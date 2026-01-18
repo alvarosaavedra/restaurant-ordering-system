@@ -55,8 +55,5 @@ export const actions: Actions = {
 	}
 };
 
-// Helper function to generate session token (copied from auth.ts)
-function generateSessionToken() {
-	const bytes = crypto.getRandomValues(new Uint8Array(18));
-	return btoa(String.fromCharCode(...bytes));
-}
+// Import the proper function from auth.ts
+import { generateSessionToken } from '$lib/server/auth';

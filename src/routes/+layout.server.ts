@@ -5,31 +5,36 @@ import type { LayoutServerLoad } from './$types';
 export const load: LayoutServerLoad = async ({ cookies, url }) => {
 	const sessionToken = cookies.get('auth-session');
 	
+	// Check if we're on an auth route
+	const isAuthRoute = url.pathname.startsWith('/login') || url.pathname.startsWith('/logout');
+	
 	if (!sessionToken) {
-		// Allow access to login page when not authenticated
-		if (url.pathname === '/login') {
-			return { user: null };
+		// If not authenticated and not on auth route, redirect to login
+		if (!isAuthRoute) {
+			redirect(302, '/login');
 		}
 		
-		// Redirect to login for all other routes
-		redirect(302, '/login');
+		// Allow access to auth routes
+		return { user: null };
 	}
 
 	const { session, user } = await validateSessionToken(sessionToken);
 	
 	if (!session || !user) {
-		// Invalid session, clear cookie and redirect to login
+		// Invalid session, clear cookie
 		cookies.delete('auth-session', { path: '/' });
 		
-		if (url.pathname === '/login') {
-			return { user: null };
+		// If not on auth route, redirect to login
+		if (!isAuthRoute) {
+			redirect(302, '/login');
 		}
 		
-		redirect(302, '/login');
+		// Allow access to auth routes
+		return { user: null };
 	}
 
-	// If authenticated user tries to access login, redirect to appropriate page
-	if (url.pathname === '/login') {
+	// If authenticated and on auth route, redirect to appropriate page
+	if (isAuthRoute) {
 		let redirectPath = '/';
 		switch (user.role) {
 			case 'kitchen':
@@ -46,5 +51,6 @@ export const load: LayoutServerLoad = async ({ cookies, url }) => {
 		redirect(302, redirectPath);
 	}
 
+	// For authenticated users, let the app layout handle protection
 	return { user };
 };
