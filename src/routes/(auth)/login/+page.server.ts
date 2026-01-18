@@ -2,7 +2,7 @@ import { fail, redirect } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import { user } from '$lib/server/db/schema';
-import { validateSessionToken, createSession, setSessionTokenCookie } from '$lib/server/auth';
+import { validateSessionToken, createSession, setSessionTokenCookie, generateSessionToken } from '$lib/server/auth';
 import type { Actions } from './$types';
 
 export const actions: Actions = {
@@ -33,7 +33,10 @@ export const actions: Actions = {
 
 		// Create session
 		const sessionToken = generateSessionToken();
+		console.log('Creating session with token:', sessionToken);
 		const session = await createSession(sessionToken, existingUser.id);
+		console.log('Session created:', session);
+		console.log('User role:', existingUser.role);
 		setSessionTokenCookie({ cookies } as any, sessionToken, session.expiresAt);
 
 		// Redirect based on user role
@@ -51,9 +54,7 @@ export const actions: Actions = {
 				break;
 		}
 
+		console.log('Redirecting to:', redirectPath);
 		redirect(302, redirectPath);
 	}
-};
-
-// Import the proper function from auth.ts
-import { generateSessionToken } from '$lib/server/auth';
+ };
