@@ -21,22 +21,15 @@ export const actions: Actions = {
 			.from(user)
 			.where(eq(user.email, email));
 
-	console.log('Found user:', existingUser);
-		
-	if (!existingUser) {
-		console.log('User not found');
-		return fail(400, { error: 'Invalid email or password' });
-	}
+		if (!existingUser) {
+			return fail(400, { error: 'Invalid email or password' });
+		}
 
-	// For MVP: Simple password check (plain text comparison)
-	// In production: Use proper password hashing with bcrypt/argon2
-	console.log('Password comparison:', { provided: password, stored: existingUser.passwordHash });
-	if (existingUser.passwordHash !== password) {
-		console.log('Password mismatch');
-		return fail(400, { error: 'Invalid email or password' });
-	}
-	
-	console.log('Password check passed');
+		// For MVP: Simple password check (plain text comparison)
+		// In production: Use proper password hashing with bcrypt/argon2
+		if (existingUser.passwordHash !== password) {
+			return fail(400, { error: 'Invalid email or password' });
+		}
 
 		// Create session
 		const sessionToken = generateSessionToken();
@@ -44,20 +37,14 @@ export const actions: Actions = {
 		setSessionTokenCookie({ cookies } as any, sessionToken, session.expiresAt);
 
 		// Redirect based on user role
-		let redirectPath = '/';
 		switch (existingUser.role) {
 			case 'kitchen':
-				redirectPath = '/kitchen';
-				break;
+				redirect(302, '/kitchen');
 			case 'delivery':
-				redirectPath = '/delivery';
-				break;
+				redirect(302, '/delivery');
 			case 'order_taker':
 			default:
-				redirectPath = '/orders/new';
-				break;
+				redirect(302, '/orders/new');
 		}
-
-		redirect(302, redirectPath);
 	}
- };
+};

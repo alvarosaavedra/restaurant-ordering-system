@@ -5,56 +5,35 @@ import type { LayoutServerLoad } from './$types';
 export const load: LayoutServerLoad = async ({ cookies, url }) => {
 	const sessionToken = cookies.get('auth-session');
 	
-	console.log('Layout load - pathname:', url.pathname);
-	console.log('Layout load - sessionToken:', sessionToken);
-	
-	// Check if we're on an auth route
-	const isAuthRoute = url.pathname.startsWith('/login') || url.pathname.startsWith('/logout');
-	console.log('Layout load - isAuthRoute:', isAuthRoute);
-	
+	// If not logged in, only allow auth routes
 	if (!sessionToken) {
-		// If not authenticated and not on auth route, redirect to login
-		if (!isAuthRoute) {
-			redirect(302, '/login');
+		if (url.pathname === '/login' || url.pathname === '/logout') {
+			return { user: null };
 		}
-		
-		// Allow access to auth routes
-		return { user: null };
+		redirect(302, '/login');
 	}
 
 	const { session, user } = await validateSessionToken(sessionToken);
 	
+	// If session is invalid, clear and redirect to login
 	if (!session || !user) {
-		// Invalid session, clear cookie
 		cookies.delete('auth-session', { path: '/' });
-		
-		// If not on auth route, redirect to login
-		if (!isAuthRoute) {
-			redirect(302, '/login');
-		}
-		
-		// Allow access to auth routes
-		return { user: null };
+		redirect(302, '/login');
 	}
 
-	// If authenticated and on auth route, redirect to appropriate page
-	if (isAuthRoute) {
-		let redirectPath = '/';
+	// If logged in and trying to access auth routes, redirect to appropriate page
+	if (url.pathname === '/login' || url.pathname === '/logout') {
 		switch (user.role) {
 			case 'kitchen':
-				redirectPath = '/kitchen';
-				break;
+				redirect(302, '/kitchen');
 			case 'delivery':
-				redirectPath = '/delivery';
-				break;
+				redirect(302, '/delivery');
 			case 'order_taker':
 			default:
-				redirectPath = '/orders/new';
-				break;
+				redirect(302, '/orders/new');
 		}
-		redirect(302, redirectPath);
 	}
 
-	// For authenticated users, let the app layout handle protection
+	// For all other routes, return user data
 	return { user };
 };
