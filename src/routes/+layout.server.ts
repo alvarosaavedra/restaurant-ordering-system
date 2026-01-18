@@ -5,8 +5,12 @@ import type { LayoutServerLoad } from './$types';
 export const load: LayoutServerLoad = async ({ cookies, url }) => {
 	const sessionToken = cookies.get('auth-session');
 	
+	console.log('Layout load - pathname:', url.pathname);
+	console.log('Layout load - sessionToken:', sessionToken);
+	
 	// Check if we're on an auth route
 	const isAuthRoute = url.pathname.startsWith('/login') || url.pathname.startsWith('/logout');
+	console.log('Layout load - isAuthRoute:', isAuthRoute);
 	
 	if (!sessionToken) {
 		// If not authenticated and not on auth route, redirect to login

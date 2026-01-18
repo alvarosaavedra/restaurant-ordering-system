@@ -33,10 +33,7 @@ export const actions: Actions = {
 
 		// Create session
 		const sessionToken = generateSessionToken();
-		console.log('Creating session with token:', sessionToken);
 		const session = await createSession(sessionToken, existingUser.id);
-		console.log('Session created:', session);
-		console.log('User role:', existingUser.role);
 		setSessionTokenCookie({ cookies } as any, sessionToken, session.expiresAt);
 
 		// Redirect based on user role
@@ -54,7 +51,6 @@ export const actions: Actions = {
 				break;
 		}
 
-		console.log('Redirecting to:', redirectPath);
 		redirect(302, redirectPath);
 	}
  };
