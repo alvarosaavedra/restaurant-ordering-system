@@ -1,0 +1,8 @@
+<script lang="ts">
+	let { data }: { data: any } = $props();
+</script>
+
+<div class="px-4 py-6">
+	<h1 class="text-2xl font-bold text-gray-900">New Order</h1>
+	<p class="mt-2 text-gray-600">Create a new customer order</p>
+</div>
