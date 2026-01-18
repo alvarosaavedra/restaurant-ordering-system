@@ -21,19 +21,10 @@
 		cart.reduce((total, cartItem) => total + (cartItem.item.price * cartItem.quantity), 0)
 	);
 
-	onMount(async () => {
-		try {
-			const response = await fetch('/api/menu');
-			if (response.ok) {
-				const data = await response.json();
-				categories = data.categories || [];
-			} else {
-				console.error('Failed to fetch menu:', response.statusText);
-			}
-		} catch (error) {
-			console.error('Error fetching menu:', error);
-		}
-	});
+	// Local quantity tracking for each item
+	const itemQuantities: Record<string, number> = $derived(
+		cart.reduce((acc, item) => ({ ...acc, [item.item.id]: item.quantity }), {})
+	);
 
 	function addToOrder(item: MenuItemWithCategory, quantity: number) {
 		const existingItem = cart.find(cartItem => cartItem.item.id === item.id);
@@ -142,11 +133,11 @@
 						</div>
 					{:else}
 						<div class="space-y-6">
-							{#each categories as category}
+					{#each categories as category}
 								<div>
 									<h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center justify-between">
 										{category.name}
-										<span class="text-sm text-gray-500">({getTotalItems()} items)</span>
+											<span class="text-sm text-gray-500">({category.items?.length || 0} items)</span>
 									</h3>
 									
 									<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -188,15 +179,17 @@
 						<Button 
 							variant="secondary"
 							class="flex-1"
-							onClick={() => cart = []}
+							onclick={() => cart = []}
 						>
 							Clear Cart
 						</Button>
 						
 						<Button 
 							variant="primary"
+							size="sm"
 							class="flex-1"
-							onClick={createOrder}
+							onclick={() => createOrder()}
+							disabled={cart.length === 0}
 						>
 							Create Order
 						</Button>

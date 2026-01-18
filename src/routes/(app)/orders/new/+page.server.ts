@@ -1,10 +1,13 @@
-import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { category, menuItem } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
-import type { RequestHandler } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
 
-export const GET: RequestHandler = async ({ url }) => {
+export const load: PageServerLoad = async ({ locals }) => {
+	if (!locals.user) {
+		return { categories: [], menuItems: [] };
+	}
+
 	try {
 		// Fetch all categories with their menu items
 		const categories = await db.select().from(category).orderBy(category.displayOrder);
@@ -27,11 +30,15 @@ export const GET: RequestHandler = async ({ url }) => {
 			})
 		);
 
-		return json({
+		return {
 			categories: menuItemsWithCategories
-		});
+		};
 	} catch (error) {
 		console.error('Error fetching menu:', error);
-		return json({ error: 'Failed to fetch menu' }, { status: 500 });
+		return { 
+			categories: [], 
+			menuItems: [],
+			error: 'Failed to fetch menu' 
+		};
 	}
 };
