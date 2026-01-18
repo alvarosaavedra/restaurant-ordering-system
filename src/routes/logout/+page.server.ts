@@ -1,5 +1,10 @@
 import { redirect } from '@sveltejs/kit';
-import { deleteSessionTokenCookie, invalidateSession } from '$lib/server/auth';
+import { sha256 } from '@oslojs/crypto/sha2';
+import { encodeHexLowerCase } from '@oslojs/encoding';
+import { deleteSessionTokenCookie } from '$lib/server/auth';
+import { db } from '$lib/server/db';
+import { session } from '$lib/server/db/schema';
+import { eq } from 'drizzle-orm';
 import type { Actions } from './$types';
 
 export const actions: Actions = {
@@ -7,9 +12,11 @@ export const actions: Actions = {
 		const sessionToken = cookies.get('auth-session');
 		
 		if (sessionToken) {
-			// Invalidate session in database
-			const sessionId = Buffer.from(sessionToken).toString('hex').substring(0, 64);
-			await invalidateSession(sessionId);
+			// Calculate session ID the same way as in auth.ts
+			const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(sessionToken)));
+			
+			// Delete session from database
+			await db.delete(session).where(eq(session.id, sessionId));
 			
 			// Delete session cookie
 			deleteSessionTokenCookie({ cookies } as any);

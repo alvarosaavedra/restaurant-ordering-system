@@ -1,12 +1,38 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
+	import Button from '$lib/components/ui/Button.svelte';
+	import Card from '$lib/components/ui/Card.svelte';
 
-	onMount(() => {
-		goto('/login');
-	});
+	let loading = $state(false);
+
+	const handleLogout = async () => {
+		loading = true;
+		await new Promise(resolve => setTimeout(resolve, 500)); // Brief delay for UX
+	};
 </script>
 
-<div class="flex items-center justify-center min-h-screen">
-	<p>Logging out...</p>
-</div>
+<Card class="max-w-md mx-auto mt-8">
+	<div class="p-6">
+		<h1 class="text-xl font-semibold text-center mb-4">Logout</h1>
+		
+		<form method="POST" use:enhance={handleLogout}>
+			<p class="text-gray-600 mb-4 text-center">Are you sure you want to logout?</p>
+			
+			<Button 
+				type="submit" 
+				variant="primary" 
+				class="w-full"
+				disabled={loading}
+			>
+				{loading ? 'Logging out...' : 'Logout'}
+			</Button>
+		</form>
+		
+		<p class="mt-4 text-center">
+			<a href="/" class="text-blue-600 hover:text-blue-800 text-sm">
+				Cancel
+			</a>
+		</p>
+	</div>
+</Card>
