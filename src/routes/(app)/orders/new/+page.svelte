@@ -141,10 +141,10 @@
 									</h3>
 									
 									<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-										{#each category.items as item (item.id)}
+						{#each category.items as item (item)}
 											<MenuItem 
 												item={item}
-												onAdd={addToOrder}
+												onAdd={(item, quantity) => addToOrder(item, quantity)}
 											/>
 										{/each}
 									</div>

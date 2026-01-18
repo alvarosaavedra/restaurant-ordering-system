@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
+	// Ensure user is authenticated before loading menu data
 	if (!locals.user) {
 		return { categories: [], menuItems: [] };
 	}
@@ -25,7 +26,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 					name: cat.name,
 					displayOrder: cat.displayOrder,
 					createdAt: cat.createdAt,
-					items
+					items: items
 				};
 			})
 		);
@@ -38,7 +39,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		return { 
 			categories: [], 
 			menuItems: [],
-			error: 'Failed to fetch menu' 
+			error: 'Failed to fetch menu'
 		};
 	}
 };
