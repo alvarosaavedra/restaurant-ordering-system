@@ -21,15 +21,22 @@ export const actions: Actions = {
 			.from(user)
 			.where(eq(user.email, email));
 
-		if (!existingUser) {
-			return fail(400, { error: 'Invalid email or password' });
-		}
+	console.log('Found user:', existingUser);
+		
+	if (!existingUser) {
+		console.log('User not found');
+		return fail(400, { error: 'Invalid email or password' });
+	}
 
-		// For MVP: Simple password check (plain text comparison)
-		// In production: Use proper password hashing with bcrypt/argon2
-		if (existingUser.passwordHash !== password) {
-			return fail(400, { error: 'Invalid email or password' });
-		}
+	// For MVP: Simple password check (plain text comparison)
+	// In production: Use proper password hashing with bcrypt/argon2
+	console.log('Password comparison:', { provided: password, stored: existingUser.passwordHash });
+	if (existingUser.passwordHash !== password) {
+		console.log('Password mismatch');
+		return fail(400, { error: 'Invalid email or password' });
+	}
+	
+	console.log('Password check passed');
 
 		// Create session
 		const sessionToken = generateSessionToken();
