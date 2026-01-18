@@ -56,3 +56,9 @@ export type Cart = {
 	items: CartItem[];
 	totalAmount: number;
 };
+
+// Props for MenuItem component
+export interface MenuItemProps {
+	item: MenuItemWithCategory;
+	onAdd: (item: MenuItemWithCategory, quantity: number) => void;
+}
