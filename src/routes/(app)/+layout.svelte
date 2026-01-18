@@ -7,6 +7,11 @@
 
 	const user = $derived(data.user);
 	const isLoggedIn = $derived(!!user);
+
+	// Helper function to check if a path is active
+	function isActive(href: string): boolean {
+		return page.url.pathname === href;
+	}
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
@@ -39,18 +44,72 @@
 			<nav class="bg-white border-b">
 				<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 					<div class="flex space-x-8">
-						<a href="/" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium border-blue-500 text-gray-900">Dashboard</a>
+						<!-- Dashboard -->
+						<a 
+							href="/" 
+							class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium {
+								isActive('/')
+									? 'border-blue-500 text-gray-900' 
+									: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+							}"
+						>
+							Dashboard
+						</a>
+						
+						<!-- New Order -->
 						{#if user.role === 'order_taker'}
-							<a href="/orders/new" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">New Order</a>
+							<a 
+								href="/orders/new" 
+								class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium {
+									isActive('/orders/new')
+										? 'border-blue-500 text-gray-900' 
+										: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+								}"
+							>
+								New Order
+							</a>
 						{/if}
+						
+						<!-- Order History -->
 						{#if user.role === 'order_taker' || user.role === 'kitchen' || user.role === 'delivery'}
-							<a href="/orders" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Order History</a>
+							<a 
+								href="/orders" 
+								class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium {
+									isActive('/orders')
+										? 'border-blue-500 text-gray-900' 
+										: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+								}"
+							>
+								Order History
+							</a>
 						{/if}
+						
+						<!-- Kitchen -->
 						{#if user.role === 'kitchen'}
-							<a href="/kitchen" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Kitchen</a>
+							<a 
+								href="/kitchen" 
+								class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium {
+									isActive('/kitchen')
+										? 'border-blue-500 text-gray-900' 
+										: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+								}"
+							>
+								Kitchen
+							</a>
 						{/if}
+						
+						<!-- Delivery -->
 						{#if user.role === 'delivery'}
-							<a href="/delivery" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Delivery</a>
+							<a 
+								href="/delivery" 
+								class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium {
+									isActive('/delivery')
+										? 'border-blue-500 text-gray-900' 
+										: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+								}"
+							>
+								Delivery
+							</a>
 						{/if}
 					</div>
 				</div>
