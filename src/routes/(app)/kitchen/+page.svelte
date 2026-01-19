@@ -4,8 +4,8 @@
 
 	let { data }: { data: PageData } = $props();
 
-	// @ts-ignore - Warning about initial value reference is acceptable for this use case
-	let orders = $state(data.orders || []);
+	let initialOrders = $derived(data.orders || []);
+	let orders = $state([...initialOrders]);
 
 	function handleStatusUpdate(orderId: string, status: string) {
 		// Remove order from list when status changes to ready
