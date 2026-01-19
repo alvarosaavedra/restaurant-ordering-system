@@ -1,6 +1,9 @@
-import { db } from './index';
-import { category, menuItem, user } from './schema';
+import { drizzle } from 'drizzle-orm/libsql';
+import { createClient } from '@libsql/client';
 import { nanoid } from 'nanoid';
+import * as schema from './schema';
+
+const db = drizzle(createClient({ url: process.env.DATABASE_URL || 'file:local.db' }), { schema });
 
 // Sample categories
 const categories = [
@@ -47,14 +50,14 @@ export async function seedDatabase() {
 	try {
 		// Insert categories
 		console.log('Inserting categories...');
-		await db.insert(category).values(categories.map(cat => ({
+		await db.insert(schema.category).values(categories.map(cat => ({
 			...cat,
 			createdAt: new Date()
 		})));
 		
 		// Insert menu items
 		console.log('Inserting menu items...');
-		await db.insert(menuItem).values(menuItems.map(item => ({
+		await db.insert(schema.menuItem).values(menuItems.map(item => ({
 			id: nanoid(),
 			...item,
 			createdAt: new Date()
@@ -62,7 +65,7 @@ export async function seedDatabase() {
 		
 		// Insert users
 		console.log('Inserting users...');
-		await db.insert(user).values(users.map(u => ({
+		await db.insert(schema.user).values(users.map(u => ({
 			...u,
 			createdAt: new Date(),
 			updatedAt: new Date()

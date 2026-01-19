@@ -5,15 +5,15 @@ import { user } from '$lib/server/db/schema';
 import { validateSessionToken, createSession, setSessionTokenCookie, generateSessionToken } from '$lib/server/auth';
 import type { Actions } from './$types';
 
-export const actions: Actions = {
-	default: async ({ request, cookies }) => {
-		const data = await request.formData();
-		const email = data.get('email') as string;
-		const password = data.get('password') as string;
+	export const actions: Actions = {
+		default: async ({ request, cookies }) => {
+			const data = await request.formData();
+			const email = data.get('email') as string;
+			const password = data.get('password') as string;
 
-		if (!email || !password) {
-			return fail(400, { error: 'Email and password are required' });
-		}
+			if (!email || !password) {
+				return fail(400, { error: 'Email and password are required' });
+			}
 
 		// Find user by email
 		const [existingUser] = await db
@@ -25,11 +25,11 @@ export const actions: Actions = {
 			return fail(400, { error: 'Invalid email or password' });
 		}
 
-		// For MVP: Simple password check (plain text comparison)
-		// In production: Use proper password hashing with bcrypt/argon2
-		if (existingUser.passwordHash !== password) {
-			return fail(400, { error: 'Invalid email or password' });
-		}
+			// For MVP: Simple password check (plain text comparison)
+			// In production: Use proper password hashing with bcrypt/argon2
+			if (existingUser.passwordHash !== password) {
+				return fail(400, { error: 'Invalid email or password' });
+			}
 
 		// Create session
 		const sessionToken = generateSessionToken();
@@ -42,6 +42,7 @@ export const actions: Actions = {
 				redirect(302, '/kitchen');
 			case 'delivery':
 				redirect(302, '/delivery');
+			case 'admin':
 			case 'order_taker':
 			default:
 				redirect(302, '/orders/new');
