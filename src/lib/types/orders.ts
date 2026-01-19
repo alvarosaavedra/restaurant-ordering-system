@@ -1,7 +1,7 @@
 import type { User, MenuItem, Category, Order, OrderItem } from '$lib/server/db/schema';
 
 // User roles
-export type UserRole = User['role'];
+export type UserRole = 'order_taker' | 'kitchen' | 'delivery' | 'admin';
 
 // Order status
 export type OrderStatus = Order['status'];

@@ -4,7 +4,7 @@ import { eq, and, or, inArray } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	if (!locals.user || locals.user.role !== 'kitchen') {
+	if (!locals.user || (locals.user.role !== 'kitchen' && locals.user.role !== 'admin')) {
 		return { orders: [] };
 	}
 

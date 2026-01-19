@@ -22,14 +22,19 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 			return json({ error: 'Invalid status' }, { status: 400 });
 		}
 
-		// Check if user has permission to update status
-		if (locals.user.role === 'kitchen' && (status === 'delivered' || status === 'pending')) {
-			return json({ error: 'Kitchen staff can only update to preparing or ready' }, { status: 403 });
-		}
+	// Check if user has permission to update status
+	if (locals.user.role === 'kitchen' && (status === 'delivered' || status === 'pending')) {
+		return json({ error: 'Kitchen staff can only update to preparing or ready' }, { status: 403 });
+	}
 
-		if (locals.user.role === 'delivery' && (status === 'pending' || status === 'preparing' || status === 'ready')) {
-			return json({ error: 'Delivery staff can only update to delivered' }, { status: 403 });
-		}
+	if (locals.user.role === 'delivery' && (status === 'pending' || status === 'preparing' || status === 'ready')) {
+		return json({ error: 'Delivery staff can only update to delivered' }, { status: 403 });
+	}
+
+	// Admin has full access to update any status
+	if (locals.user.role === 'admin') {
+		// Allow all status changes
+	}
 
 		// Update order status
 		await db

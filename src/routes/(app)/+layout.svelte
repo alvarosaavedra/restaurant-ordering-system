@@ -74,7 +74,7 @@
 						</a>
 						
 						<!-- New Order -->
-						{#if user.role === 'order_taker'}
+						{#if user.role === 'order_taker' || user.role === 'admin'}
 							<a 
 								href="/orders/new" 
 								class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all {
@@ -91,7 +91,7 @@
 						{/if}
 						
 						<!-- Order History -->
-						{#if user.role === 'order_taker' || user.role === 'kitchen' || user.role === 'delivery'}
+						{#if user.role === 'order_taker' || user.role === 'kitchen' || user.role === 'delivery' || user.role === 'admin'}
 							<a 
 								href="/orders" 
 								class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all {
@@ -108,7 +108,7 @@
 						{/if}
 						
 						<!-- Kitchen -->
-						{#if user.role === 'kitchen'}
+						{#if user.role === 'kitchen' || user.role === 'admin'}
 							<a 
 								href="/kitchen" 
 								class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all {
@@ -125,7 +125,7 @@
 						{/if}
 						
 						<!-- Delivery -->
-						{#if user.role === 'delivery'}
+						{#if user.role === 'delivery' || user.role === 'admin'}
 							<a 
 								href="/delivery" 
 								class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all {

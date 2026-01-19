@@ -27,7 +27,7 @@
 
 				<div>
 					<label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Password</label>
-					<Input id="password" name="password" type="password" required placeholder="••••••••" class="w-full" />
+					<Input id="password" name="password" type="password" required placeholder="•••••••••" class="w-full" />
 				</div>
 
 				{#if form?.error}
@@ -79,7 +79,7 @@
 						<div class="flex items-center gap-2">
 							<div class="w-8 h-8 bg-success-200 rounded-full flex items-center justify-center">
 								<svg class="w-4 h-4 text-success-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
 								</svg>
 							</div>
 							<div>
@@ -88,6 +88,21 @@
 							</div>
 						</div>
 						<span class="text-xs font-mono bg-white px-2 py-1 rounded text-success-700">password123</span>
+					</div>
+
+					<div class="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
+						<div class="flex items-center gap-2">
+							<div class="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center">
+								<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016zM4 5a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V5z" />
+								</svg>
+							</div>
+							<div>
+								<div class="text-xs font-semibold text-white">Admin</div>
+								<div class="text-xs text-gray-300">admin@bakery.com</div>
+							</div>
+						</div>
+						<span class="text-xs font-mono bg-gray-700 px-2 py-1 rounded text-white">password123</span>
 					</div>
 				</div>
 			</div>

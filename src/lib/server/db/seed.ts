@@ -37,7 +37,8 @@ const menuItems = [
 const users = [
 	{ id: nanoid(), name: 'John Doe', email: 'john@bakery.com', passwordHash: 'hashed_password_here', role: 'order_taker' as const },
 	{ id: nanoid(), name: 'Jane Smith', email: 'jane@bakery.com', passwordHash: 'hashed_password_here', role: 'kitchen' as const },
-	{ id: nanoid(), name: 'Mike Johnson', email: 'mike@bakery.com', passwordHash: 'hashed_password_here', role: 'delivery' as const }
+	{ id: nanoid(), name: 'Mike Johnson', email: 'mike@bakery.com', passwordHash: 'hashed_password_here', role: 'delivery' as const },
+	{ id: nanoid(), name: 'Admin User', email: 'admin@bakery.com', passwordHash: 'hashed_password_here', role: 'admin' as const }
 ];
 
 export async function seedDatabase() {
