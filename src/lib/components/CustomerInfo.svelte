@@ -7,9 +7,24 @@
 		customerName: string;
 		customerPhone: string;
 		onUpdate: (data: Partial<CreateOrderForm>) => void;
+		showErrors?: boolean;
 	}
 
-	let { customerName, customerPhone, onUpdate }: Props = $props();
+	let { customerName, customerPhone, onUpdate, showErrors = false }: Props = $props();
+
+	const nameError = $derived.by(() => {
+		if (showErrors && !customerName.trim()) {
+			return 'Customer name is required';
+		}
+		return null;
+	});
+
+	const phoneError = $derived.by(() => {
+		if (customerPhone && customerPhone.trim() && !/^\+?[\d\s\-()]+$/.test(customerPhone)) {
+			return 'Please enter a valid phone number';
+		}
+		return null;
+	});
 
 	function handleNameChange(event: Event) {
 		const target = event.target as HTMLInputElement;
@@ -47,6 +62,7 @@
 					value={customerName}
 					oninput={(e) => handleNameChange(e)}
 					class="w-full"
+					error={nameError || undefined}
 				/>
 			</div>
 
@@ -62,6 +78,7 @@
 					value={customerPhone}
 					oninput={(e) => handlePhoneChange(e)}
 					class="w-full"
+					error={phoneError || undefined}
 				/>
 			</div>
 		</div>

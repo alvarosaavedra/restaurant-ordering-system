@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import '../layout.css';
 	import favicon from '$lib/assets/favicon.svg';
+	import ToastContainer from '$lib/components/ToastContainer.svelte';
 
 	let { data, children }: { data: any; children: import('svelte').Snippet } = $props();
 
@@ -148,6 +149,8 @@
 		<main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
 			{@render children()}
 		</main>
+
+		<ToastContainer />
 	</div>
 {:else}
 	<!-- Redirect to login if not authenticated -->

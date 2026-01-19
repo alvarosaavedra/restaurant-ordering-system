@@ -1,6 +1,7 @@
 <script lang="ts">
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
+	import { toast } from '$lib/utils/toast';
 
 	interface OrderItemWithType {
 		id: string;
@@ -47,14 +48,15 @@
 			});
 
 			if (response.ok) {
+				toast.success('Order status updated!');
 				onStatusUpdate?.(order.id, status);
 			} else {
 				const error = await response.json();
-				alert(error.error || 'Failed to update status');
+				toast.error(error.error || 'Failed to update status');
 			}
 		} catch (error) {
 			console.error('Error updating status:', error);
-			alert('Failed to update status');
+			toast.error('Failed to update status');
 		}
 	}
 

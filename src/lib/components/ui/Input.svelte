@@ -9,6 +9,7 @@
 		value?: string;
 		oninput?: (e: Event) => void;
 		class?: string;
+		error?: string;
 	}
 
 	let {
@@ -21,10 +22,18 @@
 		value = $bindable(''),
 		oninput,
 		class: className = '',
+		error,
 		...rest
 	}: Props = $props();
 
-	const baseClasses = 'block w-full px-4 py-2.5 border border-gray-200 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-400';
+	const baseClasses = 'block w-full px-4 py-2.5 border rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-200 disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-400';
+
+	const errorState = $derived.by(() => {
+		if (error) {
+			return 'border-error-500 focus:ring-error-500 focus:border-error-500';
+		}
+		return 'border-gray-200 focus:ring-primary-500 focus:border-transparent';
+	});
 </script>
 
 <input
@@ -36,6 +45,9 @@
 	{disabled}
 	{oninput}
 	bind:value
-	class={`${baseClasses} ${className}`}
+	class={`${baseClasses} ${errorState} ${className}`}
 	{...rest}
 />
+{#if error}
+	<p class="mt-1.5 text-sm text-error-600">{error}</p>
+{/if}

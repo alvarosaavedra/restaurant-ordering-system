@@ -4,6 +4,7 @@
 	import Card from '$lib/components/ui/Card.svelte';
 	import MenuItem from '$lib/components/MenuItem.svelte';
 	import CustomerInfo from '$lib/components/CustomerInfo.svelte';
+	import { toast } from '$lib/utils/toast';
 	import type { MenuItemWithCategory } from '$lib/types/orders';
 
 	interface CartItem {
@@ -28,6 +29,8 @@
 	let totalAmount: number = $derived(
 		cart.reduce((total, cartItem) => total + (cartItem.item.price * cartItem.quantity), 0)
 	);
+	let isSubmitting: boolean = $state(false);
+	let showValidationErrors: boolean = $state(false);
 
 	function addToOrder(item: MenuItemWithCategory, quantity: number) {
 		const existingItem = cart.find(cartItem => cartItem.item.id === item.id);
@@ -65,15 +68,18 @@
 
 	async function createOrder() {
 		if (cart.length === 0) {
-			alert('Please add items to the order');
+			toast.warning('Please add items to order');
 			return;
 		}
+
+		showValidationErrors = true;
 
 		if (!customerName.trim()) {
-			alert('Please enter customer name');
+			toast.warning('Please enter customer name');
 			return;
 		}
 
+		isSubmitting = true;
 		try {
 			const response = await fetch('/api/orders', {
 				method: 'POST',
@@ -91,19 +97,20 @@
 			});
 
 			if (response.ok) {
-				// Reset cart and form
+				toast.success('Order created successfully!');
 				cart = [];
 				customerName = '';
 				customerPhone = '';
-				
-				// Redirect to order confirmation or dashboard
 				await goto('/orders');
 			} else {
-				alert('Failed to create order. Please try again.');
+				const errorData = await response.json();
+				toast.error(errorData.error || 'Failed to create order. Please try again.');
 			}
 		} catch (error) {
 			console.error('Error creating order:', error);
-			alert('Failed to create order. Please try again.');
+			toast.error('Failed to create order. Please try again.');
+		} finally {
+			isSubmitting = false;
 		}
 	}
 </script>
@@ -112,13 +119,14 @@
 	<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 		<!-- Customer Information Form -->
 		<div class="lg:col-span-1">
-			<CustomerInfo 
+			<CustomerInfo
 				customerName={customerName}
 				customerPhone={customerPhone}
 				onUpdate={(data) => {
 					if (data.customerName !== undefined) customerName = data.customerName;
 					if (data.customerPhone !== undefined) customerPhone = data.customerPhone;
 				}}
+				showErrors={showValidationErrors}
 			/>
 		</div>
 
@@ -261,17 +269,24 @@
 							Clear
 						</Button>
 						
-						<Button 
+						<Button
 							variant="primary"
 							size="sm"
 							class="flex-1"
 							onclick={() => createOrder()}
-							disabled={cart.length === 0}
+							disabled={cart.length === 0 || isSubmitting}
 						>
-							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-							</svg>
-							Create Order
+							{#if isSubmitting}
+								<svg class="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+								</svg>
+								Creating...
+							{:else}
+								<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+								</svg>
+								Create Order
+							{/if}
 						</Button>
 					</div>
 				</div>
