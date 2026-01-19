@@ -12,6 +12,10 @@ export type MenuItemWithCategory = MenuItem & {
 };
 
 export type OrderWithItems = Order & {
+	employee?: {
+		name: string;
+		email: string;
+	};
 	items: (OrderItem & {
 		menuItem: MenuItem;
 	})[];
