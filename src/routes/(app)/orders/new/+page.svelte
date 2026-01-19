@@ -47,6 +47,22 @@
 		return cart.reduce((total, cartItem) => total + cartItem.quantity, 0);
 	}
 
+	function removeFromCart(itemId: string) {
+		cart = cart.filter(cartItem => cartItem.item.id !== itemId);
+	}
+
+	function updateCartQuantity(itemId: string, newQuantity: number) {
+		if (newQuantity <= 0) {
+			cart = cart.filter(cartItem => cartItem.item.id !== itemId);
+		} else {
+			cart = cart.map(cartItem => 
+				cartItem.item.id === itemId 
+					? { ...cartItem, quantity: newQuantity }
+					: cartItem
+			);
+		}
+	}
+
 	async function createOrder() {
 		if (cart.length === 0) {
 			alert('Please add items to the order');
@@ -173,7 +189,61 @@
 						<h2 class="text-xl font-bold text-gray-900">Order Summary</h2>
 					</div>
 					
-					<div class="space-y-3 mb-6">
+					<!-- Cart Items List -->
+					<div class="mb-6 space-y-3 max-h-64 overflow-y-auto pr-2">
+						{#each cart as cartItem (cartItem.item.id)}
+							<div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+								<div class="flex-1 min-w-0">
+									<h4 class="font-semibold text-gray-900 text-sm truncate">{cartItem.item.name}</h4>
+									<p class="text-xs text-gray-500 mt-0.5">{cartItem.item.category.name}</p>
+								</div>
+								<div class="flex items-center gap-3 ml-3">
+									<div class="flex items-center border border-gray-200 rounded-lg">
+										<button
+											type="button"
+											class="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-l transition-colors"
+											onclick={() => updateCartQuantity(cartItem.item.id, cartItem.quantity - 1)}
+											disabled={cartItem.quantity <= 1}
+											aria-label="Decrease quantity"
+										>
+											<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+											</svg>
+										</button>
+										
+										<span class="px-2 text-sm font-medium text-gray-700 min-w-[30px] text-center">
+											{cartItem.quantity}
+										</span>
+										
+										<button
+											type="button"
+											class="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-r transition-colors"
+											onclick={() => updateCartQuantity(cartItem.item.id, cartItem.quantity + 1)}
+											aria-label="Increase quantity"
+										>
+											<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12h16m-8-8v8m0 0l8 8m-8-8v8" />
+											</svg>
+										</button>
+									</div>
+									<span class="font-bold text-gray-900 text-sm w-16 text-right">${(cartItem.item.price * cartItem.quantity).toFixed(2)}</span>
+									<button
+										type="button"
+										class="p-1.5 text-error-500 hover:text-error-700 hover:bg-error-50 rounded-lg transition-colors ml-1"
+										onclick={() => removeFromCart(cartItem.item.id)}
+										aria-label="Remove item"
+									>
+										<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+										</svg>
+									</button>
+								</div>
+							</div>
+						{/each}
+					</div>
+					
+					<!-- Totals -->
+					<div class="space-y-3 mb-6 border-t border-gray-200 pt-4">
 						<div class="flex justify-between items-center py-2 px-4 bg-gray-50 rounded-xl">
 							<span class="text-gray-600 font-medium">Total Items:</span>
 							<span class="font-bold text-gray-900 text-lg">{getTotalItems()}</span>
