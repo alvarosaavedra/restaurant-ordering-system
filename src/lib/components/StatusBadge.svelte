@@ -7,7 +7,7 @@
 
 	let { status }: Props = $props();
 
-	const statusConfig = {
+	const statusConfig: Record<OrderStatus, { bgColor: string; textColor: string; label: string }> = {
 		pending: {
 			bgColor: 'bg-yellow-100',
 			textColor: 'text-yellow-800',
@@ -28,9 +28,9 @@
 			textColor: 'text-gray-800',
 			label: 'Delivered'
 		}
-	} as const;
+	};
 
-	const config = statusConfig[status] || statusConfig.pending;
+	const config = $derived(statusConfig[status] || statusConfig.pending);
 </script>
 
 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {config.bgColor} {config.textColor}">

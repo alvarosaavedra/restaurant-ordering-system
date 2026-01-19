@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		return { categories: [], menuItems: [] };
 	}
 
-	try {
+		try {
 		// Fetch all categories with their menu items
 		const categories = await db.select().from(category).orderBy(category.displayOrder);
 		
@@ -21,12 +21,18 @@ export const load: PageServerLoad = async ({ locals }) => {
 					.where(eq(menuItem.categoryId, cat.id))
 					.orderBy(menuItem.name);
 				
+				// Add category to each item
+				const itemsWithCategory = items.map(item => ({
+					...item,
+					category: cat
+				}));
+				
 				return {
 					id: cat.id,
 					name: cat.name,
 					displayOrder: cat.displayOrder,
 					createdAt: cat.createdAt,
-					items: items
+					items: itemsWithCategory
 				};
 			})
 		);

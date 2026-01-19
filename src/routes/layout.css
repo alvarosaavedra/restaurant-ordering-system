@@ -1,3 +1,131 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+
+@theme {
+	--color-primary-50: #eff6ff;
+	--color-primary-100: #dbeafe;
+	--color-primary-200: #bfdbfe;
+	--color-primary-300: #93c5fd;
+	--color-primary-400: #60a5fa;
+	--color-primary-500: #3b82f6;
+	--color-primary-600: #2563eb;
+	--color-primary-700: #1d4ed8;
+	--color-primary-800: #1e40af;
+	--color-primary-900: #1e3a8a;
+
+	--color-accent-50: #fdf4ff;
+	--color-accent-100: #fae8ff;
+	--color-accent-200: #f5d0fe;
+	--color-accent-300: #f0abfc;
+	--color-accent-400: #e879f9;
+	--color-accent-500: #d946ef;
+	--color-accent-600: #c026d3;
+	--color-accent-700: #a21caf;
+	--color-accent-800: #86198f;
+	--color-accent-900: #701a75;
+
+	--color-success-50: #f0fdf4;
+	--color-success-500: #22c55e;
+	--color-success-600: #16a34a;
+	--color-success-700: #15803d;
+
+	--color-warning-50: #fefce8;
+	--color-warning-500: #eab308;
+	--color-warning-600: #ca8a04;
+
+	--color-error-50: #fef2f2;
+	--color-error-500: #ef4444;
+	--color-error-600: #dc2626;
+	--color-error-700: #b91c1c;
+
+	--font-family-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+* {
+	font-family: var(--font-family-sans);
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.glass-effect {
+	background: rgba(255, 255, 255, 0.8);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+}
+
+.gradient-bg {
+	background: linear-gradient(135deg, var(--color-primary-600) 0%, var(--color-primary-700) 100%);
+}
+
+.subtle-gradient {
+	background: linear-gradient(180deg, var(--color-primary-50) 0%, white 100%);
+}
+
+.card-hover {
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+}
+
+.button-shine {
+	position: relative;
+	overflow: hidden;
+}
+
+.button-shine::after {
+	content: '';
+	position: absolute;
+	top: -50%;
+	left: -50%;
+	width: 200%;
+	height: 200%;
+	background: linear-gradient(
+		to bottom right,
+		rgba(255, 255, 255, 0) 0%,
+		rgba(255, 255, 255, 0.1) 50%,
+		rgba(255, 255, 255, 0) 100%
+	);
+	transform: rotate(45deg) translate(-100%, -100%);
+	transition: transform 0.6s ease;
+}
+
+.button-shine:hover::after {
+	transform: rotate(45deg) translate(100%, 100%);
+}
+
+.text-gradient {
+	background: linear-gradient(135deg, var(--color-primary-600), var(--color-accent-600));
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+::-webkit-scrollbar-track {
+	background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #cbd5e1;
+	border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: #94a3b8;
+}
