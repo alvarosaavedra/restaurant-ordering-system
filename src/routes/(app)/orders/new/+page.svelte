@@ -148,17 +148,12 @@
 						<div class="space-y-8">
 					{#each categories as category (category.id)}
 								<div>
-									<div class="flex items-center gap-3 mb-5">
-										<div class="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center">
-											<svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-											</svg>
-										</div>
-										<h3 class="text-lg font-bold text-gray-900">{category.name}</h3>
-										<span class="text-xs font-medium text-gray-400 bg-gray-100 px-2 py-1 rounded-full">{category.items?.length || 0} items</span>
+									<div class="flex items-center gap-3 mb-3 pb-3 border-b border-gray-200">
+										<h3 class="text-base font-bold text-gray-900">{category.name}</h3>
+										<span class="text-xs font-medium text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{category.items?.length || 0}</span>
 									</div>
 									
-									<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+									<div class="space-y-2">
 						{#each category.items as item (item.id)}
 											<MenuItem 
 												item={item}
