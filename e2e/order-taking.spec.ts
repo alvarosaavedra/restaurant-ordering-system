@@ -16,7 +16,10 @@ test.describe('Order Taking Flow', () => {
 
 	test('should add item to cart', async ({ page }) => {
 		const firstItem = page.getByRole('listitem').filter({ hasText: 'Classic Croissant' }).first();
-		await firstItem.getByRole('button', { name: /Add.*Classic Croissant to order/ }).click();
+		await expect(firstItem).toBeVisible();
+
+		const addButton = firstItem.getByRole('button', { name: /Add.*Classic Croissant to order/ });
+		await addButton.click();
 
 		await expect(page.getByText('1 item in cart')).toBeVisible();
 	});
