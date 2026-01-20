@@ -134,7 +134,7 @@
 						id="status"
 						bind:value={statusFilter}
 						onchange={updateUrl}
-						class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all text-sm font-medium text-gray-700 bg-white"
+						class="w-full px-4 py-2.5 min-h-[44px] border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all text-sm font-medium text-gray-700 bg-white"
 					>
 						<option value="">All Status</option>
 						<option value="pending">Pending</option>
@@ -152,7 +152,7 @@
 						id="sort"
 						bind:value={sort}
 						onchange={updateUrl}
-						class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all text-sm font-medium text-gray-700 bg-white"
+						class="w-full px-4 py-2.5 min-h-[44px] border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all text-sm font-medium text-gray-700 bg-white"
 					>
 						<option value="newest">Newest First</option>
 						<option value="oldest">Oldest First</option>
@@ -161,7 +161,7 @@
 
 				<div class="flex items-end">
 					<Button variant="secondary" onclick={() => goto('/orders')} class="w-full md:w-auto">
-						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
 						</svg>
 						Clear Filters

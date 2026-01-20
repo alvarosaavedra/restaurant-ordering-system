@@ -96,7 +96,7 @@
 			<div class="flex flex-col">
 				<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Total Orders</p>
 				<div class="flex items-center gap-3">
-					<div class="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
+					<div class="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center" aria-hidden="true">
 						<svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
 						</svg>
@@ -111,7 +111,7 @@
 			<div class="flex flex-col">
 				<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Pending</p>
 				<div class="flex items-center gap-3">
-					<div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+					<div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center" aria-hidden="true">
 						<svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
 						</svg>
@@ -126,7 +126,7 @@
 			<div class="flex flex-col">
 				<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Preparing</p>
 				<div class="flex items-center gap-3">
-					<div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+					<div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center" aria-hidden="true">
 						<svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
 						</svg>
@@ -141,7 +141,7 @@
 			<div class="flex flex-col">
 				<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Ready</p>
 				<div class="flex items-center gap-3">
-					<div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+					<div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center" aria-hidden="true">
 						<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
 						</svg>
@@ -156,7 +156,7 @@
 			<div class="flex flex-col">
 				<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Delivered</p>
 				<div class="flex items-center gap-3">
-					<div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
+					<div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center" aria-hidden="true">
 						<svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
 						</svg>
@@ -312,7 +312,7 @@
 		{:else}
 			<div class="space-y-3">
 				{#each recentOrders as order (order.id)}
-					<div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer" onclick={() => goto(`/orders/${order.id}`)}>
+					<a href="/orders/{order.id}" class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer">
 						<div class="flex items-center gap-4 flex-1 min-w-0">
 							<StatusBadge status={order.status} />
 							<div class="flex-1 min-w-0">
@@ -326,7 +326,7 @@
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
 							</svg>
 						</div>
-					</div>
+					</a>
 				{/each}
 			</div>
 		{/if}

@@ -63,16 +63,17 @@
 
 <div class="px-4 py-6 max-w-7xl mx-auto">
 	<div class="mb-6">
-		<div class="flex items-center gap-3 mb-2">
-			<button
-				onclick={() => goto('/orders')}
-				class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-			>
-				<svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-				</svg>
-			</button>
-			<div>
+	<div class="flex items-center gap-3 mb-2">
+		<button
+			onclick={() => goto('/orders')}
+			class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+			aria-label="Back to orders"
+		>
+			<svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+			</svg>
+		</button>
+		<div>
 				<h1 class="text-2xl font-bold text-gray-900">Order Details</h1>
 				<p class="text-sm text-gray-600">Order #{order.id.slice(-6)}</p>
 			</div>

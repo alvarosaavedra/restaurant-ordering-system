@@ -135,7 +135,7 @@
 			<Card>
 				<div class="p-6">
 					<div class="flex items-center gap-3 mb-6">
-						<div class="w-10 h-10 gradient-bg rounded-xl flex items-center justify-center">
+						<div class="w-10 h-10 gradient-bg rounded-xl flex items-center justify-center" aria-hidden="true">
 							<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
 							</svg>
@@ -181,10 +181,10 @@
 	<!-- Order Summary & Submit -->
 	{#if cart.length > 0}
 		<div class="mt-6">
-			<Card class="max-w-md">
+			<Card class="max-w-md mx-auto lg:mx-0">
 				<div class="p-6">
 					<div class="flex items-center gap-3 mb-6">
-						<div class="w-10 h-10 gradient-bg rounded-xl flex items-center justify-center">
+						<div class="w-10 h-10 gradient-bg rounded-xl flex items-center justify-center" aria-hidden="true">
 							<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
 							</svg>
@@ -201,30 +201,30 @@
 									<p class="text-xs text-gray-500 mt-0.5">{cartItem.item.category.name}</p>
 								</div>
 								<div class="flex items-center gap-3 ml-3">
-									<div class="flex items-center border border-gray-200 rounded-lg">
+									<div class="flex items-center border border-gray-200 rounded-lg" role="group" aria-label="Quantity selector">
 										<button
 											type="button"
-											class="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-l transition-colors"
+											class="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-l transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
 											onclick={() => updateCartQuantity(cartItem.item.id, cartItem.quantity - 1)}
 											disabled={cartItem.quantity <= 1}
-											aria-label="Decrease quantity"
+											aria-label={`Decrease ${cartItem.item.name} quantity`}
 										>
-											<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
 											</svg>
 										</button>
 										
-										<span class="px-2 text-sm font-medium text-gray-700 min-w-[30px] text-center">
+										<span class="px-2 text-sm font-medium text-gray-700 min-w-[30px] text-center" aria-live="polite" aria-atomic="true">
 											{cartItem.quantity}
 										</span>
 										
 										<button
 											type="button"
-											class="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-r transition-colors"
+											class="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-r transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
 											onclick={() => updateCartQuantity(cartItem.item.id, cartItem.quantity + 1)}
-											aria-label="Increase quantity"
+											aria-label={`Increase ${cartItem.item.name} quantity`}
 										>
-											<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12h16m-8-8v8m0 0l8 8m-8-8v8" />
 											</svg>
 										</button>
@@ -232,11 +232,11 @@
 									<span class="font-bold text-gray-900 text-sm w-16 text-right">${(cartItem.item.price * cartItem.quantity).toFixed(2)}</span>
 									<button
 										type="button"
-										class="p-1.5 text-error-500 hover:text-error-700 hover:bg-error-50 rounded-lg transition-colors ml-1"
+										class="p-1.5 text-error-500 hover:text-error-700 hover:bg-error-50 rounded-lg transition-colors ml-1 min-w-[44px] min-h-[44px] flex items-center justify-center"
 										onclick={() => removeFromCart(cartItem.item.id)}
-										aria-label="Remove item"
+										aria-label={`Remove ${cartItem.item.name} from order`}
 									>
-										<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
 										</svg>
 									</button>
@@ -257,13 +257,14 @@
 						</div>
 					</div>
 
-					<div class="flex gap-3">
+					<div class="flex flex-col sm:flex-row gap-3">
 						<Button 
 							variant="secondary"
 							class="flex-1"
 							onclick={() => cart = []}
+							aria-label="Clear all items from order"
 						>
-							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
 							</svg>
 							Clear
@@ -275,14 +276,15 @@
 							class="flex-1"
 							onclick={() => createOrder()}
 							disabled={cart.length === 0 || isSubmitting}
+							aria-label="Create order with {getTotalItems()} items"
 						>
 							{#if isSubmitting}
-								<svg class="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<svg class="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
 								</svg>
 								Creating...
 							{:else}
-								<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
 								</svg>
 								Create Order

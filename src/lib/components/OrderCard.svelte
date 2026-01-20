@@ -1,6 +1,7 @@
 <script lang="ts">
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
+	import Spinner from '$lib/components/ui/Spinner.svelte';
 	import { toast } from '$lib/utils/toast';
 
 	interface OrderItemWithType {
@@ -21,11 +22,7 @@
 		customerPhone: string | null;
 		totalAmount: number;
 		status: 'pending' | 'preparing' | 'ready' | 'delivered';
-		createdAt: Date;
-		employee?: {
-			name: string;
-			email: string;
-		} | null;
+		createdAt: Date | string;
 		items: OrderItemWithType[];
 	}
 
@@ -37,8 +34,21 @@
 
 	let { order, onStatusUpdate, showActions = true }: Props = $props();
 
+	let isUpdating = $state(false);
+	let previousStatus = $state(order.status);
+
+	let createdAt = $derived(new Date(order.createdAt));
+	let isoDate = $derived(createdAt.toISOString());
+
 	async function updateStatus(status: string) {
+		if (isUpdating) return;
+
+		isUpdating = true;
+		previousStatus = order.status;
+
 		try {
+			onStatusUpdate?.(order.id, status);
+
 			const response = await fetch(`/api/orders/${order.id}/status`, {
 				method: 'PATCH',
 				headers: {
@@ -47,53 +57,59 @@
 				body: JSON.stringify({ orderId: order.id, status })
 			});
 
-			if (response.ok) {
-				toast.success('Order status updated!');
-				onStatusUpdate?.(order.id, status);
-			} else {
+			if (!response.ok) {
 				const error = await response.json();
-				toast.error(error.error || 'Failed to update status');
+				throw new Error(error.error || 'Failed to update status');
 			}
+
+			toast.success('Order status updated!');
 		} catch (error) {
 			console.error('Error updating status:', error);
 			toast.error('Failed to update status');
+			onStatusUpdate?.(order.id, previousStatus);
+		} finally {
+			isUpdating = false;
 		}
 	}
 
 	function formatDate(date: Date): string {
-		return new Date(date).toLocaleString('en-US', {
+		return date.toLocaleString('en-US', {
 			hour: '2-digit',
 			minute: '2-digit',
 			hour12: true
 		});
 	}
+
+	let currentStatus = $derived(isUpdating ? previousStatus : order.status);
 </script>
 
-<div class="bg-white rounded-2xl shadow-lg border border-gray-100 card-hover">
+<div class="bg-white rounded-2xl shadow-lg border border-gray-100 card-hover" role="article" aria-labelledby={`order-${order.id}-title`}>
 	<div class="p-6">
 		<!-- Order Header -->
 		<div class="flex items-start justify-between mb-4 pb-4 border-b border-gray-100">
 			<div class="flex-1">
 				<div class="flex items-center gap-3 mb-2">
-					<h3 class="font-bold text-lg text-gray-900">
+					<h3 id={`order-${order.id}-title`} class="font-bold text-lg text-gray-900">
 						{order.customerName}
 					</h3>
-					<StatusBadge status={order.status} />
+					<StatusBadge status={currentStatus} />
 				</div>
 				<div class="flex items-center gap-4 text-sm text-gray-500">
 					{#if order.customerPhone}
 						<div class="flex items-center gap-1">
-							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
 							</svg>
-							{order.customerPhone}
+							<a href={`tel:${order.customerPhone}`} class="hover:text-primary-600 focus:outline-none focus:underline" aria-label={`Call ${order.customerName}`}>
+								{order.customerPhone}
+							</a>
 						</div>
 					{/if}
 					<div class="flex items-center gap-1">
-						<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
 						</svg>
-						{formatDate(order.createdAt)}
+						<time datetime={isoDate}>{formatDate(createdAt)}</time>
 					</div>
 				</div>
 			</div>
@@ -103,12 +119,12 @@
 			</div>
 		</div>
 
-	<!-- Order Items -->
-	<div class="mb-4">
-			{#each order.items as item}
-				<div class="flex items-center justify-between py-2 text-sm">
+		<!-- Order Items -->
+		<div class="mb-4" role="list" aria-label="Order items">
+			{#each order.items as item (item.id)}
+				<div class="flex items-center justify-between py-2 text-sm" role="listitem">
 					<div class="flex items-center gap-3">
-						<span class="font-medium text-gray-600 w-6 text-center">×{item.quantity}</span>
+						<span class="font-medium text-gray-600 w-6 text-center" aria-label={`Quantity: ${item.quantity}`}>×{item.quantity}</span>
 						<span class="text-gray-900">{item.menuItem?.name || 'Unknown'}</span>
 					</div>
 					<span class="font-medium text-gray-900">${(item.quantity * item.unitPrice).toFixed(2)}</span>
@@ -123,36 +139,54 @@
 					variant="primary" 
 					class="w-full"
 					onclick={() => updateStatus('preparing')}
+					disabled={isUpdating}
+					aria-label={`Start preparing order for ${order.customerName}`}
 				>
-					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-					</svg>
-					Start Preparing
+					{#if isUpdating}
+						<Spinner size="sm" />
+					{:else}
+						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+						</svg>
+						Start Preparing
+					{/if}
 				</Button>
 			{:else if order.status === 'preparing'}
 				<Button 
 					variant="primary" 
 					class="w-full"
 					onclick={() => updateStatus('ready')}
+					disabled={isUpdating}
+					aria-label={`Mark order for ${order.customerName} as ready`}
 				>
-					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-					</svg>
-					Mark Ready
+					{#if isUpdating}
+						<Spinner size="sm" />
+					{:else}
+						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+						</svg>
+						Mark Ready
+					{/if}
 				</Button>
 			{:else if order.status === 'ready'}
 				<Button 
 					variant="primary" 
 					class="w-full"
 					onclick={() => updateStatus('delivered')}
+					disabled={isUpdating}
+					aria-label={`Mark order for ${order.customerName} as delivered`}
 				>
-					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-					</svg>
-					Mark Delivered
+					{#if isUpdating}
+						<Spinner size="sm" />
+					{:else}
+						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+						</svg>
+						Mark Delivered
+					{/if}
 				</Button>
 			{:else}
-				<div class="w-full text-center py-3 text-sm text-gray-500 bg-gray-50 rounded-xl">
+				<div class="w-full text-center py-3 text-sm text-gray-500 bg-gray-50 rounded-xl" role="status" aria-live="polite">
 					Order completed
 				</div>
 			{/if}

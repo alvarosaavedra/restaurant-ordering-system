@@ -7,6 +7,9 @@
 		onclick?: () => void;
 		children: import('svelte').Snippet;
 		class?: string;
+		'aria-label'?: string;
+		'aria-describedby'?: string;
+		tabindex?: number;
 	}
 
 	let {
@@ -17,10 +20,13 @@
 		onclick,
 		children,
 		class: className = '',
+		'aria-label': ariaLabel,
+		'aria-describedby': ariaDescribedby,
+		tabindex,
 		...rest
 	}: Props = $props();
 
-	const baseClasses = 'font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 button-shine';
+	const baseClasses = 'font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 button-shine min-h-[44px] min-w-[44px]';
 	
 	const variantClasses = {
 		primary: 'gradient-bg text-white hover:shadow-lg hover:shadow-primary-500/30 focus:ring-primary-500',
@@ -39,6 +45,10 @@
 	{type}
 	{disabled}
 	{onclick}
+	aria-label={ariaLabel}
+	aria-describedby={ariaDescribedby}
+	{tabindex}
+	aria-disabled={disabled}
 	class={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
 	{...rest}
 >
