@@ -69,7 +69,7 @@ export const actions: Actions = {
 		const categoryId = formData.get('categoryId')?.toString();
 		const isAvailable = formData.get('isAvailable') === 'true';
 
-		if (!name || !price || !categoryId) {
+		if (!name || !price || !categoryId || categoryId === '') {
 			return fail(400, {
 				error: 'Name, price, and category are required'
 			});
@@ -111,7 +111,7 @@ export const actions: Actions = {
 		const categoryId = formData.get('categoryId')?.toString();
 		const isAvailable = formData.get('isAvailable') === 'true';
 
-		if (!id || !name || !price || !categoryId) {
+		if (!id || !name || !price || !categoryId || categoryId === '') {
 			return fail(400, {
 				error: 'ID, name, price, and category are required'
 			});
@@ -232,7 +232,7 @@ export const actions: Actions = {
 		const name = formData.get('name')?.toString().trim();
 		const displayOrder = formData.get('displayOrder');
 
-		if (!id || !name || displayOrder === null) {
+		if (!id || !name || displayOrder === null || displayOrder === '') {
 			return fail(400, {
 				error: 'ID, name, and display order are required'
 			});
