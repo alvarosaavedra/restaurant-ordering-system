@@ -26,8 +26,10 @@ export const load: LayoutServerLoad = async ({ cookies, url }) => {
 		switch (user.role) {
 			case 'kitchen':
 				redirect(302, '/kitchen');
+				break;
 			case 'delivery':
 				redirect(302, '/delivery');
+				break;
 			case 'order_taker':
 			default:
 				redirect(302, '/orders/new');

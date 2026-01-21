@@ -132,7 +132,7 @@
 					</div>
 
 					<div class="space-y-3">
-						{#each order.items as item}
+						{#each order.items as item (item.id)}
 							<div class="flex items-center justify-between py-3 px-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
 								<div class="flex-1 min-w-0">
 									<div class="flex items-start justify-between mb-1">

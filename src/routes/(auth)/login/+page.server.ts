@@ -40,8 +40,10 @@ import type { Actions } from './$types';
 		switch (existingUser.role) {
 			case 'kitchen':
 				redirect(302, '/kitchen');
+				break;
 			case 'delivery':
 				redirect(302, '/delivery');
+				break;
 			case 'admin':
 			case 'order_taker':
 			default:

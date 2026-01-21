@@ -181,19 +181,27 @@
 	{#if orders.length === 0}
 		<Card class="text-center py-16">
 			<div class="flex flex-col items-center">
-				<div class="w-20 h-20 mb-4 bg-gray-100 rounded-2xl flex items-center justify-center">
-					<svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<div class="w-20 h-20 mb-4 bg-gradient-to-br from-primary-50 to-accent-50 rounded-2xl flex items-center justify-center">
+					<svg class="w-10 h-10 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
 					</svg>
 				</div>
 				<h3 class="text-lg font-semibold text-gray-900 mb-2">No Orders Found</h3>
-				<p class="text-gray-500">
+				<p class="text-gray-500 mb-4">
 					{#if search || statusFilter}
 						Try adjusting your filters or search terms
 					{:else}
 						Start taking orders to see them appear here
 					{/if}
 				</p>
+				{#if !search && !statusFilter}
+					<a href="/orders/new" class="inline-flex items-center justify-center px-6 py-2.5 bg-primary-600 text-white font-medium rounded-xl hover:bg-primary-700 transition-colors min-h-[44px] min-w-[44px]">
+						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+						</svg>
+						New Order
+					</a>
+				{/if}
 			</div>
 		</Card>
 	{:else}
@@ -251,7 +259,7 @@
 
 							{#if expandedOrderId === order.id}
 								<div class="space-y-2 mt-3">
-									{#each order.items as item}
+									{#each order.items as item (item.id)}
 										<div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
 											<div class="flex items-center gap-3">
 												<span class="font-medium text-gray-600 w-6 text-center">×{item.quantity}</span>
