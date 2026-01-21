@@ -7,9 +7,13 @@
 
 	let { data }: { data: PageData } = $props();
 
-	let orders = $state([...(data.orders || [])]);
+	let orders = $state<PageData['orders']>([]);
 	let isRefreshing = $state(false);
 	let lastUpdated = $state<Date | null>(null);
+
+	$effect(() => {
+		orders = [...(data.orders || [])];
+	});
 	let intervalId: ReturnType<typeof setInterval> | null = null;
 	let abortController: AbortController | null = null;
 
@@ -80,7 +84,7 @@
 					</svg>
 				</div>
 				<div>
-					<h1 class="text-2xl font-bold text-gray-900">Delivery View</h1>
+					<h1 class="text-2xl font-bold text-gray-900">Delivery Orders</h1>
 					<p class="text-sm text-gray-600">Manage orders ready for delivery</p>
 				</div>
 			</div>

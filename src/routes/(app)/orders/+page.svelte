@@ -40,9 +40,15 @@
 	let totalCount = $derived(data.totalCount || 0);
 	let currentPage = $derived(data.currentPage || 1);
 	let limit = $derived(data.limit || 20);
-	let search = $state(data.search || '');
-	let statusFilter = $state(data.status || '');
-	let sort = $state(data.sort || 'newest');
+	let search = $state('');
+	let statusFilter = $state('');
+	let sort = $state('newest');
+
+	$effect(() => {
+		search = data.search || '';
+		statusFilter = data.status || '';
+		sort = data.sort || 'newest';
+	});
 
 	let expandedOrderId = $state<string | null>(null);
 

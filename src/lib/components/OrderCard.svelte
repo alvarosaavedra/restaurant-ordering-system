@@ -35,7 +35,11 @@
 	let { order, onStatusUpdate, showActions = true }: Props = $props();
 
 	let isUpdating = $state(false);
-	let previousStatus = $state(order.status);
+	let previousStatus = $state<'pending' | 'preparing' | 'ready' | 'delivered'>('pending');
+
+	$effect(() => {
+		previousStatus = order.status;
+	});
 
 	let createdAt = $derived(new Date(order.createdAt));
 	let isoDate = $derived(createdAt.toISOString());
