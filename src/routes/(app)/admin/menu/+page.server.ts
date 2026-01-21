@@ -61,12 +61,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
 	addMenuItem: async ({ request }) => {
-		const data = await request.formData();
-		const name = data.get('name')?.toString().trim();
-		const description = data.get('description')?.toString().trim() || null;
-		const price = data.get('price');
-		const categoryId = data.get('categoryId')?.toString();
-		const isAvailable = data.get('isAvailable') === 'true';
+		const formData = await request.formData();
+		console.log('Add Menu Item - Form data received:', Array.from(formData.entries()));
+		const name = formData.get('name')?.toString().trim();
+		const description = formData.get('description')?.toString().trim() || null;
+		const price = formData.get('price');
+		const categoryId = formData.get('categoryId')?.toString();
+		const isAvailable = formData.get('isAvailable') === 'true';
 
 		if (!name || !price || !categoryId) {
 			return fail(400, {
@@ -101,13 +102,14 @@ export const actions: Actions = {
 	},
 
 	updateMenuItem: async ({ request }) => {
-		const data = await request.formData();
-		const id = data.get('id')?.toString();
-		const name = data.get('name')?.toString().trim();
-		const description = data.get('description')?.toString().trim() || null;
-		const price = data.get('price');
-		const categoryId = data.get('categoryId')?.toString();
-		const isAvailable = data.get('isAvailable') === 'true';
+		const formData = await request.formData();
+		console.log('Update Menu Item - Form data received:', Array.from(formData.entries()));
+		const id = formData.get('id')?.toString();
+		const name = formData.get('name')?.toString().trim();
+		const description = formData.get('description')?.toString().trim() || null;
+		const price = formData.get('price');
+		const categoryId = formData.get('categoryId')?.toString();
+		const isAvailable = formData.get('isAvailable') === 'true';
 
 		if (!id || !name || !price || !categoryId) {
 			return fail(400, {
@@ -155,8 +157,8 @@ export const actions: Actions = {
 	},
 
 	deleteMenuItem: async ({ request }) => {
-		const data = await request.formData();
-		const id = data.get('id')?.toString();
+		const formData = await request.formData();
+		const id = formData.get('id')?.toString();
 
 		if (!id) {
 			return fail(400, {
@@ -188,9 +190,9 @@ export const actions: Actions = {
 	},
 
 	addCategory: async ({ request }) => {
-		const data = await request.formData();
-		const name = data.get('name')?.toString().trim();
-		const displayOrder = data.get('displayOrder');
+		const formData = await request.formData();
+		const name = formData.get('name')?.toString().trim();
+		const displayOrder = formData.get('displayOrder');
 
 		if (!name) {
 			return fail(400, {
@@ -225,10 +227,10 @@ export const actions: Actions = {
 	},
 
 	updateCategory: async ({ request }) => {
-		const data = await request.formData();
-		const id = data.get('id')?.toString();
-		const name = data.get('name')?.toString().trim();
-		const displayOrder = data.get('displayOrder');
+		const formData = await request.formData();
+		const id = formData.get('id')?.toString();
+		const name = formData.get('name')?.toString().trim();
+		const displayOrder = formData.get('displayOrder');
 
 		if (!id || !name || displayOrder === null) {
 			return fail(400, {
@@ -266,8 +268,8 @@ export const actions: Actions = {
 	},
 
 	deleteCategory: async ({ request }) => {
-		const data = await request.formData();
-		const id = data.get('id')?.toString();
+		const formData = await request.formData();
+		const id = formData.get('id')?.toString();
 
 		if (!id) {
 			return fail(400, {
