@@ -8,7 +8,7 @@ Add a full-featured admin interface for managing menu items and categories, acce
 - **Phase 2**: Admin Menu Management Page (Frontend) ✅ COMPLETE
 - **Phase 3**: UI Components ✅ COMPLETE
 - **Phase 4**: Type Definitions ✅ COMPLETE
-- **Phase 5**: Navigation Update ⏳ TODO
+- **Phase 5**: Navigation Update ✅ COMPLETE
 
 ---
 
@@ -194,11 +194,11 @@ export type AdminTab = 'menu-items' | 'categories';
 
 ---
 
-### Phase 5: Navigation Update
+### Phase 5: Navigation Update ✅ COMPLETE
 
-**Update: `/src/routes/(app)/+layout.svelte`**
+**Update: `/src/routes/(app)/+layout.svelte`** ✅
 
-Add admin navigation link (lines ~155, after Delivery):
+Added admin navigation link (after Delivery):
 ```svelte
 <!-- Admin -->
 {#if user.role === 'admin'}
@@ -255,7 +255,7 @@ src/
 3. **Server page** - Create `+page.server.ts` with load and actions ✅
 4. **Card components** - Create MenuItemCard and CategoryCard ✅
 5. **Main page** - Create `+page.svelte` with tabs, modals, and forms ✅
-6. **Navigation** - Update `+layout.svelte` to add admin link ⏳
+6. **Navigation** - Update `+layout.svelte` to add admin link ✅
 7. **Testing** - Run linter, typecheck, and manual testing ⏳
 
 ---
