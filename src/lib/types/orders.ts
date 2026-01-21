@@ -8,7 +8,7 @@ export type OrderStatus = Order['status'];
 
 // Extended types for frontend use
 export type MenuItemWithCategory = MenuItem & {
-	category: Category;
+	category: Category | null;
 };
 
 export type OrderWithItems = Order & {
@@ -66,3 +66,24 @@ export interface MenuItemProps {
 	item: MenuItemWithCategory;
 	onAdd: (item: MenuItemWithCategory, quantity: number) => void;
 }
+
+// Admin form types
+export type MenuItemForm = {
+	name: string;
+	description?: string;
+	price: number;
+	categoryId: string;
+	isAvailable?: boolean;
+};
+
+export type CategoryForm = {
+	name: string;
+	displayOrder?: number;
+};
+
+export type AdminTab = 'menu-items' | 'categories';
+
+// Extended types for admin
+export type CategoryWithCount = Category & {
+	itemCount: number;
+};

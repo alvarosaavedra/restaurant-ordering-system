@@ -198,7 +198,9 @@
 							<div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
 								<div class="flex-1 min-w-0">
 									<h4 class="font-semibold text-gray-900 text-sm truncate">{cartItem.item.name}</h4>
-									<p class="text-xs text-gray-500 mt-0.5">{cartItem.item.category.name}</p>
+									{#if cartItem.item.category}
+										<p class="text-xs text-gray-500 mt-0.5">{cartItem.item.category.name}</p>
+									{/if}
 								</div>
 								<div class="flex items-center gap-3 ml-3">
 									<div class="flex items-center border border-gray-200 rounded-lg" role="group" aria-label="Quantity selector">

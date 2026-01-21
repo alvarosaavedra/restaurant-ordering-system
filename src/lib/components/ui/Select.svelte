@@ -1,47 +1,44 @@
 <script lang="ts">
+	interface SelectOption {
+		value: string;
+		label: string;
+	}
+
 	interface Props {
 		id?: string;
 		name?: string;
-		type?: 'text' | 'email' | 'password' | 'number';
+		value?: string;
+		options: SelectOption[];
 		placeholder?: string;
 		required?: boolean;
 		disabled?: boolean;
-		value?: string;
-		oninput?: (e: Event) => void;
-		class?: string;
 		error?: string;
+		onchange?: (e: Event) => void;
+		class?: string;
 		'aria-label'?: string;
 		'aria-describedby'?: string;
-		autocomplete?: 'on' | 'off' | 'name' | 'email' | 'tel' | 'username' | 'given-name' | 'family-name';
-		step?: string;
-		min?: string;
-		max?: string;
 	}
 
 	let {
 		id,
 		name,
-		type = 'text',
-		placeholder,
+		value = $bindable(''),
+		options,
+		placeholder = 'Select an option',
 		required = false,
 		disabled = false,
-		value = $bindable(''),
-		oninput,
-		class: className = '',
 		error,
+		onchange,
+		class: className = '',
 		'aria-label': ariaLabel,
 		'aria-describedby': ariaDescribedby,
-		autocomplete,
-		step,
-		min,
-		max,
 		...rest
 	}: Props = $props();
 
 	let errorId = $derived(error ? `${id}-error` : undefined);
 	let combinedAriaDescribedby = $derived(ariaDescribedby && errorId ? `${ariaDescribedby} ${errorId}` : (ariaDescribedby || errorId));
 
-	const baseClasses = 'block w-full px-4 py-2.5 min-h-[44px] border rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-200 disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-400';
+	const baseClasses = 'block w-full px-4 py-2.5 min-h-[44px] border rounded-xl shadow-sm bg-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-200 disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-400';
 
 	const errorState = $derived.by(() => {
 		if (error) {
@@ -51,26 +48,26 @@
 	});
 </script>
 
-<input
+<select
 	{id}
 	{name}
-	{type}
 	{placeholder}
 	{required}
 	{disabled}
-	{oninput}
+	{onchange}
 	aria-label={ariaLabel}
 	aria-describedby={combinedAriaDescribedby}
-	{autocomplete}
-	{step}
-	{min}
-	{max}
 	aria-invalid={!!error}
 	aria-required={required}
 	bind:value
 	class={`${baseClasses} ${errorState} ${className}`}
 	{...rest}
-/>
+>
+	<option value="">{placeholder}</option>
+	{#each options as option (option.value)}
+		<option {value}>{option.label}</option>
+	{/each}
+</select>
 {#if error}
 	<p id={errorId} class="mt-1.5 text-sm text-error-600" role="alert">{error}</p>
 {/if}

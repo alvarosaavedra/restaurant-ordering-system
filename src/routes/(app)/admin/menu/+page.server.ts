@@ -13,6 +13,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		const menuItems = await db
 			.select({
 				id: menuItem.id,
+				categoryId: menuItem.categoryId,
 				name: menuItem.name,
 				description: menuItem.description,
 				price: menuItem.price,
@@ -21,7 +22,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 				category: {
 					id: category.id,
 					name: category.name,
-					displayOrder: category.displayOrder
+					displayOrder: category.displayOrder,
+					createdAt: category.createdAt
 				}
 			})
 			.from(menuItem)
