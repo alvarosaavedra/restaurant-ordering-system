@@ -26,6 +26,21 @@
 	let selectedMenuItem: MenuItemWithCategory | null = $state(null);
 	let selectedCategory: CategoryWithCount | null = $state(null);
 
+	let menuItemFormData = $state({
+		id: '',
+		name: '',
+		description: '',
+		price: '',
+		categoryId: '',
+		isAvailable: true
+	});
+
+	let categoryFormData = $state({
+		id: '',
+		name: '',
+		displayOrder: ''
+	});
+
 	let filteredMenuItems = $derived.by(() => {
 		if (!searchQuery.trim()) return data.menuItems;
 		const query = searchQuery.toLowerCase();

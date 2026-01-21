@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
+	import { browser } from '$app/environment';
 
 	interface Props {
 		open: boolean;
@@ -30,14 +31,16 @@
 	}
 
 	$effect(() => {
-		if (open) {
+		if (browser && open) {
 			window.addEventListener('keydown', handleKeyDown);
 			return () => window.removeEventListener('keydown', handleKeyDown);
 		}
 	});
 
 	onDestroy(() => {
-		window.removeEventListener('keydown', handleKeyDown);
+		if (browser) {
+			window.removeEventListener('keydown', handleKeyDown);
+		}
 	});
 </script>
 
