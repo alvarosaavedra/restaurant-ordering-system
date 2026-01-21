@@ -38,10 +38,10 @@ const menuItems = [
 
 // Sample users (passwords should be hashed in real application)
 const users = [
-	{ id: nanoid(), name: 'John Doe', email: 'john@bakery.com', passwordHash: 'hashed_password_here', role: 'order_taker' as const },
-	{ id: nanoid(), name: 'Jane Smith', email: 'jane@bakery.com', passwordHash: 'hashed_password_here', role: 'kitchen' as const },
-	{ id: nanoid(), name: 'Mike Johnson', email: 'mike@bakery.com', passwordHash: 'hashed_password_here', role: 'delivery' as const },
-	{ id: nanoid(), name: 'Admin User', email: 'admin@bakery.com', passwordHash: 'hashed_password_here', role: 'admin' as const }
+	{ id: nanoid(), name: 'John Doe', email: 'john@bakery.com', passwordHash: 'password123', role: 'order_taker' as const },
+	{ id: nanoid(), name: 'Jane Smith', email: 'jane@bakery.com', passwordHash: 'password123', role: 'kitchen' as const },
+	{ id: nanoid(), name: 'Mike Johnson', email: 'mike@bakery.com', passwordHash: 'password123', role: 'delivery' as const },
+	{ id: nanoid(), name: 'Admin User', email: 'admin@bakery.com', passwordHash: 'password123', role: 'admin' as const }
 ];
 
 export async function seedDatabase() {
@@ -50,18 +50,19 @@ export async function seedDatabase() {
 	try {
 		// Insert categories
 		console.log('Inserting categories...');
-		await db.insert(schema.category).values(categories.map(cat => ({
+		const insertedCategories = await db.insert(schema.category).values(categories.map(cat => ({
 			...cat,
 			createdAt: new Date()
-		})));
+		}))).returning();
 		
-		// Insert menu items
+		// Insert menu items with IDs
 		console.log('Inserting menu items...');
-		await db.insert(schema.menuItem).values(menuItems.map(item => ({
+		const menuItemsWithIds = menuItems.map(item => ({
 			id: nanoid(),
 			...item,
 			createdAt: new Date()
-		})));
+		}));
+		await db.insert(schema.menuItem).values(menuItemsWithIds);
 		
 		// Insert users
 		console.log('Inserting users...');
@@ -70,6 +71,72 @@ export async function seedDatabase() {
 			createdAt: new Date(),
 			updatedAt: new Date()
 		})));
+		
+		// Insert sample orders for testing
+		console.log('Inserting sample orders...');
+		const now = new Date();
+		const order1Id = nanoid();
+		const order2Id = nanoid();
+		const order3Id = nanoid();
+		const order4Id = nanoid();
+		
+		await db.insert(schema.order).values([
+			{
+				id: order1Id,
+				customerName: 'Alice Johnson',
+				customerPhone: '555-1234',
+				totalAmount: 12.47,
+				status: 'ready',
+				employeeId: users[0].id,
+				createdAt: new Date(now.getTime() - 2 * 60 * 1000),
+				updatedAt: new Date(now.getTime() - 2 * 60 * 1000)
+			},
+			{
+				id: order2Id,
+				customerName: 'Bob Smith',
+				customerPhone: '555-5678',
+				totalAmount: 8.99,
+				status: 'ready',
+				employeeId: users[0].id,
+				createdAt: new Date(now.getTime() - 5 * 60 * 1000),
+				updatedAt: new Date(now.getTime() - 5 * 60 * 1000)
+			},
+			{
+				id: order3Id,
+				customerName: 'Carol Williams',
+				customerPhone: '555-9012',
+				totalAmount: 15.98,
+				status: 'pending',
+				employeeId: users[0].id,
+				createdAt: new Date(now.getTime() - 10 * 60 * 1000),
+				updatedAt: new Date(now.getTime() - 10 * 60 * 1000)
+			},
+			{
+				id: order4Id,
+				customerName: 'David Brown',
+				customerPhone: '555-3456',
+				totalAmount: 3.99,
+				status: 'preparing',
+				employeeId: users[0].id,
+				createdAt: new Date(now.getTime() - 15 * 60 * 1000),
+				updatedAt: new Date(now.getTime() - 15 * 60 * 1000)
+			}
+		]);
+		
+		// Insert order items for the orders using index-based references
+		await db.insert(schema.orderItem).values([
+			// Order 1 items (Alice Johnson - ready)
+			{ id: nanoid(), orderId: order1Id, menuItemId: menuItemsWithIds[1].id, quantity: 1, unitPrice: 3.49, createdAt: now },
+			{ id: nanoid(), orderId: order1Id, menuItemId: menuItemsWithIds[2].id, quantity: 1, unitPrice: 3.99, createdAt: now },
+			{ id: nanoid(), orderId: order1Id, menuItemId: menuItemsWithIds[3].id, quantity: 1, unitPrice: 4.99, createdAt: now },
+			// Order 2 items (Bob Smith - ready)
+			{ id: nanoid(), orderId: order2Id, menuItemId: menuItemsWithIds[6].id, quantity: 1, unitPrice: 8.99, createdAt: now },
+			// Order 3 items (Carol Williams - pending)
+			{ id: nanoid(), orderId: order3Id, menuItemId: menuItemsWithIds[0].id, quantity: 2, unitPrice: 4.99, createdAt: now },
+			{ id: nanoid(), orderId: order3Id, menuItemId: menuItemsWithIds[4].id, quantity: 2, unitPrice: 2.99, createdAt: now },
+			// Order 4 items (David Brown - preparing)
+			{ id: nanoid(), orderId: order4Id, menuItemId: menuItemsWithIds[5].id, quantity: 1, unitPrice: 3.99, createdAt: now }
+		]);
 		
 		console.log('Database seeded successfully!');
 	} catch (error) {

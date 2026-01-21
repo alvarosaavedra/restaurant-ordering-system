@@ -77,6 +77,13 @@ test.describe('Authentication Flow', () => {
 	test('should show error with missing fields', async ({ page }) => {
 		await page.goto('/login');
 
+		await page.locator('form').evaluate((form) => {
+			const emailInput = form.querySelector('#email') as HTMLInputElement;
+			const passwordInput = form.querySelector('#password') as HTMLInputElement;
+			if (emailInput) emailInput.required = false;
+			if (passwordInput) passwordInput.required = false;
+		});
+
 		await page.getByRole('button', { name: 'Sign In' }).click();
 
 		await expect(page.getByText('Email and password are required')).toBeVisible();

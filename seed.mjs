@@ -73,11 +73,55 @@ const users = [
 	{ id: nanoid(), name: 'Admin User', email: 'admin@bakery.com', password_hash: 'password123', role: 'admin', created_at: Date.now(), updated_at: Date.now() }
 ];
 
+const order = {
+	name: 'order',
+	columns: {
+		id: 'id',
+		customerName: 'customer_name',
+		customerPhone: 'customer_phone',
+		totalAmount: 'total_amount',
+		status: 'status',
+		employeeId: 'employee_id',
+		createdAt: 'created_at',
+		updatedAt: 'updated_at'
+	}
+};
+
+const orderItem = {
+	name: 'order_item',
+	columns: {
+		id: 'id',
+		orderId: 'order_id',
+		menuItemId: 'menu_item_id',
+		quantity: 'quantity',
+		unitPrice: 'unit_price',
+		createdAt: 'created_at'
+	}
+};
+
 async function seedDatabase() {
 	console.log('Seeding database...');
 	
 	try {
 		const client = createClient({ url: DATABASE_URL });
+		
+		await client.execute({
+			sql: 'CREATE TABLE IF NOT EXISTS category (id TEXT PRIMARY KEY, name TEXT NOT NULL, display_order INTEGER NOT NULL, created_at INTEGER NOT NULL)'
+		});
+		await client.execute({
+			sql: 'CREATE TABLE IF NOT EXISTS menu_item (id TEXT PRIMARY KEY, category_id TEXT NOT NULL, name TEXT NOT NULL, description TEXT, price REAL NOT NULL, is_available INTEGER NOT NULL, created_at INTEGER NOT NULL, FOREIGN KEY (category_id) REFERENCES category(id) ON UPDATE NO ACTION ON DELETE CASCADE)'
+		});
+		await client.execute({
+			sql: 'CREATE TABLE IF NOT EXISTS user (id TEXT PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, role TEXT NOT NULL, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL)'
+		});
+		await client.execute({
+			sql: 'CREATE TABLE IF NOT EXISTS "order" (id TEXT PRIMARY KEY, customer_name TEXT NOT NULL, customer_phone TEXT, total_amount REAL NOT NULL, status TEXT NOT NULL, employee_id TEXT NOT NULL, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, FOREIGN KEY (employee_id) REFERENCES user(id) ON UPDATE NO ACTION ON DELETE NO ACTION)'
+		});
+		await client.execute({
+			sql: 'CREATE TABLE IF NOT EXISTS order_item (id TEXT PRIMARY KEY, order_id TEXT NOT NULL, menu_item_id TEXT NOT NULL, quantity INTEGER NOT NULL, unit_price REAL NOT NULL, created_at INTEGER NOT NULL, FOREIGN KEY (order_id) REFERENCES "order"(id) ON UPDATE NO ACTION ON DELETE CASCADE, FOREIGN KEY (menu_item_id) REFERENCES menu_item(id) ON UPDATE NO ACTION ON DELETE NO ACTION)'
+		});
+		
+		console.log('✓ Tables created');
 		
 		await client.execute({
 			sql: 'INSERT INTO category (id, name, display_order, created_at) VALUES (?, ?, ?, ?)',
@@ -115,6 +159,62 @@ async function seedDatabase() {
 		}
 		
 		console.log('✓ Users inserted');
+		
+		const now = Date.now();
+		const order1Id = nanoid();
+		const order2Id = nanoid();
+		const order3Id = nanoid();
+		const order4Id = nanoid();
+		
+		await client.execute({
+			sql: 'INSERT INTO "order" (id, customer_name, customer_phone, total_amount, status, employee_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+			args: [order1Id, 'Alice Johnson', '555-1234', 12.47, 'ready', users[0].id, now, now]
+		});
+		await client.execute({
+			sql: 'INSERT INTO "order" (id, customer_name, customer_phone, total_amount, status, employee_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+			args: [order2Id, 'Bob Smith', '555-5678', 8.99, 'ready', users[0].id, now, now]
+		});
+		await client.execute({
+			sql: 'INSERT INTO "order" (id, customer_name, customer_phone, total_amount, status, employee_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+			args: [order3Id, 'Carol Williams', '555-9012', 15.98, 'pending', users[0].id, now, now]
+		});
+		await client.execute({
+			sql: 'INSERT INTO "order" (id, customer_name, customer_phone, total_amount, status, employee_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+			args: [order4Id, 'David Brown', '555-3456', 3.99, 'preparing', users[0].id, now, now]
+		});
+		
+		console.log('✓ Orders inserted');
+		
+		await client.execute({
+			sql: 'INSERT INTO order_item (id, order_id, menu_item_id, quantity, unit_price, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+			args: [nanoid(), order1Id, menuItems[2].id, 1, 3.49, now]
+		});
+		await client.execute({
+			sql: 'INSERT INTO order_item (id, order_id, menu_item_id, quantity, unit_price, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+			args: [nanoid(), order1Id, menuItems[3].id, 1, 3.99, now]
+		});
+		await client.execute({
+			sql: 'INSERT INTO order_item (id, order_id, menu_item_id, quantity, unit_price, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+			args: [nanoid(), order1Id, menuItems[4].id, 1, 4.99, now]
+		});
+		await client.execute({
+			sql: 'INSERT INTO order_item (id, order_id, menu_item_id, quantity, unit_price, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+			args: [nanoid(), order2Id, menuItems[8].id, 1, 8.99, now]
+		});
+		await client.execute({
+			sql: 'INSERT INTO order_item (id, order_id, menu_item_id, quantity, unit_price, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+			args: [nanoid(), order3Id, menuItems[1].id, 2, 4.99, now]
+		});
+		await client.execute({
+			sql: 'INSERT INTO order_item (id, order_id, menu_item_id, quantity, unit_price, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+			args: [nanoid(), order3Id, menuItems[5].id, 2, 2.99, now]
+		});
+		await client.execute({
+			sql: 'INSERT INTO order_item (id, order_id, menu_item_id, quantity, unit_price, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+			args: [nanoid(), order4Id, menuItems[6].id, 1, 3.99, now]
+		});
+		
+		console.log('✓ Order items inserted');
 		
 		await client.close();
 		
