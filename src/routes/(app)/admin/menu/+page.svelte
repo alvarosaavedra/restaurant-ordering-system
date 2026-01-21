@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
+	import { enhance } from '$app/forms';
 	import type { PageData, ActionData } from './$types';
 	import Button from '$lib/components/ui/Button.svelte';
 	import Input from '$lib/components/ui/Input.svelte';
@@ -55,9 +56,13 @@
 	$effect(() => {
 		if (form?.message) {
 			closeAllModals();
-			setTimeout(() => invalidateAll(), 100);
 		}
 	});
+
+	function handleFormSuccess() {
+		closeAllModals();
+		invalidateAll();
+	}
 
 	function openAddMenuItemModal() {
 		menuItemFormData = {
@@ -240,7 +245,7 @@
 	{/if}
 
 	<Modal title="Add Menu Item" open={showAddMenuItemModal} onclose={closeAllModals}>
-		<form method="POST" action="?/addMenuItem">
+		<form method="POST" action="?/addMenuItem" use:enhance={handleFormSuccess}>
 			<div class="space-y-4">
 				<Input id="name" name="name" type="text" placeholder="Item name" required bind:value={menuItemFormData.name} />
 				<div>
@@ -291,7 +296,7 @@
 	</Modal>
 
 	<Modal title="Edit Menu Item" open={showEditMenuItemModal} onclose={closeAllModals}>
-		<form method="POST" action="?/updateMenuItem">
+		<form method="POST" action="?/updateMenuItem" use:enhance={handleFormSuccess}>
 			<input type="hidden" name="id" value={menuItemFormData.id} />
 			<div class="space-y-4">
 				<Input id="edit-name" name="name" type="text" placeholder="Item name" required bind:value={menuItemFormData.name} />
@@ -345,7 +350,7 @@
 	</Modal>
 
 	<Modal title="Delete Menu Item" open={showDeleteMenuItemModal} onclose={closeAllModals}>
-		<form method="POST" action="?/deleteMenuItem">
+		<form method="POST" action="?/deleteMenuItem" use:enhance={handleFormSuccess}>
 			<input type="hidden" name="id" value={selectedMenuItem?.id} />
 			<p class="text-gray-700 mb-6">
 				Are you sure you want to delete "<strong>{selectedMenuItem?.name}</strong>"? This action cannot be undone.
@@ -358,7 +363,7 @@
 	</Modal>
 
 	<Modal title="Add Category" open={showAddCategoryModal} onclose={closeAllModals}>
-		<form method="POST" action="?/addCategory">
+		<form method="POST" action="?/addCategory" use:enhance={handleFormSuccess}>
 			<div class="space-y-4">
 				<Input id="cat-name" name="name" type="text" placeholder="Category name" required bind:value={categoryFormData.name} />
 				<Input
@@ -377,7 +382,7 @@
 	</Modal>
 
 	<Modal title="Edit Category" open={showEditCategoryModal} onclose={closeAllModals}>
-		<form method="POST" action="?/updateCategory">
+		<form method="POST" action="?/updateCategory" use:enhance={handleFormSuccess}>
 			<input type="hidden" name="id" value={categoryFormData.id} />
 			<div class="space-y-4">
 				<Input id="edit-cat-name" name="name" type="text" placeholder="Category name" required bind:value={categoryFormData.name} />
@@ -398,7 +403,7 @@
 	</Modal>
 
 	<Modal title="Delete Category" open={showDeleteCategoryModal} onclose={closeAllModals}>
-		<form method="POST" action="?/deleteCategory">
+		<form method="POST" action="?/deleteCategory" use:enhance={handleFormSuccess}>
 			<input type="hidden" name="id" value={selectedCategory?.id} />
 			<p class="text-gray-700 mb-6">
 				Are you sure you want to delete "<strong>{selectedCategory?.name}</strong>"? This action cannot be undone.
