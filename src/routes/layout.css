@@ -3,43 +3,81 @@
 @plugin '@tailwindcss/typography';
 
 @theme {
-	--color-primary-50: #eff6ff;
-	--color-primary-100: #dbeafe;
-	--color-primary-200: #bfdbfe;
-	--color-primary-300: #93c5fd;
-	--color-primary-400: #60a5fa;
-	--color-primary-500: #3b82f6;
-	--color-primary-600: #2563eb;
-	--color-primary-700: #1d4ed8;
-	--color-primary-800: #1e40af;
-	--color-primary-900: #1e3a8a;
+	/* Primary Colors - Warm Industrial Bakery (Terracotta) */
+	--color-bakery-50: #faf6f3;
+	--color-bakery-100: #f5ebe2;
+	--color-bakery-200: #ebd9c4;
+	--color-bakery-300: #dbc3a6;
+	--color-bakery-400: #c8a885;
+	--color-bakery-500: #b69166;
+	--color-bakery-600: #a87b56;
+	--color-bakery-700: #8f6647;
+	--color-bakery-800: #74523d;
+	--color-bakery-900: #614332;
 
-	--color-accent-50: #fdf4ff;
-	--color-accent-100: #fae8ff;
-	--color-accent-200: #f5d0fe;
-	--color-accent-300: #f0abfc;
-	--color-accent-400: #e879f9;
-	--color-accent-500: #d946ef;
-	--color-accent-600: #c026d3;
-	--color-accent-700: #a21caf;
-	--color-accent-800: #86198f;
-	--color-accent-900: #701a75;
+	/* Accent Colors - Sage */
+	--color-sage-50: #f4f7f4;
+	--color-sage-100: #e5ebe6;
+	--color-sage-200: #cfd9cf;
+	--color-sage-300: #b1c1b0;
+	--color-sage-400: #96a896;
+	--color-sage-500: #7b907b;
+	--color-sage-600: #657a65;
+	--color-sage-700: #516451;
+	--color-sage-800: #425042;
+	--color-sage-900: #374037;
 
-	--color-success-50: #f0fdf4;
-	--color-success-500: #22c55e;
-	--color-success-600: #16a34a;
-	--color-success-700: #15803d;
+	/* Semantic Colors - Warm Tones */
+	--color-success-50: #f4f9eb;
+	--color-success-500: #8faa56;
+	--color-success-600: #7a9147;
+	--color-success-700: #65783d;
 
-	--color-warning-50: #fefce8;
-	--color-warning-500: #eab308;
-	--color-warning-600: #ca8a04;
+	--color-warning-50: #fcf4e8;
+	--color-warning-500: #e8a83a;
+	--color-warning-600: #d4942d;
+	--color-warning-700: #c08020;
 
-	--color-error-50: #fef2f2;
-	--color-error-500: #ef4444;
-	--color-error-600: #dc2626;
-	--color-error-700: #b91c1c;
+	--color-error-50: #f9f0ef;
+	--color-error-500: #c85a4f;
+	--color-error-600: #b3493f;
+	--color-error-700: #9e3a32;
 
-	--font-family-sans: 'Inter', system-ui, -apple-system, sans-serif;
+	--color-info-50: #f0f4f7;
+	--color-info-500: #5c7c94;
+	--color-info-600: #4d6a7e;
+	--color-info-700: #3e5867;
+
+	/* Neutral Colors - Warm Grays */
+	--color-neutral-50: #faf9f7;
+	--color-neutral-100: #f2f0ed;
+	--color-neutral-200: #e3e0db;
+	--color-neutral-300: #cdc7be;
+	--color-neutral-400: #b5aca0;
+	--color-neutral-500: #9a8f80;
+	--color-neutral-600: #827769;
+	--color-neutral-700: #6a6154;
+	--color-neutral-800: #584f44;
+	--color-neutral-900: #474038;
+
+	/* Custom Font Families */
+	--font-family-display: 'DM Serif Display', 'Georgia', serif;
+	--font-family-sans: 'Outfit', system-ui, -apple-system, sans-serif;
+	--font-family-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+	/* Custom Spacing */
+	--spacing-3: 12px;
+	--spacing-12: 48px;
+	--spacing-16: 64px;
+
+	/* Custom Border Radius */
+	--radius-sm: 6px;
+	--radius-md: 10px;
+	--radius-lg: 16px;
+	--radius-xl: 24px;
+
+	/* Custom Box Shadows */
+	--shadow-warm-glow: 0 4px 20px -4px rgba(182, 145, 102, 0.3);
 }
 
 * {
@@ -53,6 +91,32 @@ html {
 body {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+	font-family: var(--font-family-sans);
+}
+
+/* Grain Overlay Utility */
+.grain-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	z-index: 9999;
+	opacity: 0.4;
+	background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+	background-repeat: repeat;
+}
+
+/* Text Selection */
+::selection {
+	background-color: var(--color-bakery-200);
+	color: var(--color-bakery-900);
+}
+
+ ::-moz-selection {
+	background-color: var(--color-bakery-200);
+	color: var(--color-bakery-900);
 }
 
 .glass-effect {
@@ -62,11 +126,11 @@ body {
 }
 
 .gradient-bg {
-	background: linear-gradient(135deg, var(--color-primary-600) 0%, var(--color-primary-700) 100%);
+	background: linear-gradient(135deg, var(--color-bakery-500) 0%, var(--color-bakery-600) 100%);
 }
 
 .subtle-gradient {
-	background: linear-gradient(180deg, var(--color-primary-50) 0%, white 100%);
+	background: linear-gradient(180deg, var(--color-bakery-50) 0%, white 100%);
 }
 
 .card-hover {
@@ -93,7 +157,7 @@ body {
 	background: linear-gradient(
 		to bottom right,
 		rgba(255, 255, 255, 0) 0%,
-		rgba(255, 255, 255, 0.1) 50%,
+		rgba(255, 255, 255, 0.2) 50%,
 		rgba(255, 255, 255, 0) 100%
 	);
 	transform: rotate(45deg) translate(-100%, -100%);
@@ -104,13 +168,6 @@ body {
 	transform: rotate(45deg) translate(100%, 100%);
 }
 
-.text-gradient {
-	background: linear-gradient(135deg, var(--color-primary-600), var(--color-accent-600));
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
-	background-clip: text;
-}
-
 /* Custom scrollbar */
 ::-webkit-scrollbar {
 	width: 8px;
@@ -118,14 +175,30 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-	background: #f1f5f9;
+	background: var(--color-neutral-100);
 }
 
 ::-webkit-scrollbar-thumb {
-	background: #cbd5e1;
+	background: var(--color-neutral-300);
 	border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: #94a3b8;
+	background: var(--color-neutral-400);
+}
+
+/* Animations */
+@keyframes slide-up {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.animate-slide-up {
+	animation: slide-up 0.4s ease-out;
 }
