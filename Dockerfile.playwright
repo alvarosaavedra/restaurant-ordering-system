@@ -1,0 +1,23 @@
+FROM mcr.microsoft.com/playwright:v1.47.0-jammy
+
+# Install Node.js
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+RUN apt-get install -y nodejs
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy project files
+COPY . .
+
+# Expose port for dev server (if needed)
+EXPOSE 5173
+
+# Default command
+CMD ["npm", "run", "test:e2e"]

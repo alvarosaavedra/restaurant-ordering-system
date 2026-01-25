@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  playwright-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.playwright
+    container_name: orders-playwright-tests
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - CI=true
+    command: npm run test:e2e
+    network_mode: host
