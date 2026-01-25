@@ -88,6 +88,9 @@ export async function seedDatabase() {
 				totalAmount: 12.47,
 				status: 'ready',
 				employeeId: users[0].id,
+				deliveryDateTime: new Date(now.getTime() + 60 * 60 * 1000),
+				address: '123 Main St',
+				comment: 'Leave at door',
 				createdAt: new Date(now.getTime() - 2 * 60 * 1000),
 				updatedAt: new Date(now.getTime() - 2 * 60 * 1000)
 			},
@@ -98,6 +101,8 @@ export async function seedDatabase() {
 				totalAmount: 8.99,
 				status: 'ready',
 				employeeId: users[0].id,
+				deliveryDateTime: new Date(now.getTime() + 90 * 60 * 1000),
+				address: '456 Oak Ave',
 				createdAt: new Date(now.getTime() - 5 * 60 * 1000),
 				updatedAt: new Date(now.getTime() - 5 * 60 * 1000)
 			},
@@ -108,6 +113,8 @@ export async function seedDatabase() {
 				totalAmount: 15.98,
 				status: 'pending',
 				employeeId: users[0].id,
+				deliveryDateTime: new Date(now.getTime() + 120 * 60 * 1000),
+				comment: 'Allergic to nuts',
 				createdAt: new Date(now.getTime() - 10 * 60 * 1000),
 				updatedAt: new Date(now.getTime() - 10 * 60 * 1000)
 			},
@@ -118,6 +125,7 @@ export async function seedDatabase() {
 				totalAmount: 3.99,
 				status: 'preparing',
 				employeeId: users[0].id,
+				deliveryDateTime: new Date(now.getTime() + 30 * 60 * 1000),
 				createdAt: new Date(now.getTime() - 15 * 60 * 1000),
 				updatedAt: new Date(now.getTime() - 15 * 60 * 1000)
 			}

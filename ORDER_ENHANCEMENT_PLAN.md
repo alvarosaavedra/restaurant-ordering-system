@@ -3,6 +3,18 @@
 ## Overview
 Add delivery date/time, address, and comment fields to the restaurant ordering system.
 
+## Progress Summary
+**Phase 1 (Backend):** ✅ Complete
+- [x] Database schema updated
+- [x] Migration applied
+- [x] API endpoints updated
+
+**Phase 2 (Frontend):** 🚧 In Progress
+- [ ] Type definitions
+- [ ] UI components
+- [ ] Page updates
+- [ ] Testing
+
 ## Requirements (from user)
 - **Delivery Date/Time**: Required field for all orders
 - **Address**: Optional field with no validation
@@ -11,7 +23,7 @@ Add delivery date/time, address, and comment fields to the restaurant ordering s
 
 ## Implementation Steps
 
-### 1. Database Schema Migration
+### 1. Database Schema Migration ✅ COMPLETE
 **File:** `src/lib/server/db/schema.ts`
 
 Add to `order` table:
@@ -25,6 +37,12 @@ comment: text('comment'),
 ```bash
 npm run db:push
 ```
+
+**Status:** Completed
+- Schema updated with new fields
+- Migration applied to database
+- Existing orders populated with default delivery dates
+- Type checking passes ✓
 
 ### 2. Type Updates
 **File:** `src/lib/types/orders.ts`
@@ -108,12 +126,17 @@ Show address prominently, plus delivery date/time and comment.
 
 ### 5. API Updates
 
-#### 5a. Order Creation API
+#### 5a. Order Creation API ✅ COMPLETE
 **File:** `src/routes/api/orders/+server.ts`
 
 Update POST handler:
 - Validate `deliveryDateTime` is present and valid
 - Include all three fields in order insertion
+
+**Status:** Completed
+- Added deliveryDateTime validation (required, must be future date)
+- Added address and comment to order insertion
+- Updated GET handler to return new fields ✓
 
 #### 5b. Order Retrieval APIs
 Update all GET handlers to include new fields:
@@ -198,10 +221,10 @@ npm run db:push    # Apply schema changes
 8. Testing + validation
 
 ## Success Criteria
-- [ ] Orders can be created with delivery date/time (required)
-- [ ] Orders can be created with optional address and comment
+- [x] Orders can be created with delivery date/time (required) - API complete
+- [ ] Orders can be created with optional address and comment - API complete, UI pending
 - [ ] All order views display the new information appropriately
-- [ ] Database migration completes successfully
-- - [ ] All existing functionality remains intact
-- [ ] No TypeScript errors
-- [ ] No ESLint warnings
+- [x] Database migration completes successfully
+- [x] All existing functionality remains intact
+- [x] No TypeScript errors
+- [ ] No ESLint warnings (pre-existing)

@@ -5,13 +5,16 @@ import { eq } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 import type { RequestHandler } from '@sveltejs/kit';
 
-export const GET: RequestHandler = async ({ locals }) => {
+export const GET: RequestHandler = async () => {
 	try {
 		const orders = await db
 			.select({
 				id: order.id,
 				customerName: order.customerName,
 				customerPhone: order.customerPhone,
+				deliveryDateTime: order.deliveryDateTime,
+				address: order.address,
+				comment: order.comment,
 				totalAmount: order.totalAmount,
 				status: order.status,
 				createdAt: order.createdAt,
@@ -38,11 +41,24 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	try {
 		const data = await request.json();
-		const { customerName, customerPhone, items } = data;
+		const { customerName, customerPhone, deliveryDateTime, address, comment, items } = data;
 
 		// Validate input
 		if (!customerName?.trim()) {
 			return json({ error: 'Customer name is required' }, { status: 400 });
+		}
+
+		if (!deliveryDateTime) {
+			return json({ error: 'Delivery date/time is required' }, { status: 400 });
+		}
+
+		const parsedDeliveryDateTime = new Date(deliveryDateTime);
+		if (isNaN(parsedDeliveryDateTime.getTime())) {
+			return json({ error: 'Invalid delivery date/time' }, { status: 400 });
+		}
+
+		if (parsedDeliveryDateTime < new Date()) {
+			return json({ error: 'Delivery date/time must be in the future' }, { status: 400 });
 		}
 
 		if (!items || items.length === 0) {
@@ -88,6 +104,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			id: orderId,
 			customerName: customerName.trim(),
 			customerPhone: customerPhone?.trim() || null,
+			deliveryDateTime: parsedDeliveryDateTime,
+			address: address?.trim() || null,
+			comment: comment?.trim() || null,
 			totalAmount,
 			status: 'pending',
 			employeeId: locals.user.id

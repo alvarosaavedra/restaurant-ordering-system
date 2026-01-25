@@ -45,6 +45,9 @@ export const order = sqliteTable('order', {
 	totalAmount: real('total_amount').notNull(),
 	status: text('status', { enum: ['pending', 'preparing', 'ready', 'delivered'] }).notNull().$default(() => 'pending'),
 	employeeId: text('employee_id').notNull().references(() => user.id),
+	deliveryDateTime: integer('delivery_date_time', { mode: 'timestamp' }).notNull(),
+	address: text('address'),
+	comment: text('comment'),
 	createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$default(() => new Date()),
 	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$default(() => new Date())
 });
