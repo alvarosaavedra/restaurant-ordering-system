@@ -1,8 +1,13 @@
 # Playwright Docker Setup
 
-This project can run Playwright E2E tests in a Docker container for consistent testing environments.
+This project supports two Docker-based Playwright configurations:
 
-## Quick Start
+1. **Test Container** (`docker-compose.playwright.yml`) - Run tests inside Docker
+2. **Remote Server** (`docker-compose.playwright-server.yml`) - Run Playwright Server in Docker and connect remotely
+
+See [PLAYWRIGHT_REMOTE_SERVER.md](./PLAYWRIGHT_REMOTE_SERVER.md) for remote server setup.
+
+## Quick Start - Test Container
 
 ```bash
 # Build and run tests in Docker

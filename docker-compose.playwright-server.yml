@@ -1,0 +1,20 @@
+services:
+  playwright-server:
+    image: mcr.microsoft.com/playwright:v1.57.0-noble
+    container_name: orders-playwright-server
+    ports:
+      - "3000:3000"
+    # Recommended flags from official docs
+    init: true
+    ipc: host
+    # Use non-root user for better security
+    user: pwuser
+    working_dir: /home/pwuser
+    command: /bin/sh -c "npx -y playwright@1.57.0 run-server --port 3000 --host 0.0.0.0"
+    restart: unless-stopped
+    # Add hostmachine access for local server access
+    extra_hosts:
+      - "hostmachine:host-gateway"
+    # Optional: Use seccomp profile for sandbox support
+    # security_opt:
+    #   - seccomp:seccomp_profile.json

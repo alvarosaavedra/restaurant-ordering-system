@@ -1,0 +1,12 @@
+{
+  "comment": "Allow create user namespaces - default seccomp profile with extra permissions for Chromium sandbox",
+  "names": [
+    "clone",
+    "setns",
+    "unshare"
+  ],
+  "action": "SCMP_ACT_ALLOW",
+  "args": [],
+  "includes": {},
+  "excludes": {}
+}

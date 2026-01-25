@@ -16,7 +16,10 @@ export default defineConfig({
 		baseURL: 'http://localhost:4173',
 		trace: 'on-first-retry',
 		screenshot: 'only-on-failure',
-		video: 'retain-on-failure'
+		video: 'retain-on-failure',
+		connectOptions: process.env.PW_TEST_CONNECT_WS_ENDPOINT
+			? { wsEndpoint: process.env.PW_TEST_CONNECT_WS_ENDPOINT }
+			: undefined
 	},
 	projects: [
 		{
