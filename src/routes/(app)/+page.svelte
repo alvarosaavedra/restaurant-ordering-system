@@ -64,125 +64,110 @@
 			hour12: true
 		});
 	}
-
-	function getStatsColor(status: string): string {
-		switch (status) {
-			case 'pending':
-				return 'bg-yellow-100 text-yellow-800';
-			case 'preparing':
-				return 'bg-blue-100 text-blue-800';
-			case 'ready':
-				return 'bg-green-100 text-green-800';
-			case 'delivered':
-				return 'bg-gray-100 text-gray-800';
-			default:
-				return 'bg-gray-100 text-gray-800';
-		}
-	}
 </script>
 
 <div class="px-4 py-6 max-w-7xl mx-auto">
 	<div class="mb-8">
-		<h1 class="text-3xl font-bold text-gradient">Dashboard</h1>
-		<p class="mt-2 text-lg text-gray-600">
-			Welcome back, <span class="font-semibold text-primary-600">{user?.name}</span>! 👋
+		<h1 class="text-4xl font-display font-bold text-bakery-900">Dashboard</h1>
+		<p class="mt-2 text-lg text-neutral-600">
+			Welcome back, <span class="font-semibold text-bakery-600">{user?.name}</span>! 👋
 		</p>
 	</div>
 
 	<!-- Stats Cards -->
 	<div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
 		<!-- Total Orders -->
-		<Card class="p-6">
+		<Card variant="elevated" class="p-6 animate-slide-up">
 			<div class="flex flex-col">
-				<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Total Orders</p>
+				<p class="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">Total Orders</p>
 				<div class="flex items-center gap-3">
-					<div class="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center" aria-hidden="true">
-						<svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+					<div class="w-12 h-12 bg-bakery-100 rounded-lg flex items-center justify-center" aria-hidden="true">
+						<svg class="w-6 h-6 text-bakery-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012 2h2a2 2 0 012 2" />
 						</svg>
 					</div>
-					<div class="text-3xl font-black text-gray-900">{stats?.total || 0}</div>
+					<div class="text-3xl font-black text-bakery-900">{stats?.total || 0}</div>
 				</div>
 			</div>
 		</Card>
 
 		<!-- Pending -->
-		<Card class="p-6">
+		<Card variant="elevated" class="p-6 animate-slide-up">
 			<div class="flex flex-col">
-				<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Pending</p>
+				<p class="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">Pending</p>
 				<div class="flex items-center gap-3">
-					<div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center" aria-hidden="true">
-						<svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<div class="w-12 h-12 bg-warning-100 rounded-lg flex items-center justify-center" aria-hidden="true">
+						<svg class="w-6 h-6 text-warning-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
 						</svg>
 					</div>
-					<div class="text-3xl font-black text-yellow-600">{stats?.pending || 0}</div>
+					<div class="text-3xl font-black text-warning-700">{stats?.pending || 0}</div>
 				</div>
 			</div>
 		</Card>
 
 		<!-- Preparing -->
-		<Card class="p-6">
+		<Card variant="elevated" class="p-6 animate-slide-up">
 			<div class="flex flex-col">
-				<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Preparing</p>
+				<p class="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">Preparing</p>
 				<div class="flex items-center gap-3">
-					<div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center" aria-hidden="true">
-						<svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center" aria-hidden="true">
+						<svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
 						</svg>
 					</div>
-					<div class="text-3xl font-black text-blue-600">{stats?.preparing || 0}</div>
+					<div class="text-3xl font-black text-orange-700">{stats?.preparing || 0}</div>
 				</div>
 			</div>
 		</Card>
 
 		<!-- Ready -->
-		<Card class="p-6">
+		<Card variant="elevated" class="p-6 animate-slide-up">
 			<div class="flex flex-col">
-				<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Ready</p>
+				<p class="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">Ready</p>
 				<div class="flex items-center gap-3">
-					<div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center" aria-hidden="true">
-						<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<div class="w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center" aria-hidden="true">
+						<svg class="w-6 h-6 text-success-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
 						</svg>
 					</div>
-					<div class="text-3xl font-black text-green-600">{stats?.ready || 0}</div>
+					<div class="text-3xl font-black text-success-700">{stats?.ready || 0}</div>
 				</div>
 			</div>
 		</Card>
 
 		<!-- Delivered -->
-		<Card class="p-6">
+		<Card variant="elevated" class="p-6 animate-slide-up">
 			<div class="flex flex-col">
-				<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Delivered</p>
+				<p class="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">Delivered</p>
 				<div class="flex items-center gap-3">
-					<div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center" aria-hidden="true">
-						<svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<div class="w-12 h-12 bg-sage-100 rounded-lg flex items-center justify-center" aria-hidden="true">
+						<svg class="w-6 h-6 text-sage-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
 						</svg>
 					</div>
-					<div class="text-3xl font-black text-gray-600">{stats?.delivered || 0}</div>
+					<div class="text-3xl font-black text-sage-700">{stats?.delivered || 0}</div>
 				</div>
 			</div>
 		</Card>
 	</div>
 
-	<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+	<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
 		<!-- Quick Actions -->
-		<Card class="p-6">
+		<Card variant="elevated" class="p-6 animate-slide-up">
 			<div class="flex items-center gap-3 mb-6">
-				<div class="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
-					<svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<div class="w-10 h-10 bg-bakery-100 rounded-lg flex items-center justify-center">
+					<svg class="w-5 h-5 text-bakery-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
 					</svg>
 				</div>
-				<h2 class="text-lg font-bold text-gray-900">Quick Actions</h2>
+				<h2 class="text-lg font-bold text-neutral-900">Quick Actions</h2>
 			</div>
 			<div class="space-y-3">
 				{#if user?.role === 'order_taker'}
 					<a href="/orders/new" class="block">
 						<Button variant="primary" class="w-full">
-							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
 							</svg>
 							Create New Order
@@ -191,8 +176,8 @@
 				{/if}
 				<a href="/orders" class="block">
 					<Button variant="secondary" class="w-full">
-						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012 2h2a2 2 0 012 2" />
 						</svg>
 						View All Orders
 					</Button>
@@ -200,7 +185,7 @@
 				{#if user?.role === 'kitchen'}
 					<a href="/kitchen" class="block">
 						<Button variant="secondary" class="w-full">
-							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
 							</svg>
 							Kitchen View
@@ -210,7 +195,7 @@
 				{#if user?.role === 'delivery'}
 					<a href="/delivery" class="block">
 						<Button variant="secondary" class="w-full">
-							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
 							</svg>
 							Delivery View
@@ -221,10 +206,10 @@
 		</Card>
 
 		<!-- Role Information -->
-		<Card class="bg-gradient-to-br from-primary-500 to-primary-600 text-white">
+		<Card variant="default" class="bg-gradient-to-br from-bakery-500 to-bakery-600 text-white animate-slide-up">
 			<div class="p-6">
 				<div class="flex items-center gap-3 mb-6">
-					<div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+					<div class="w-10 h-10 bg-white/20 backdrop-blur rounded-lg flex items-center justify-center">
 						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
 						</svg>
@@ -233,10 +218,10 @@
 				</div>
 				<div class="mb-4">
 					<span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-white/20 backdrop-blur-sm">
-						{user?.role?.toUpperCase()}
+						{user?.role?.replace('_', ' ').toUpperCase()}
 					</span>
 				</div>
-				<p class="text-sm text-primary-100">
+				<p class="text-sm text-bakery-100">
 					{#if user?.role === 'order_taker'}
 						You can create and manage orders
 					{:else if user?.role === 'kitchen'}
@@ -251,31 +236,31 @@
 		</Card>
 
 		<!-- System Status -->
-		<Card class="p-6">
+		<Card variant="default" class="p-6 animate-slide-up">
 			<div class="flex items-center gap-3 mb-6">
-				<div class="w-10 h-10 bg-success-100 rounded-xl flex items-center justify-center">
+				<div class="w-10 h-10 bg-success-100 rounded-lg flex items-center justify-center">
 					<svg class="w-5 h-5 text-success-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
 					</svg>
 				</div>
-				<h2 class="text-lg font-bold text-gray-900">System Status</h2>
+				<h2 class="text-lg font-bold text-neutral-900">System Status</h2>
 			</div>
 			<div class="space-y-3">
-				<div class="flex items-center justify-between p-3 bg-success-50 rounded-xl">
+				<div class="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
 					<div class="flex items-center gap-3">
 						<div class="w-2 h-2 bg-success-500 rounded-full animate-pulse"></div>
 						<span class="text-sm font-medium text-success-700">System Online</span>
 					</div>
-					<svg class="w-5 h-5 text-success-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<svg class="w-5 h-5 text-success-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
 					</svg>
 				</div>
-				<div class="flex items-center justify-between p-3 bg-primary-50 rounded-xl">
+				<div class="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
 					<div class="flex items-center gap-3">
-						<div class="w-2 h-2 bg-primary-500 rounded-full"></div>
-						<span class="text-sm font-medium text-primary-700">Database Connected</span>
+						<div class="w-2 h-2 bg-bakery-500 rounded-full"></div>
+						<span class="text-sm font-medium text-bakery-700">Database Connected</span>
 					</div>
-					<svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<svg class="w-5 h-5 text-bakery-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
 					</svg>
 				</div>
@@ -284,33 +269,33 @@
 	</div>
 
 	<!-- Recent Orders -->
-	<Card class="p-6">
+	<Card variant="elevated" class="p-6 animate-slide-up">
 		<div class="flex items-center justify-between mb-6">
 			<div class="flex items-center gap-3">
-				<div class="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
-					<svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<div class="w-10 h-10 bg-bakery-100 rounded-lg flex items-center justify-center">
+					<svg class="w-5 h-5 text-bakery-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
 					</svg>
 				</div>
 				<div>
-					<h2 class="text-lg font-bold text-gray-900">Recent Orders</h2>
-					<p class="text-sm text-gray-500">Latest {recentOrders.length} orders</p>
+					<h2 class="text-lg font-bold text-neutral-900">Recent Orders</h2>
+					<p class="text-sm text-neutral-500">Latest {recentOrders.length} orders</p>
 				</div>
 			</div>
-			<a href="/orders" class="text-primary-600 hover:text-primary-700 font-medium text-sm">View All</a>
+			<a href="/orders" class="text-bakery-600 hover:text-bakery-700 font-medium text-sm">View All</a>
 		</div>
 
 		{#if recentOrders.length === 0}
 			<div class="text-center py-16">
-				<div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-primary-50 to-accent-50 rounded-2xl flex items-center justify-center">
-					<svg class="w-10 h-10 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+				<div class="w-20 h-20 mx-auto mb-4 bg-neutral-100 rounded-2xl flex items-center justify-center">
+					<svg class="w-10 h-10 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414-2.414a1 1 0 01-.293-.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
 					</svg>
 				</div>
-				<h3 class="text-lg font-semibold text-gray-900 mb-2">No orders yet</h3>
-				<p class="text-gray-500 mb-4">Start taking orders to see them here</p>
-				<a href="/orders/new" class="inline-flex items-center justify-center px-6 py-2.5 bg-primary-600 text-white font-medium rounded-xl hover:bg-primary-700 transition-colors min-h-[44px] min-w-[44px]">
-					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<h3 class="text-lg font-semibold text-neutral-900 mb-2">No orders yet</h3>
+				<p class="text-neutral-500 mb-4">Start taking orders to see them here</p>
+				<a href="/orders/new" class="inline-flex items-center justify-center px-6 py-2.5 bg-bakery-600 text-white font-medium rounded-lg hover:bg-bakery-700 transition-colors min-h-[44px] min-w-[44px]">
+					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
 					</svg>
 					New Order
@@ -319,17 +304,17 @@
 		{:else}
 			<div class="space-y-3">
 				{#each recentOrders as order (order.id)}
-					<a href="/orders/{order.id}" class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer">
+					<a href="/orders/{order.id}" class="flex items-center justify-between p-4 bg-neutral-50 rounded-lg hover:bg-neutral-100 transition-colors cursor-pointer">
 						<div class="flex items-center gap-4 flex-1 min-w-0">
 							<StatusBadge status={order.status} />
 							<div class="flex-1 min-w-0">
-								<h3 class="font-semibold text-gray-900 truncate">{order.customerName}</h3>
-								<p class="text-sm text-gray-500">{order.items.length} item{order.items.length !== 1 ? 's' : ''} · ${order.totalAmount.toFixed(2)}</p>
+								<h3 class="font-semibold text-neutral-900 truncate">{order.customerName}</h3>
+								<p class="text-sm text-neutral-500">{order.items.length} item{order.items.length !== 1 ? 's' : ''} · {order.totalAmount.toFixed(2)}</p>
 							</div>
 						</div>
 						<div class="flex items-center gap-3">
-							<span class="text-sm text-gray-500 whitespace-nowrap">{formatDate(order.createdAt)}</span>
-							<svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<span class="text-sm text-neutral-500 whitespace-nowrap">{formatDate(order.createdAt)}</span>
+							<svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
 							</svg>
 						</div>
