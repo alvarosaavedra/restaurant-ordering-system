@@ -32,3 +32,6 @@ project.inlang/cache/
 
 # Playwright
 playwright-report/
+
+# Browser
+.well-known/
