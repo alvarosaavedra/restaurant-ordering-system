@@ -1,0 +1,207 @@
+# Order Enhancement Implementation Plan
+
+## Overview
+Add delivery date/time, address, and comment fields to the restaurant ordering system.
+
+## Requirements (from user)
+- **Delivery Date/Time**: Required field for all orders
+- **Address**: Optional field with no validation
+- **Comment**: Optional field for special instructions
+- **Order Type**: No dine-in/takeout/delivery distinction (keep simple)
+
+## Implementation Steps
+
+### 1. Database Schema Migration
+**File:** `src/lib/server/db/schema.ts`
+
+Add to `order` table:
+```typescript
+deliveryDateTime: integer('delivery_date_time', { mode: 'timestamp' }).notNull(),
+address: text('address'),
+comment: text('comment'),
+```
+
+**Migration Command:**
+```bash
+npm run db:push
+```
+
+### 2. Type Updates
+**File:** `src/lib/types/orders.ts`
+
+Update `CreateOrderForm`:
+```typescript
+export type CreateOrderForm = {
+    customerName: string;
+    customerPhone?: string;
+    deliveryDateTime: string;  // ISO datetime string
+    address?: string;
+    comment?: string;
+    items: {
+        menuItemId: string;
+        quantity: number;
+    }[];
+};
+```
+
+### 3. UI Components
+
+#### 3a. CustomerInfo Component
+**File:** `src/lib/components/CustomerInfo.svelte`
+
+Add form fields:
+- Delivery Date/Time: `<input type="datetime-local">` (required)
+- Address: `<textarea>` (optional)
+- Comment: `<textarea>` (optional)
+
+Update Props interface:
+```typescript
+interface Props {
+    customerName: string;
+    customerPhone: string;
+    deliveryDateTime: string;
+    address?: string;
+    comment?: string;
+    onUpdate: (data: Partial<CreateOrderForm>) => void;
+    showErrors?: boolean;
+}
+```
+
+#### 3b. OrderCard Component
+**File:** `src/lib/components/OrderCard.svelte`
+
+Add display of new fields in order cards (compact format).
+
+### 4. Page Updates
+
+#### 4a. Order Creation Page
+**File:** `src/routes/(app)/orders/new/+page.svelte`
+
+Add state variables:
+```typescript
+let deliveryDateTime: string = $state('');
+let address: string = $state('');
+let comment: string = $state('');
+```
+
+Include in API request payload.
+
+#### 4b. Order History Page
+**File:** `src/routes/(app)/orders/+page.svelte`
+
+Display new fields in expanded order details.
+
+#### 4c. Order Detail Page
+**File:** `src/routes/(app)/orders/[id]/+page.svelte`
+
+Create "Delivery Information" section with all three fields.
+
+#### 4d. Kitchen View
+**File:** `src/routes/(app)/kitchen/+page.svelte`
+
+Display delivery date/time and comment for prioritization.
+
+#### 4e. Delivery View
+**File:** `src/routes/(app)/delivery/+page.svelte`
+
+Show address prominently, plus delivery date/time and comment.
+
+### 5. API Updates
+
+#### 5a. Order Creation API
+**File:** `src/routes/api/orders/+server.ts`
+
+Update POST handler:
+- Validate `deliveryDateTime` is present and valid
+- Include all three fields in order insertion
+
+#### 5b. Order Retrieval APIs
+Update all GET handlers to include new fields:
+- `src/routes/api/orders/+server.ts`
+- `src/routes/api/kitchen/orders/+server.ts`
+- `src/routes/api/delivery/orders/+server.ts`
+
+### 6. Server Load Functions
+
+Update all load functions to include new fields:
+- `src/routes/(app)/orders/+page.server.ts`
+- `src/routes/(app)/orders/[id]/+page.server.ts`
+
+## Files to Modify
+
+### Core Files
+1. `src/lib/server/db/schema.ts` - Database schema
+2. `src/lib/types/orders.ts` - TypeScript types
+
+### Components
+3. `src/lib/components/CustomerInfo.svelte` - Order form
+4. `src/lib/components/OrderCard.svelte` - Order display cards
+
+### Pages
+5. `src/routes/(app)/orders/new/+page.svelte` - Order creation
+6. `src/routes/(app)/orders/+page.svelte` - Order history
+7. `src/routes/(app)/orders/[id]/+page.svelte` - Order details
+8. `src/routes/(app)/kitchen/+page.svelte` - Kitchen view
+9. `src/routes/(app)/delivery/+page.svelte` - Delivery view
+
+### Server Load Functions
+10. `src/routes/(app)/orders/+page.server.ts`
+11. `src/routes/(app)/orders/[id]/+page.server.ts`
+
+### API Routes
+12. `src/routes/api/orders/+server.ts`
+13. `src/routes/api/kitchen/orders/+server.ts`
+14. `src/routes/api/delivery/orders/+server.ts`
+
+## Testing Commands
+
+After implementation:
+```bash
+npm run check      # Type checking
+npm run lint       # ESLint
+npm run test:unit  # Unit tests
+npm run db:push    # Apply schema changes
+```
+
+## Implementation Notes
+
+### Date/Time Handling
+- Use HTML5 `datetime-local` input for user-friendly selection
+- Convert to ISO string for API
+- Store as timestamp in database
+- Format nicely for display
+
+### Address Display
+- Show in kitchen/delivery views prominently
+- Optional field, so handle null/undefined gracefully
+- No validation required (free text)
+
+### Comment Field
+- Use textarea for multi-line input
+- Display in all views for context
+- Optional field, handle null/undefined gracefully
+
+### Validation Rules
+- Delivery date/time: Required, must be in the future
+- Address: Optional, no validation
+- Comment: Optional, no validation
+- Customer name: Still required (existing)
+
+## Priority Order
+1. Database schema + migration
+2. Type definitions
+3. API updates (creation + retrieval)
+4. CustomerInfo component
+5. Order creation page
+6. Order display components (OrderCard, detail pages)
+7. Kitchen/Delivery views
+8. Testing + validation
+
+## Success Criteria
+- [ ] Orders can be created with delivery date/time (required)
+- [ ] Orders can be created with optional address and comment
+- [ ] All order views display the new information appropriately
+- [ ] Database migration completes successfully
+- - [ ] All existing functionality remains intact
+- [ ] No TypeScript errors
+- [ ] No ESLint warnings
