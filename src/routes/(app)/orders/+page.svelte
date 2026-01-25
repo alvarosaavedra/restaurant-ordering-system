@@ -78,7 +78,7 @@
 		return new Date(date).toLocaleDateString('en-US', {
 			month: 'short',
 			day: 'numeric',
-			year: 'numeric',
+			'year': 'numeric',
 			hour: '2-digit',
 			minute: '2-digit',
 			hour12: true
@@ -95,24 +95,24 @@
 <div class="px-4 py-6 max-w-7xl mx-auto">
 	<div class="mb-8">
 		<div class="flex items-center gap-3 mb-2">
-			<div class="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
-				<svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+			<div class="w-12 h-12 bg-bakery-100 rounded-xl flex items-center justify-center" aria-hidden="true">
+				<svg class="w-6 h-6 text-bakery-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002 2V7a2 2 0 00-2 2h-2M9 5a2 2 0 002 2h10a2 2 0 012 2" />
 				</svg>
 			</div>
 			<div>
-				<h1 class="text-2xl font-bold text-gray-900">Order History</h1>
-				<p class="text-sm text-gray-600">View and search all orders</p>
+				<h1 class="text-3xl font-display font-bold text-neutral-900">Order History</h1>
+				<p class="text-sm text-neutral-600">View and search all orders</p>
 			</div>
 		</div>
 	</div>
 
 	<!-- Filters and Search -->
-	<Card class="mb-6">
+	<Card variant="elevated" class="mb-6">
 		<div class="p-6">
 			<div class="flex flex-col md:flex-row gap-4">
 				<div class="flex-1">
-					<label for="search" class="block text-sm font-semibold text-gray-700 mb-2">
+					<label for="search" class="block text-sm font-semibold text-neutral-700 mb-2">
 						Search Orders
 					</label>
 					<Input
@@ -133,14 +133,14 @@
 				</div>
 
 				<div class="md:w-48">
-					<label for="status" class="block text-sm font-semibold text-gray-700 mb-2">
+					<label for="status" class="block text-sm font-semibold text-neutral-700 mb-2">
 						Status
 					</label>
 					<select
 						id="status"
 						bind:value={statusFilter}
 						onchange={updateUrl}
-						class="w-full px-4 py-2.5 min-h-[44px] border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all text-sm font-medium text-gray-700 bg-white"
+						class="w-full px-4 py-2.5 min-h-[44px] border border-neutral-200 rounded-lg focus:ring-2 focus:ring-bakery-500 focus:border-bakery-500 transition-all text-sm font-medium text-neutral-700 bg-white"
 					>
 						<option value="">All Status</option>
 						<option value="pending">Pending</option>
@@ -151,14 +151,14 @@
 				</div>
 
 				<div class="md:w-48">
-					<label for="sort" class="block text-sm font-semibold text-gray-700 mb-2">
+					<label for="sort" class="block text-sm font-semibold text-neutral-700 mb-2">
 						Sort By
 					</label>
 					<select
 						id="sort"
 						bind:value={sort}
 						onchange={updateUrl}
-						class="w-full px-4 py-2.5 min-h-[44px] border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all text-sm font-medium text-gray-700 bg-white"
+						class="w-full px-4 py-2.5 min-h-[44px] border border-neutral-200 rounded-lg focus:ring-2 focus:ring-bakery-500 focus:border-bakery-500 transition-all text-sm font-medium text-neutral-700 bg-white"
 					>
 						<option value="newest">Newest First</option>
 						<option value="oldest">Oldest First</option>
@@ -174,20 +174,19 @@
 					</Button>
 				</div>
 			</div>
-		</div>
-	</Card>
+		</Card>
 
 	<!-- Orders List -->
 	{#if orders.length === 0}
-		<Card class="text-center py-16">
+		<Card variant="elevated" class="text-center py-16">
 			<div class="flex flex-col items-center">
-				<div class="w-20 h-20 mb-4 bg-gradient-to-br from-primary-50 to-accent-50 rounded-2xl flex items-center justify-center">
-					<svg class="w-10 h-10 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+				<div class="w-20 h-20 mb-4 bg-neutral-100 rounded-2xl flex items-center justify-center">
+					<svg class="w-10 h-10 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2 2H6a2 2 0 002 2v7m16 0v5a2 2 0 01-2 2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01.293.707V16a1 1 0 01-1h-1m-6-1a1 0 001 15.357 2m15.357 2H15" />
 					</svg>
 				</div>
-				<h3 class="text-lg font-semibold text-gray-900 mb-2">No Orders Found</h3>
-				<p class="text-gray-500 mb-4">
+				<h3 class="text-lg font-semibold text-neutral-900 mb-2">No Orders Found</h3>
+				<p class="text-neutral-500 mb-4">
 					{#if search || statusFilter}
 						Try adjusting your filters or search terms
 					{:else}
@@ -195,8 +194,8 @@
 					{/if}
 				</p>
 				{#if !search && !statusFilter}
-					<a href="/orders/new" class="inline-flex items-center justify-center px-6 py-2.5 bg-primary-600 text-white font-medium rounded-xl hover:bg-primary-700 transition-colors min-h-[44px] min-w-[44px]">
-						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<a href="/orders/new" class="inline-flex items-center justify-center px-6 py-2.5 bg-bakery-600 text-white font-medium rounded-lg hover:bg-bakery-700 transition-colors min-h-[44px] min-w-[44px]">
+						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
 						</svg>
 						New Order
@@ -207,121 +206,113 @@
 	{:else}
 		<div class="space-y-4">
 			{#each orders as order (order.id)}
-				<Card>
-					<div class="p-6">
-						<div class="flex items-start justify-between mb-4 pb-4 border-b border-gray-100">
-							<div class="flex-1">
-								<div class="flex items-center gap-3 mb-2">
-									<h3 class="font-bold text-lg text-gray-900">{order.customerName}</h3>
-									<StatusBadge status={order.status} />
-								</div>
-								<div class="flex items-center gap-4 text-sm text-gray-500">
-									<div class="flex items-center gap-1">
-										<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-										</svg>
-										{formatDate(order.createdAt)}
-									</div>
-									{#if order.employee}
-										<div class="flex items-center gap-1">
-											<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-											</svg>
-											{order.employee.name}
-										</div>
-									{/if}
-								</div>
-							</div>
-							<div class="text-right">
-								<div class="text-2xl font-black text-gradient">${order.totalAmount.toFixed(2)}</div>
-								<div class="text-xs text-gray-400">Order #{order.id.slice(-6)}</div>
-							</div>
+				<Card variant="elevated" class="p-6 animate-slide-up">
+					<div class="flex items-start justify-between mb-4 pb-4 border-b border-neutral-200">
+						<div class="flex items-center gap-1">
+							<h3 class="font-bold text-lg text-neutral-900 font-display">{order.customerName}</h3>
+							<StatusBadge status={order.status} />
 						</div>
-
-						<div class="mb-4">
-							<div class="flex items-center justify-between mb-2">
-								<h4 class="text-sm font-semibold text-gray-700">Order Items</h4>
-								<button
-									onclick={() => toggleExpanded(order.id)}
-									class="text-sm text-primary-600 hover:text-primary-700 font-medium flex items-center gap-1"
-								>
-									{expandedOrderId === order.id ? 'Hide Details' : 'View Details'}
-									<svg
-										class="w-4 h-4 transition-transform {expandedOrderId === order.id ? 'rotate-180' : ''}"
-										fill="none"
-										stroke="currentColor"
-										viewBox="0 0 24 24"
-									>
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-									</svg>
-								</button>
+						<div class="flex items-center gap-4 text-sm text-neutral-500">
+							<div class="flex items-center gap-1">
+								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+								</svg>
+								{formatDate(order.createdAt)}
 							</div>
-
-							{#if expandedOrderId === order.id}
-								<div class="space-y-2 mt-3">
-									{#each order.items as item (item.id)}
-										<div class="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
-											<div class="flex items-center gap-3">
-												<span class="font-medium text-gray-600 w-6 text-center">×{item.quantity}</span>
-												<span class="text-gray-900">{item.menuItem?.name || 'Unknown'}</span>
-											</div>
-											<span class="font-medium text-gray-900">${(item.quantity * item.unitPrice).toFixed(2)}</span>
-										</div>
-									{/each}
+							{#if order.employee}
+								<div class="flex items-center gap-1">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7 7z" />
+									</svg>
+									{order.employee.name}
 								</div>
-							{:else}
-								<p class="text-sm text-gray-500">
-									{order.items.length} item{order.items.length !== 1 ? 's' : ''} ·
-									<span class="font-medium text-gray-900">${order.totalAmount.toFixed(2)}</span>
-								</p>
 							{/if}
 						</div>
-
-						<div class="flex gap-3">
-							<Button variant="secondary" onclick={() => handleViewOrder(order.id)}>
-								<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-								</svg>
-								View Details
-							</Button>
+					</div>
+					<div class="flex items-center gap-6 text-sm">
+						<div class="flex items-center gap-1 text-neutral-600">
+							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002 2V7a2 2 0 00-2 2h-2M9 5a2 2 0 012 2h2a2 2 0 012 2" />
+							</svg>
+							<span>{order.items?.length || 0} item{order.items?.length !== 1 ? 's' : ''}</span>
+						</div>
+						<div class="flex items-center gap-1 font-bold text-bakery-700">
+							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l2.293 2.293c-.63.63-.184 1.707.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+							</svg>
+							<span>${order.totalAmount?.toFixed(2) || '0.00'}</span>
 						</div>
 					</div>
 				</Card>
+
+				<div class="mb-4">
+					<Button
+						variant="ghost"
+						onclick={() => toggleExpanded(order.id)}
+						class="text-sm text-bakery-600 hover:text-bakery-700 font-medium flex items-center gap-1"
+					>
+						{expandedOrderId === order.id ? 'Hide Details' : 'View Details'}
+						<svg
+							class="w-4 h-4 transition-transform {expandedOrderId === order.id ? 'rotate-180' : ''}"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+							aria-hidden="true"
+						>
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7" />
+						</svg>
+					</Button>
+				</div>
+
+				{#if expandedOrderId === order.id}
+					<div class="space-y-2 mt-3">
+						{#each order.items as item (item.id)}
+							<div class="flex items-center justify-between py-2 px-3 bg-neutral-50 rounded-lg">
+								<div class="flex items-center gap-3">
+									<span class="font-medium text-neutral-600 w-6 text-center">×{item.quantity}</span>
+									<span class="text-neutral-900">{item.menuItem?.name || 'Unknown'}</span>
+								</div>
+								<span class="font-medium text-neutral-900">${(item.quantity * item.unitPrice).toFixed(2)}</span>
+							</div>
+						{/each}
+					</div>
+				{/if}
 			{/each}
 		</div>
-
-		<!-- Pagination -->
-		{#if totalPages > 1}
-			<div class="flex items-center justify-between mt-6 px-4">
-				<div class="text-sm text-gray-600">
-					Showing {(currentPage - 1) * limit + 1} to {Math.min(currentPage * limit, totalCount)} of {totalCount} orders
-				</div>
-				<div class="flex gap-2">
-					<Button
-						variant="secondary"
-						size="sm"
-						disabled={currentPage === 1}
-						onclick={() => changePage(currentPage - 1)}
-					>
-						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-						</svg>
-						Previous
-					</Button>
-					<Button
-						variant="secondary"
-						size="sm"
-						disabled={currentPage === totalPages}
-						onclick={() => changePage(currentPage + 1)}
-					>
-						Next
-						<svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-						</svg>
-					</Button>
-				</div>
-			</div>
 		{/if}
+
+	<!-- Pagination -->
+	{#if totalPages > 1}
+		<div class="flex items-center justify-center mt-6 px-4">
+			<div class="text-sm text-neutral-600">
+				Showing {(currentPage - 1) * limit + 1} to {Math.min(currentPage * limit, totalCount)} of {totalCount} orders
+			</div>
+			<div class="flex gap-2">
+				<Button
+					variant="secondary"
+					size="sm"
+					disabled={currentPage === 1}
+					onclick={() => changePage(currentPage - 1)}
+					aria-label="Previous page"
+				>
+					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7 7-7" />
+					</svg>
+					Previous
+				</Button>
+				<Button
+					variant="secondary"
+					size="sm"
+					disabled={currentPage === totalPages}
+					onclick={() => changePage(currentPage + 1)}
+					aria-label="Next page"
+				>
+					Next
+					<svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7" />
+					</svg>
+				</Button>
+			</div>
+		</div>
 	{/if}
 </div>
