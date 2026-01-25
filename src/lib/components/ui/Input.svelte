@@ -10,6 +10,7 @@
 		oninput?: (e: Event) => void;
 		class?: string;
 		error?: string;
+		success?: boolean;
 		'aria-label'?: string;
 		'aria-describedby'?: string;
 		autocomplete?: 'on' | 'off' | 'name' | 'email' | 'tel' | 'username' | 'given-name' | 'family-name';
@@ -29,6 +30,7 @@
 		oninput,
 		class: className = '',
 		error,
+		success,
 		'aria-label': ariaLabel,
 		'aria-describedby': ariaDescribedby,
 		autocomplete,
@@ -39,16 +41,29 @@
 	}: Props = $props();
 
 	let errorId = $derived(error ? `${id}-error` : undefined);
-	let combinedAriaDescribedby = $derived(ariaDescribedby && errorId ? `${ariaDescribedby} ${errorId}` : (ariaDescribedby || errorId));
+	let successId = $derived(success ? `${id}-success` : undefined);
+	let combinedAriaDescribedby = $derived(
+		ariaDescribedby && errorId
+			? `${ariaDescribedby} ${errorId}`
+			: ariaDescribedby && successId
+				? `${ariaDescribedby} ${successId}`
+				: errorId || successId || ariaDescribedby
+	);
 
-	const baseClasses = 'block w-full px-4 py-2.5 min-h-[44px] border rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-200 disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-400';
+	const baseClasses =
+		'block w-full px-4 py-2.5 min-h-[44px] border rounded-lg shadow-sm placeholder:text-neutral-400 focus:outline-none transition-all duration-200';
 
-	const errorState = $derived.by(() => {
+	const stateClasses = $derived.by(() => {
 		if (error) {
-			return 'border-error-500 focus:ring-error-500 focus:border-error-500';
+			return 'border-error-500 focus:ring-2 focus:ring-error-500 focus:border-error-500 text-neutral-500';
 		}
-		return 'border-gray-200 focus:ring-primary-500 focus:border-transparent';
+		if (success) {
+			return 'border-success-500 focus:ring-2 focus:ring-success-500 focus:border-success-500 text-neutral-500';
+		}
+		return 'border-neutral-200 focus:ring-2 focus:ring-bakery-500 focus:border-bakery-500 text-neutral-500';
 	});
+
+	const disabledClasses = 'disabled:bg-neutral-100 disabled:border-neutral-200 disabled:text-neutral-400 disabled:cursor-not-allowed disabled:shadow-none';
 </script>
 
 <input
@@ -68,7 +83,7 @@
 	aria-invalid={!!error}
 	aria-required={required}
 	bind:value
-	class={`${baseClasses} ${errorState} ${className}`}
+	class={`${baseClasses} ${stateClasses} ${disabledClasses} ${className}`}
 	{...rest}
 />
 {#if error}

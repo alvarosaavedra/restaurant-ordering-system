@@ -2,10 +2,10 @@
 	interface Props {
 		size?: 'sm' | 'md' | 'lg';
 		class?: string;
-		color?: 'primary' | 'white' | 'gray';
+		color?: 'bakery' | 'white' | 'gray' | 'success' | 'warning' | 'error';
 	}
 
-	let { size = 'md', class: className = '', color = 'primary' }: Props = $props();
+	let { size = 'md', class: className = '', color = 'bakery' }: Props = $props();
 
 	const sizeClasses = {
 		sm: 'w-4 h-4 border-2',
@@ -14,9 +14,12 @@
 	};
 
 	const colorClasses = {
-		primary: 'border-primary-500 border-t-transparent',
+		bakery: 'border-bakery-500 border-t-transparent',
 		white: 'border-white border-t-transparent',
-		gray: 'border-gray-300 border-t-transparent'
+		gray: 'border-neutral-300 border-t-transparent',
+		success: 'border-success-500 border-t-transparent',
+		warning: 'border-warning-500 border-t-transparent',
+		error: 'border-error-500 border-t-transparent'
 	};
 </script>
 

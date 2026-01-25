@@ -7,25 +7,32 @@
 
 	let { status }: Props = $props();
 
-	const statusConfig: Record<OrderStatus, { bgColor: string; textColor: string; label: string }> = {
+	const statusConfig: Record<
+		OrderStatus,
+		{ bgColor: string; textColor: string; borderColor: string; label: string }
+	> = {
 		pending: {
-			bgColor: 'bg-yellow-100',
-			textColor: 'text-yellow-800',
+			bgColor: 'bg-warning-100',
+			textColor: 'text-warning-700',
+			borderColor: 'border-warning-200',
 			label: 'Pending'
 		},
 		preparing: {
-			bgColor: 'bg-blue-100',
-			textColor: 'text-blue-800',
+			bgColor: 'bg-bakery-100',
+			textColor: 'text-bakery-700',
+			borderColor: 'border-bakery-200',
 			label: 'Preparing'
 		},
 		ready: {
-			bgColor: 'bg-green-100',
-			textColor: 'text-green-800',
+			bgColor: 'bg-success-100',
+			textColor: 'text-success-700',
+			borderColor: 'border-success-200',
 			label: 'Ready'
 		},
 		delivered: {
-			bgColor: 'bg-gray-100',
-			textColor: 'text-gray-800',
+			bgColor: 'bg-sage-100',
+			textColor: 'text-sage-700',
+			borderColor: 'border-sage-200',
 			label: 'Delivered'
 		}
 	};
@@ -33,6 +40,8 @@
 	const config = $derived(statusConfig[status] || statusConfig.pending);
 </script>
 
-<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {config.bgColor} {config.textColor}">
+<span
+	class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border {config.bgColor} {config.textColor} {config.borderColor}"
+>
 	{config.label}
 </span>
