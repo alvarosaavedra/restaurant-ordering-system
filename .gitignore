@@ -29,3 +29,6 @@ project.inlang/cache/
 
 # SQLite
 *.db
+
+# Playwright
+playwright-report/
