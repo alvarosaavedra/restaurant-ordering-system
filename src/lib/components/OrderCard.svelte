@@ -93,10 +93,10 @@
 	let deliveryIsoDate = $derived(deliveryDate ? deliveryDate.toISOString() : '');
 </script>
 
-<div class="bg-white rounded-2xl shadow-lg border border-gray-100 card-hover" role="article" aria-labelledby={`order-${order.id}-title`}>
-	<div class="p-6">
+<div class="bg-white rounded-lg shadow-md border border-neutral-200 flex flex-col h-full card-hover" role="article" aria-labelledby={`order-${order.id}-title`}>
+	<div class="p-6 flex flex-col flex-1">
 		<!-- Order Header -->
-		<div class="flex items-start justify-between mb-4 pb-4 border-b border-gray-100">
+		<div class="flex items-start justify-between mb-4 pb-4 border-b border-neutral-200">
 			<div class="flex-1">
 				<div class="flex items-center gap-3 mb-2">
 					<h3 id={`order-${order.id}-title`} class="font-bold text-lg text-gray-900">
@@ -114,7 +114,7 @@
 								href={`https://wa.me/${order.customerPhone.replace(/[^0-9]/g, '')}`}
 								target="_blank"
 								rel="noopener noreferrer"
-								class="text-primary-600 hover:text-primary-700 hover:underline focus:outline-none focus:underline"
+								class="text-bakery-600 hover:text-bakery-700 hover:underline focus:outline-none focus:underline"
 								aria-label={`Send WhatsApp message to ${order.customerName}`}
 							>
 								{order.customerPhone}
@@ -130,14 +130,14 @@
 				</div>
 			</div>
 			<div class="text-right">
-				<div class="text-2xl font-black text-gradient">${order.totalAmount.toFixed(2)}</div>
-				<div class="text-xs text-gray-400">Order #{order.id.slice(-6)}</div>
+				<div class="text-2xl font-black text-bakery-700">${order.totalAmount.toFixed(2)}</div>
+				<div class="text-xs text-neutral-400">Order #{order.id.slice(-6)}</div>
 			</div>
 		</div>
 
 		<!-- Delivery Information -->
 		{#if deliveryDate || order.address || order.comment}
-			<div class="mb-4 p-4 bg-gray-50 rounded-xl space-y-2">
+			<div class="mb-4 p-4 bg-neutral-50 rounded-lg space-y-2">
 				{#if deliveryDate}
 					<div class="flex items-center gap-2 text-sm">
 						<svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -192,7 +192,8 @@
 
 		<!-- Action Buttons -->
 		{#if showActions}
-			{#if order.status === 'pending'}
+			<div class="mt-auto pt-4 border-t border-neutral-200">
+				{#if order.status === 'pending'}
 				<Button 
 					variant="primary" 
 					class="w-full"
@@ -244,10 +245,11 @@
 					{/if}
 				</Button>
 			{:else}
-				<div class="w-full text-center py-3 text-sm text-gray-500 bg-gray-50 rounded-xl" role="status" aria-live="polite">
+				<div class="w-full text-center py-3 text-sm text-neutral-500 bg-neutral-50 rounded-lg" role="status" aria-live="polite">
 					Order completed
 				</div>
 			{/if}
+		</div>
 		{/if}
 	</div>
 </div>

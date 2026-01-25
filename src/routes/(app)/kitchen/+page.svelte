@@ -135,7 +135,7 @@
 			<p class="text-gray-500">All orders are either ready or delivered. Great job!</p>
 		</div>
 	{:else}
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
 			{#each orders as order (order.id)}
 				<OrderCard
 					order={order}
