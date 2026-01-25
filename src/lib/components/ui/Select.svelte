@@ -38,7 +38,7 @@
 	let errorId = $derived(error ? `${id}-error` : undefined);
 	let combinedAriaDescribedby = $derived(ariaDescribedby && errorId ? `${ariaDescribedby} ${errorId}` : (ariaDescribedby || errorId));
 
-	const baseClasses = 'block w-full px-4 py-2.5 min-h-[44px] border rounded-xl shadow-sm bg-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-200 disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-400';
+	const baseClasses = 'appearance-none block w-full px-4 py-3 min-h-[48px] pr-10 border rounded-xl shadow-sm bg-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-200 disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-400 text-base cursor-pointer';
 
 	const errorState = $derived.by(() => {
 		if (error) {
@@ -48,10 +48,25 @@
 	});
 </script>
 
+<style>
+	select {
+		background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+		background-position: right 0.75rem center;
+		background-repeat: no-repeat;
+		background-size: 1.5rem 1.5rem;
+	}
+
+	@media (pointer: coarse) {
+		select {
+			background-position: right 0.75rem center;
+			padding-right: 2.5rem;
+		}
+	}
+</style>
+
 <select
 	{id}
 	{name}
-	{placeholder}
 	{required}
 	{disabled}
 	{onchange}
@@ -65,7 +80,7 @@
 >
 	<option value="">{placeholder}</option>
 	{#each options as option (option.value)}
-		<option {value}>{option.label}</option>
+		<option value={option.value}>{option.label}</option>
 	{/each}
 </select>
 {#if error}
