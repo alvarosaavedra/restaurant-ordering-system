@@ -107,7 +107,15 @@
 						{#if order.customerPhone}
 							<div>
 								<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Phone</p>
-								<p class="text-gray-900 font-medium">{order.customerPhone}</p>
+								<a
+									href={`https://wa.me/${order.customerPhone.replace(/[^0-9]/g, '')}`}
+									target="_blank"
+									rel="noopener noreferrer"
+									class="text-primary-600 hover:text-primary-700 hover:underline focus:outline-none focus:underline font-medium"
+									aria-label={`Send WhatsApp message to ${order.customerName}`}
+								>
+									{order.customerPhone}
+								</a>
 							</div>
 						{/if}
 
