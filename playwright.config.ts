@@ -1,11 +1,14 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
+	globalSetup: './e2e/global-setup.ts',
+	globalTeardown: './e2e/global-teardown.ts',
 	webServer: {
 		command: 'npm run build && npm run preview',
 		port: 4173,
 		timeout: 120000,
-		reuseExistingServer: !process.env.CI
+		reuseExistingServer: !process.env.CI,
+		env: process.env.DATABASE_URL ? { DATABASE_URL: process.env.DATABASE_URL } : undefined
 	},
 	testDir: 'e2e',
 	fullyParallel: true,
