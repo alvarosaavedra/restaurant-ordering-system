@@ -13,6 +13,11 @@
 	function isActive(href: string): boolean {
 		return page.url.pathname === href;
 	}
+
+	// Helper function to check if a path prefix is active (for sub-sections)
+	function isPrefixActive(prefix: string): boolean {
+		return page.url.pathname.startsWith(prefix);
+	}
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
@@ -158,12 +163,12 @@
 							<a
 								href="/admin/menu"
 								class="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all min-h-[44px] {
-									isActive('/admin/menu')
+									isPrefixActive('/admin')
 										? 'bg-primary-100 text-primary-700 shadow-sm'
 										: 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
 								}"
 								role="menuitem"
-								aria-current={isActive('/admin/menu') ? 'page' : undefined}
+								aria-current={isPrefixActive('/admin') ? 'page' : undefined}
 							>
 								<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 									<path

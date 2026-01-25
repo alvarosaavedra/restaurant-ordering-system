@@ -84,7 +84,13 @@ export type CategoryForm = {
 	displayOrder?: number;
 };
 
-export type AdminTab = 'menu-items' | 'categories';
+export type ClientForm = {
+	name: string;
+	phone: string;
+	address?: string;
+};
+
+export type AdminTab = 'menu-items' | 'categories' | 'clients';
 
 // Extended types for admin
 export type CategoryWithCount = Category & {

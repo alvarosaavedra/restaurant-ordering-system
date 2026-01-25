@@ -37,6 +37,16 @@ export const menuItem = sqliteTable('menu_item', {
 	createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$default(() => new Date())
 });
 
+// Clients (customers)
+export const client = sqliteTable('client', {
+	id: text('id').primaryKey(),
+	name: text('name').notNull(),
+	phone: text('phone').notNull().unique(),
+	address: text('address'),
+	createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$default(() => new Date()),
+	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$default(() => new Date())
+});
+
 // Orders
 export const order = sqliteTable('order', {
 	id: text('id').primaryKey(),
@@ -62,16 +72,17 @@ export const orderItem = sqliteTable('order_item', {
 	createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$default(() => new Date())
 });
 
-// Type exports
 export type Session = typeof session.$inferSelect;
 export type User = typeof user.$inferSelect;
 export type Category = typeof category.$inferSelect;
 export type MenuItem = typeof menuItem.$inferSelect;
+export type Client = typeof client.$inferSelect;
 export type Order = typeof order.$inferSelect;
 export type OrderItem = typeof orderItem.$inferSelect;
 
 export type InsertUser = typeof user.$inferInsert;
 export type InsertCategory = typeof category.$inferInsert;
 export type InsertMenuItem = typeof menuItem.$inferInsert;
+export type InsertClient = typeof client.$inferInsert;
 export type InsertOrder = typeof order.$inferInsert;
 export type InsertOrderItem = typeof orderItem.$inferInsert;

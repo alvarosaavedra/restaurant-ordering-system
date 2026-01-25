@@ -76,7 +76,8 @@ After completing the code, ask the user if they want a playground link. Only cal
 - **Users**: id, name, email, role, password_hash, timestamps
 - **Categories**: id, name, display_order, created_at
 - **Menu Items**: id, category_id, name, description, price, is_available, created_at
-- **Orders**: id, customer_name, customer_phone, total_amount, status, employee_id, timestamps
+- **Clients**: id, name, phone (unique), address, timestamps
+- **Orders**: id, customer_name, customer_phone, total_amount, status, employee_id, delivery_date_time, address, comment, timestamps
 - **Order Items**: id, order_id, menu_item_id, quantity, unit_price, created_at
 - **Sessions**: id, user_id, expires_at (for authentication)
 
@@ -177,10 +178,33 @@ After completing the code, ask the user if they want a playground link. Only cal
 ### 🚧 Next Phase Development
 - **Phase 3**: Order Taking Interface
   - Menu display and item selection
-  - Customer information forms
+  - Client lookup and creation (phone-based)
+  - Customer information forms (defaults from client)
   - Real-time order total calculation
   - Order creation and persistence
   - Basic error handling and validation
+
+## Admin - Client Management
+
+Admin users can manage clients at `/admin/clients`:
+
+### Features
+- **List clients**: View all clients with search functionality
+- **Add client**: Create new clients with name, phone, and optional address
+- **Edit client**: Update existing client information
+- **Delete client**: Remove clients (blocked if they have orders)
+- **Order count**: Shows how many orders each client has
+
+### Server Actions
+- `addClient`: Creates a new client with phone number validation
+- `updateClient`: Updates existing client, checks for duplicate phone numbers
+- `deleteClient`: Deletes client if no orders exist
+
+### Validation Rules
+- Name: Required
+- Phone: Required, unique across clients, format validation
+- Address: Optional
+- Delete: Blocked if client has existing orders
 
 ## Development Workflow
 

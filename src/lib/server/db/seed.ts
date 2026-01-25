@@ -44,6 +44,15 @@ const users = [
 	{ id: nanoid(), name: 'Admin User', email: 'admin@bakery.com', passwordHash: 'password123', role: 'admin' as const }
 ];
 
+const clients = [
+	{ id: nanoid(), name: 'Alice Johnson', phone: '555-1234', address: '123 Main St' },
+	{ id: nanoid(), name: 'Bob Smith', phone: '555-5678', address: '456 Oak Ave' },
+	{ id: nanoid(), name: 'Carol Williams', phone: '555-9012', address: '789 Pine Rd' },
+	{ id: nanoid(), name: 'David Brown', phone: '555-3456', address: '321 Elm St' },
+	{ id: nanoid(), name: 'Emma Davis', phone: '555-6789', address: '654 Maple Ave' },
+	{ id: nanoid(), name: 'Frank Miller', phone: '555-4321', address: '987 Cedar Ln' }
+];
+
 export async function seedDatabase() {
 	console.log('Seeding database...');
 	
@@ -68,6 +77,14 @@ export async function seedDatabase() {
 		console.log('Inserting users...');
 		await db.insert(schema.user).values(users.map(u => ({
 			...u,
+			createdAt: new Date(),
+			updatedAt: new Date()
+		})));
+
+		// Insert clients
+		console.log('Inserting clients...');
+		await db.insert(schema.client).values(clients.map(c => ({
+			...c,
 			createdAt: new Date(),
 			updatedAt: new Date()
 		})));
