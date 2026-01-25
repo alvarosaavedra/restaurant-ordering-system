@@ -10,7 +10,7 @@ Add delivery date/time, address, and comment fields to the restaurant ordering s
 - [x] API endpoints updated
 
 **Phase 2 (Frontend):** 🚧 In Progress
-- [ ] Type definitions
+- [x] Type definitions
 - [ ] UI components
 - [ ] Page updates
 - [ ] Testing
@@ -44,7 +44,7 @@ npm run db:push
 - Existing orders populated with default delivery dates
 - Type checking passes ✓
 
-### 2. Type Updates
+### 2. Type Updates ✅ COMPLETE
 **File:** `src/lib/types/orders.ts`
 
 Update `CreateOrderForm`:
@@ -61,6 +61,13 @@ export type CreateOrderForm = {
     }[];
 };
 ```
+
+**Status:** Completed
+- Added deliveryDateTime field (required)
+- Added address field (optional)
+- Added comment field (optional)
+- Removed unused User import
+- Type checking passes ✓
 
 ### 3. UI Components
 

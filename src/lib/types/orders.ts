@@ -1,4 +1,4 @@
-import type { User, MenuItem, Category, Order, OrderItem } from '$lib/server/db/schema';
+import type { MenuItem, Category, Order, OrderItem } from '$lib/server/db/schema';
 
 // User roles
 export type UserRole = 'order_taker' | 'kitchen' | 'delivery' | 'admin';
@@ -32,6 +32,9 @@ export type OrderWithEmployee = Order & {
 export type CreateOrderForm = {
 	customerName: string;
 	customerPhone?: string;
+	deliveryDateTime: string;
+	address?: string;
+	comment?: string;
 	items: {
 		menuItemId: string;
 		quantity: number;
