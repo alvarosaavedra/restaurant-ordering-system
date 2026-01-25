@@ -21,7 +21,12 @@ export default defineConfig({
 	projects: [
 		{
 			name: 'chromium',
-			use: { ...devices['Desktop Chrome'] }
+			use: {
+				viewport: { width: 1280, height: 720 },
+				launchOptions: {
+					channel: 'chromium'
+				}
+			}
 		}
 	]
 });

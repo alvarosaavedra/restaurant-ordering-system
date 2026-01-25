@@ -77,7 +77,7 @@
 	<!-- Stats Cards -->
 	<div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
 		<!-- Total Orders -->
-		<Card variant="elevated" class="p-6 animate-slide-up">
+		<Card variant="elevated" class="p-6 animate-slide-up shadow-warm-glow">
 			<div class="flex flex-col">
 				<p class="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">Total Orders</p>
 				<div class="flex items-center gap-3">
@@ -92,7 +92,7 @@
 		</Card>
 
 		<!-- Pending -->
-		<Card variant="elevated" class="p-6 animate-slide-up">
+		<Card variant="elevated" class="p-6 animate-slide-up shadow-warm-glow-sm">
 			<div class="flex flex-col">
 				<p class="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">Pending</p>
 				<div class="flex items-center gap-3">
@@ -107,7 +107,7 @@
 		</Card>
 
 		<!-- Preparing -->
-		<Card variant="elevated" class="p-6 animate-slide-up">
+		<Card variant="elevated" class="p-6 animate-slide-up shadow-warm-glow-sm">
 			<div class="flex flex-col">
 				<p class="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">Preparing</p>
 				<div class="flex items-center gap-3">
@@ -122,7 +122,7 @@
 		</Card>
 
 		<!-- Ready -->
-		<Card variant="elevated" class="p-6 animate-slide-up">
+		<Card variant="elevated" class="p-6 animate-slide-up shadow-warm-glow-sm">
 			<div class="flex flex-col">
 				<p class="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">Ready</p>
 				<div class="flex items-center gap-3">
@@ -137,7 +137,7 @@
 		</Card>
 
 		<!-- Delivered -->
-		<Card variant="elevated" class="p-6 animate-slide-up">
+		<Card variant="elevated" class="p-6 animate-slide-up shadow-warm-glow-sm">
 			<div class="flex flex-col">
 				<p class="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-2">Delivered</p>
 				<div class="flex items-center gap-3">
@@ -154,7 +154,7 @@
 
 	<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
 		<!-- Quick Actions -->
-		<Card variant="elevated" class="p-6 animate-slide-up">
+		<Card variant="elevated" class="p-6 animate-slide-up shadow-warm-glow-sm">
 			<div class="flex items-center gap-3 mb-6">
 				<div class="w-10 h-10 bg-bakery-100 rounded-lg flex items-center justify-center">
 					<svg class="w-5 h-5 text-bakery-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -206,7 +206,7 @@
 		</Card>
 
 		<!-- Role Information -->
-		<Card variant="default" class="bg-gradient-to-br from-bakery-500 to-bakery-600 text-white animate-slide-up">
+		<Card variant="default" class="bg-gradient-to-br from-bakery-500 to-bakery-600 text-white animate-slide-up shadow-warm-glow">
 			<div class="p-6">
 				<div class="flex items-center gap-3 mb-6">
 					<div class="w-10 h-10 bg-white/20 backdrop-blur rounded-lg flex items-center justify-center">
@@ -236,7 +236,7 @@
 		</Card>
 
 		<!-- System Status -->
-		<Card variant="default" class="p-6 animate-slide-up">
+		<Card variant="default" class="p-6 animate-slide-up shadow-warm-glow-sm">
 			<div class="flex items-center gap-3 mb-6">
 				<div class="w-10 h-10 bg-success-100 rounded-lg flex items-center justify-center">
 					<svg class="w-5 h-5 text-success-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -269,7 +269,7 @@
 	</div>
 
 	<!-- Recent Orders -->
-	<Card variant="elevated" class="p-6 animate-slide-up">
+	<Card variant="elevated" class="p-6 animate-slide-up shadow-warm-glow-sm">
 		<div class="flex items-center justify-between mb-6">
 			<div class="flex items-center gap-3">
 				<div class="w-10 h-10 bg-bakery-100 rounded-lg flex items-center justify-center">

@@ -152,7 +152,7 @@
 
 		<!-- Menu Items -->
 		<div class="lg:col-span-2">
-			<Card variant="elevated" class="p-6">
+			<Card variant="elevated" class="p-6 shadow-warm-glow-sm">
 				<div class="flex items-center gap-3 mb-6">
 					<div class="w-10 h-10 bg-bakery-100 rounded-lg flex items-center justify-center" aria-hidden="true">
 						<svg class="w-5 h-5 text-bakery-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -200,7 +200,7 @@
 	<!-- Order Summary & Submit -->
 	{#if cart.length > 0}
 		<div class="mt-6">
-			<Card variant="elevated" class="max-w-md mx-auto lg:mx-0">
+			<Card variant="elevated" class="max-w-md mx-auto lg:mx-0 shadow-warm-glow">
 				<div class="p-6">
 					<div class="flex items-center gap-3 mb-6">
 						<div class="w-10 h-10 bg-bakery-100 rounded-lg flex items-center justify-center" aria-hidden="true">

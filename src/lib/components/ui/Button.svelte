@@ -33,7 +33,7 @@
 	const isDisabled = $derived(disabled || loading);
 
 	const baseClasses =
-		'font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-bakery-200 button-shine min-h-[44px] min-w-[44px] inline-flex items-center justify-center gap-2';
+		'font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-bakery-200 button-shine min-h-[44px] min-w-[44px] inline-flex items-center justify-center gap-2 active:scale-95';
 
 	const variantClasses = {
 		primary:

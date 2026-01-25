@@ -108,7 +108,7 @@
 	</div>
 
 	<!-- Filters and Search -->
-	<Card variant="elevated" class="mb-6">
+	<Card variant="elevated" class="mb-6 shadow-warm-glow-sm">
 		<div class="p-6">
 			<div class="flex flex-col md:flex-row gap-4">
 				<div class="flex-1">
@@ -176,17 +176,17 @@
 			</div>
 		</Card>
 
-	<!-- Orders List -->
-	{#if orders.length === 0}
-		<Card variant="elevated" class="text-center py-16">
-			<div class="flex flex-col items-center">
-				<div class="w-20 h-20 mb-4 bg-neutral-100 rounded-2xl flex items-center justify-center">
-					<svg class="w-10 h-10 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2 2H6a2 2 0 002 2v7m16 0v5a2 2 0 01-2 2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01.293.707V16a1 1 0 01-1h-1m-6-1a1 0 001 15.357 2m15.357 2H15" />
-					</svg>
-				</div>
-				<h3 class="text-lg font-semibold text-neutral-900 mb-2">No Orders Found</h3>
-				<p class="text-neutral-500 mb-4">
+		<!-- Orders List -->
+		{#if orders.length === 0}
+			<Card variant="elevated" class="text-center py-16 shadow-warm-glow-sm">
+				<div class="flex flex-col items-center">
+					<div class="w-20 h-20 mb-4 bg-neutral-100 rounded-2xl flex items-center justify-center">
+						<svg class="w-10 h-10 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 002 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414-2.414a1 1 0 01.293-.707V16a1 1 0 01-1h-1m-6-1a1 0 001 15.357 2m15.357 2H15" />
+						</svg>
+					</div>
+					<h3 class="text-lg font-semibold text-neutral-900 mb-2">No Orders Found</h3>
+					<p class="text-neutral-500 mb-4">
 					{#if search || statusFilter}
 						Try adjusting your filters or search terms
 					{:else}
@@ -206,7 +206,8 @@
 	{:else}
 		<div class="space-y-4">
 			{#each orders as order (order.id)}
-				<Card variant="elevated" class="p-6 animate-slide-up">
+				<Card variant="elevated" class="p-6 animate-slide-up shadow-warm-glow-sm">
+					<div class="flex items-start justify-between mb-4 pb-4 border-b border-neutral-200">
 					<div class="flex items-start justify-between mb-4 pb-4 border-b border-neutral-200">
 						<div class="flex items-center gap-1">
 							<h3 class="font-bold text-lg text-neutral-900 font-display">{order.customerName}</h3>

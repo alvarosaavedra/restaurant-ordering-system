@@ -13,7 +13,7 @@
 			position: absolute;
 			top: -40px;
 			left: 0;
-			background: #4F46E5;
+			background: var(--color-bakery-500);
 			color: white;
 			padding: 8px 16px;
 			text-decoration: none;

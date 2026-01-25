@@ -4,13 +4,13 @@
 	import Spinner from '$lib/components/ui/Spinner.svelte';
 	import { onMount, onDestroy } from 'svelte';
 	import type { PageData } from './$types';
-
+ 
 	let { data }: { data: PageData } = $props();
-
+ 
 	let orders = $state<any[]>([]);
 	let isRefreshing = $state(false);
 	let lastUpdated = $state<Date | null>(null);
-
+ 
 	$effect(() => {
 		orders = (data.orders || []).map((order: any) => ({
 			...order,
@@ -21,18 +21,18 @@
 	});
 	let intervalId: ReturnType<typeof setInterval> | null = null;
 	let abortController: AbortController | null = null;
-
+ 
 	async function fetchOrders() {
 		if (isRefreshing) return;
-
+ 
 		isRefreshing = true;
 		abortController = new AbortController();
-
+ 
 		try {
 			const response = await fetch('/api/delivery/orders', {
 				signal: abortController.signal
 			});
-
+ 
 			if (response.ok) {
 				const newOrders = await response.json();
 				orders = newOrders.map((order: any) => ({
@@ -52,7 +52,7 @@
 			isRefreshing = false;
 		}
 	}
-
+ 
 	onMount(() => {
 		fetchOrders();
 		
@@ -60,7 +60,7 @@
 			fetchOrders();
 		}, 30000);
 	});
-
+ 
 	onDestroy(() => {
 		if (intervalId) {
 			clearInterval(intervalId);
@@ -71,26 +71,26 @@
 			abortController = null;
 		}
 	});
-
+ 
 	async function manualRefresh() {
 		await fetchOrders();
 	}
-
+ 
 	function handleStatusUpdate(orderId: string, status: string) {
 		if (status === 'delivered') {
 			orders = orders.filter(order => order.id !== orderId);
 		}
 	}
-</script>
-
- <div class="px-4 py-6 max-w-7xl mx-auto">
+ </script>
+  
+<div class="px-4 py-6 max-w-7xl mx-auto">
 	<!-- Header -->
 	<div class="mb-8">
 		<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-2">
 			<div class="flex items-center gap-3">
-				<div class="w-12 h-12 bg-bakery-100 rounded-xl flex items-center justify-center" aria-hidden="true">
+				<div class="w-12 h-12 bg-bakery-100 rounded-xl flex items-center justify-center shadow-warm-glow-sm" aria-hidden="true">
 					<svg class="w-6 h-6 text-bakery-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
 					</svg>
 				</div>
 				<div>
@@ -98,7 +98,7 @@
 					<p class="text-sm text-neutral-600">Manage orders ready for delivery</p>
 				</div>
 			</div>
-			<Button 
+			<Button
 				variant="secondary" 
 				onclick={manualRefresh}
 				disabled={isRefreshing}
@@ -116,18 +116,18 @@
 			</Button>
 		</div>
 		{#if lastUpdated}
-			<p class="text-xs text-gray-500">
+			<p class="text-xs text-neutral-500">
 				Last updated: {lastUpdated.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
 			</p>
 		{/if}
 	</div>
-
+ 
 	<!-- Orders Grid -->
 	{#if orders.length === 0}
 		<div class="text-center py-16">
-			<div class="w-20 h-20 mx-auto mb-4 bg-neutral-100 rounded-2xl flex items-center justify-center">
+			<div class="w-20 h-20 mx-auto mb-4 bg-neutral-100 rounded-2xl flex items-center justify-center shadow-warm-glow-sm">
 				<svg class="w-10 h-10 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2 2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2 2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414-2.414a1 1 0 01-.707-.707h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
 				</svg>
 			</div>
 			<h3 class="text-lg font-semibold text-neutral-900 mb-2 font-display">No Orders for Delivery</h3>
@@ -143,4 +143,4 @@
 			{/each}
 		</div>
 	{/if}
-</div>
+ </div>

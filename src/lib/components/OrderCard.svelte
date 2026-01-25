@@ -93,7 +93,7 @@
 	let deliveryIsoDate = $derived(deliveryDate ? deliveryDate.toISOString() : '');
 </script>
 
-<div class="bg-white rounded-lg shadow-md border border-neutral-200 flex flex-col h-full card-hover" role="article" aria-labelledby={`order-${order.id}-title`}>
+<div class="bg-white rounded-lg shadow-md shadow-warm-glow border border-neutral-200 flex flex-col h-full card-hover" role="article" aria-labelledby={`order-${order.id}-title`}>
 	<div class="p-6 flex flex-col flex-1">
 		<!-- Order Header -->
 		<div class="flex items-start justify-between mb-4 pb-4 border-b border-neutral-200">

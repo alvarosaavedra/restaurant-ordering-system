@@ -89,7 +89,7 @@
 	<div class="mb-8">
 		<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-2">
 			<div class="flex items-center gap-3">
-				<div class="w-12 h-12 bg-bakery-100 rounded-xl flex items-center justify-center" aria-hidden="true">
+				<div class="w-12 h-12 bg-bakery-100 rounded-xl flex items-center justify-center shadow-warm-glow-sm" aria-hidden="true">
 					<svg class="w-6 h-6 text-bakery-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2 2v-6a2 2 0 012 2m14 0V9a2 2 0 00-2-2h10a2 2 0 002 2V7a2 2 0 00-2 2h-2M9 5a2 2 0 002 2h2a2 2 0 012 2" />
 					</svg>
@@ -123,18 +123,18 @@
 		{/if}
 	</div>
 
-	<!-- Orders Grid -->
+		<!-- Orders Grid -->
 	{#if orders.length === 0}
-		<div class="text-center py-16">
-			<div class="w-20 h-20 mx-auto mb-4 bg-neutral-100 rounded-2xl flex items-center justify-center">
-				<svg class="w-10 h-10 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2 2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-				</svg>
+			<div class="text-center py-16">
+				<div class="w-20 h-20 mx-auto mb-4 bg-neutral-100 rounded-2xl flex items-center justify-center shadow-warm-glow-sm">
+					<svg class="w-10 h-10 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414-2.414a1 1 0 01-.707-.707h-3.172a1 1 0 01-.707.293l-2.414-2.414A1 1 0 016.586 13H4" />
+					</svg>
+				</div>
+				<h3 class="text-lg font-semibold text-neutral-900 mb-2 font-display">No Orders to Prepare</h3>
+				<p class="text-neutral-500">All orders are either ready or delivered. Great job!</p>
 			</div>
-			<h3 class="text-lg font-semibold text-neutral-900 mb-2 font-display">No Orders to Prepare</h3>
-			<p class="text-neutral-500">All orders are either ready or delivered. Great job!</p>
-		</div>
-	{:else}
+		{:else}
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
 			{#each orders as order (order.id)}
 				<OrderCard
