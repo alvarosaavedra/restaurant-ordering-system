@@ -37,10 +37,10 @@
 
 	function addToOrder(item: MenuItemWithCategory, quantity: number) {
 		const existingItem = cart.find(cartItem => cartItem.item.id === item.id);
-		
+
 		if (existingItem) {
-			cart = cart.map(cartItem => 
-				cartItem.item.id === item.id 
+			cart = cart.map(cartItem =>
+				cartItem.item.id === item.id
 					? { ...cartItem, quantity: cartItem.quantity + quantity }
 					: cartItem
 			);
@@ -61,8 +61,8 @@
 		if (newQuantity <= 0) {
 			cart = cart.filter(cartItem => cartItem.item.id !== itemId);
 		} else {
-			cart = cart.map(cartItem => 
-				cartItem.item.id === itemId 
+			cart = cart.map(cartItem =>
+				cartItem.item.id === itemId
 					? { ...cartItem, quantity: newQuantity }
 					: cartItem
 			);
@@ -130,7 +130,7 @@
 </script>
 
 <div class="px-4 py-6 max-w-7xl mx-auto">
-	<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+	<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 		<!-- Customer Information Form -->
 		<div class="lg:col-span-1">
 			<CustomerInfo
@@ -152,48 +152,47 @@
 
 		<!-- Menu Items -->
 		<div class="lg:col-span-2">
-			<Card>
-				<div class="p-6">
-					<div class="flex items-center gap-3 mb-6">
-						<div class="w-10 h-10 gradient-bg rounded-xl flex items-center justify-center" aria-hidden="true">
-							<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+			<Card variant="elevated" class="p-6">
+				<div class="flex items-center gap-3 mb-6">
+					<div class="w-10 h-10 bg-bakery-100 rounded-lg flex items-center justify-center" aria-hidden="true">
+						<svg class="w-5 h-5 text-bakery-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+						</svg>
+					</div>
+					<h2 class="text-xl font-bold text-neutral-900 font-display">Menu</h2>
+				</div>
+
+				{#if categories.length === 0}
+					<div class="text-center py-12">
+						<div class="w-16 h-16 mx-auto mb-4 bg-neutral-100 rounded-2xl flex items-center justify-center">
+							<svg class="w-8 h-8 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
 							</svg>
 						</div>
-						<h2 class="text-xl font-bold text-gray-900">Menu</h2>
+						<h3 class="text-lg font-semibold text-neutral-900 mb-2">Loading menu...</h3>
+						<p class="text-neutral-500 font-medium">Please wait while we load the menu items</p>
 					</div>
-					
-					{#if categories.length === 0}
-						<div class="text-center py-12">
-							<div class="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-2xl flex items-center justify-center">
-								<svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-								</svg>
-							</div>
-							<p class="text-gray-500 font-medium">Loading menu...</p>
-						</div>
-					{:else}
-						<div class="space-y-8">
-					{#each categories as category (category.id)}
-								<div>
-									<div class="flex items-center gap-3 mb-3 pb-3 border-b border-gray-200">
-										<h3 class="text-base font-bold text-gray-900">{category.name}</h3>
-										<span class="text-xs font-medium text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{category.items?.length || 0}</span>
-									</div>
-									
-									<div class="space-y-2">
-						{#each category.items as item (item.id)}
-											<MenuItem 
-												item={item}
-												onAdd={(item, quantity) => addToOrder(item, quantity)}
-											/>
-										{/each}
-									</div>
+				{:else}
+					<div class="space-y-6">
+						{#each categories as category (category.id)}
+							<div class="animate-slide-up">
+								<div class="flex items-center gap-3 mb-3 pb-3 border-b border-neutral-200">
+									<h3 class="text-base font-bold text-neutral-900 font-display">{category.name}</h3>
+									<span class="text-xs font-medium text-neutral-400 bg-neutral-100 px-2 py-0.5 rounded-full">{category.items?.length || 0}</span>
 								</div>
-							{/each}
-						</div>
-					{/if}
-				</div>
+ 
+								<div class="space-y-3">
+									{#each category.items as item (item.id)}
+ 										<MenuItem
+ 											item={item}
+ 												onAdd={(item, quantity) => addToOrder(item, quantity)}
+ 										/>
+ 									{/each}
+ 								</div>
+							</div>
+						{/each}
+					</div>
+				{/if}
 			</Card>
 		</div>
 	</div>
@@ -201,97 +200,88 @@
 	<!-- Order Summary & Submit -->
 	{#if cart.length > 0}
 		<div class="mt-6">
-			<Card class="max-w-md mx-auto lg:mx-0">
+			<Card variant="elevated" class="max-w-md mx-auto lg:mx-0">
 				<div class="p-6">
 					<div class="flex items-center gap-3 mb-6">
-						<div class="w-10 h-10 gradient-bg rounded-xl flex items-center justify-center" aria-hidden="true">
-							<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+						<div class="w-10 h-10 bg-bakery-100 rounded-lg flex items-center justify-center" aria-hidden="true">
+							<svg class="w-5 h-5 text-bakery-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l2.293 2.293c-.63.63-.184 1.707.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
 							</svg>
 						</div>
-						<h2 class="text-xl font-bold text-gray-900">Order Summary</h2>
+						<h2 class="text-xl font-bold text-neutral-900 font-display">Order Summary</h2>
 					</div>
-					
+
 					<!-- Cart Items List -->
 					<div class="mb-6 space-y-3 max-h-64 overflow-y-auto pr-2">
 						{#each cart as cartItem (cartItem.item.id)}
-							<div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-								<div class="flex-1 min-w-0">
-									<h4 class="font-semibold text-gray-900 text-sm truncate">{cartItem.item.name}</h4>
-									{#if cartItem.item.category}
-										<p class="text-xs text-gray-500 mt-0.5">{cartItem.item.category.name}</p>
-									{/if}
-								</div>
-								<div class="flex items-center gap-3 ml-3">
-									<div class="flex items-center border border-gray-200 rounded-lg" role="group" aria-label="Quantity selector">
+							<Card variant="subtle" class="p-3">
+								<div class="flex items-center justify-between">
+									<div class="flex-1 min-w-0">
+										<h4 class="font-semibold text-neutral-900 text-sm truncate">{cartItem.item.name}</h4>
+										{#if cartItem.item.category}
+											<p class="text-xs text-neutral-500 mt-0.5">{cartItem.item.category.name}</p>
+										{/if}
+									</div>
+									<div class="flex items-center gap-3 ml-3">
+										<div class="flex items-center border border-neutral-200 rounded-lg" role="group" aria-label="Quantity selector">
+											<Button variant="ghost" size="sm" onclick={() => updateCartQuantity(cartItem.item.id, cartItem.quantity - 1)} disabled={cartItem.quantity <= 1} aria-label={`Decrease ${cartItem.item.name} quantity`}>
+												<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+												</svg>
+											</Button>
+ 
+											<span class="px-2 text-sm font-medium text-neutral-700 min-w-[30px] text-center" aria-live="polite" aria-atomic="true">
+												{cartItem.quantity}
+											</span>
+ 
+											<Button variant="ghost" size="sm" onclick={() => updateCartQuantity(cartItem.item.id, cartItem.quantity + 1)} aria-label={`Increase ${cartItem.item.name} quantity`}>
+												<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12h16m-8-8v8m0 0l8 8m8-8v8" />
+												</svg>
+											</Button>
+										</div>
+										<span class="font-bold text-neutral-900 text-sm w-16 text-right">${(cartItem.item.price * cartItem.quantity).toFixed(2)}</span>
 										<button
 											type="button"
-											class="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-l transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
-											onclick={() => updateCartQuantity(cartItem.item.id, cartItem.quantity - 1)}
-											disabled={cartItem.quantity <= 1}
-											aria-label={`Decrease ${cartItem.item.name} quantity`}
+											class="p-1.5 text-error-500 hover:text-error-700 hover:bg-error-50 rounded-lg transition-colors ml-1 min-w-[44px] min-h-[44px] flex items-center justify-center"
+											onclick={() => removeFromCart(cartItem.item.id)}
+											aria-label={`Remove ${cartItem.item.name} from order`}
 										>
-											<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
-											</svg>
-										</button>
-										
-										<span class="px-2 text-sm font-medium text-gray-700 min-w-[30px] text-center" aria-live="polite" aria-atomic="true">
-											{cartItem.quantity}
-										</span>
-										
-										<button
-											type="button"
-											class="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-r transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
-											onclick={() => updateCartQuantity(cartItem.item.id, cartItem.quantity + 1)}
-											aria-label={`Increase ${cartItem.item.name} quantity`}
-										>
-											<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12h16m-8-8v8m0 0l8 8m-8-8v8" />
+											<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
 											</svg>
 										</button>
 									</div>
-									<span class="font-bold text-gray-900 text-sm w-16 text-right">${(cartItem.item.price * cartItem.quantity).toFixed(2)}</span>
-									<button
-										type="button"
-										class="p-1.5 text-error-500 hover:text-error-700 hover:bg-error-50 rounded-lg transition-colors ml-1 min-w-[44px] min-h-[44px] flex items-center justify-center"
-										onclick={() => removeFromCart(cartItem.item.id)}
-										aria-label={`Remove ${cartItem.item.name} from order`}
-									>
-										<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-										</svg>
-									</button>
 								</div>
-							</div>
+							</Card>
 						{/each}
 					</div>
-					
+
 					<!-- Totals -->
-					<div class="space-y-3 mb-6 border-t border-gray-200 pt-4">
-						<div class="flex justify-between items-center py-2 px-4 bg-gray-50 rounded-xl">
-							<span class="text-gray-600 font-medium">Total Items:</span>
-							<span class="font-bold text-gray-900 text-lg">{getTotalItems()}</span>
+					<div class="space-y-3 mb-6 border-t border-neutral-200 pt-4">
+						<div class="flex justify-between items-center py-2 px-4 bg-neutral-50 rounded-lg">
+							<span class="text-neutral-600 font-medium">Total Items:</span>
+							<span class="font-bold text-neutral-900 text-lg">{getTotalItems()}</span>
 						</div>
-						<div class="flex justify-between items-center py-3 px-4 bg-primary-50 rounded-xl">
-							<span class="text-gray-700 font-medium">Total Amount:</span>
-							<span class="font-black text-xl text-gradient">${totalAmount.toFixed(2)}</span>
+						<div class="flex justify-between items-center py-2 px-4 bg-bakery-50 rounded-lg">
+							<span class="text-neutral-600 font-medium">Total Amount:</span>
+							<span class="font-black text-xl text-bakery-700">${totalAmount.toFixed(2)}</span>
 						</div>
 					</div>
 
 					<div class="flex flex-col sm:flex-row gap-3">
-						<Button 
+						<Button
 							variant="secondary"
 							class="flex-1"
 							onclick={() => cart = []}
 							aria-label="Clear all items from order"
 						>
 							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1 1h4a1 1 0 00-1 1v3M4 7h16" />
 							</svg>
 							Clear
 						</Button>
-						
+
 						<Button
 							variant="primary"
 							size="sm"
