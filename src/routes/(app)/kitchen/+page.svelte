@@ -7,7 +7,7 @@
 
 	let { data }: { data: PageData } = $props();
 
-	let orders = $state<PageData['orders']>([]);
+	let orders = $state<any[]>([]);
 	let isRefreshing = $state(false);
 	let lastUpdated = $state<Date | null>(null);
 
@@ -17,20 +17,25 @@
 	let intervalId: ReturnType<typeof setInterval> | null = null;
 	let abortController: AbortController | null = null;
 
-	async function fetchOrders() {
+		async function fetchOrders() {
 		if (isRefreshing) return;
-		
+
 		isRefreshing = true;
 		abortController = new AbortController();
-		
+
 		try {
 			const response = await fetch('/api/kitchen/orders', {
 				signal: abortController.signal
 			});
-			
+
 			if (response.ok) {
 				const newOrders = await response.json();
-				orders = newOrders;
+				orders = newOrders.map((order: any) => ({
+					...order,
+					deliveryDateTime: order.deliveryDateTime || null,
+					address: order.address || null,
+					comment: order.comment || null
+				}));
 				lastUpdated = new Date();
 			}
 		} catch (error) {

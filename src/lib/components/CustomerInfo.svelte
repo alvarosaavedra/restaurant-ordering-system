@@ -6,11 +6,14 @@
 	interface Props {
 		customerName: string;
 		customerPhone: string;
+		deliveryDateTime: string;
+		address: string;
+		comment: string;
 		onUpdate: (data: Partial<CreateOrderForm>) => void;
 		showErrors?: boolean;
 	}
 
-	let { customerName, customerPhone, onUpdate, showErrors = false }: Props = $props();
+	let { customerName, customerPhone, deliveryDateTime, address, comment, onUpdate, showErrors = false }: Props = $props();
 
 	const nameError = $derived.by(() => {
 		if (showErrors && !customerName.trim()) {
@@ -26,6 +29,22 @@
 		return null;
 	});
 
+	const deliveryDateTimeError = $derived.by(() => {
+		if (showErrors && !deliveryDateTime.trim()) {
+			return 'Delivery date/time is required';
+		}
+		if (deliveryDateTime.trim()) {
+			const parsedDate = new Date(deliveryDateTime);
+			if (isNaN(parsedDate.getTime())) {
+				return 'Invalid date/time format';
+			}
+			if (parsedDate < new Date()) {
+				return 'Delivery time must be in the future';
+			}
+		}
+		return null;
+	});
+
 	function handleNameChange(event: Event) {
 		const target = event.target as HTMLInputElement;
 		onUpdate({ customerName: target.value });
@@ -34,6 +53,21 @@
 	function handlePhoneChange(event: Event) {
 		const target = event.target as HTMLInputElement;
 		onUpdate({ customerPhone: target.value });
+	}
+
+	function handleDeliveryDateTimeChange(event: Event) {
+		const target = event.target as HTMLInputElement;
+		onUpdate({ deliveryDateTime: target.value });
+	}
+
+	function handleAddressChange(event: Event) {
+		const target = event.target as HTMLTextAreaElement;
+		onUpdate({ address: target.value });
+	}
+
+	function handleCommentChange(event: Event) {
+		const target = event.target as HTMLTextAreaElement;
+		onUpdate({ comment: target.value });
 	}
 </script>
 
@@ -80,6 +114,55 @@
 					class="w-full"
 					error={phoneError || undefined}
 				/>
+			</div>
+
+			<div>
+				<label for="deliveryDateTime" class="block text-sm font-semibold text-gray-700 mb-2">
+					Delivery Date/Time <span class="text-red-500">*</span>
+				</label>
+				<input
+					id="deliveryDateTime"
+					name="deliveryDateTime"
+					type="datetime-local"
+					required
+					value={deliveryDateTime}
+					oninput={(e) => handleDeliveryDateTimeChange(e)}
+					class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+					class:error={deliveryDateTimeError ? 'border-red-500 ring-1 ring-red-500' : ''}
+				/>
+				{#if deliveryDateTimeError}
+					<p class="mt-1 text-sm text-red-600" role="alert">{deliveryDateTimeError}</p>
+				{/if}
+			</div>
+
+			<div>
+				<label for="address" class="block text-sm font-semibold text-gray-700 mb-2">
+					Delivery Address (Optional)
+				</label>
+				<textarea
+					id="address"
+					name="address"
+					placeholder="Enter delivery address (optional)"
+					value={address}
+					oninput={(e) => handleAddressChange(e)}
+					rows="3"
+					class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-none"
+				></textarea>
+			</div>
+
+			<div>
+				<label for="comment" class="block text-sm font-semibold text-gray-700 mb-2">
+					Special Instructions (Optional)
+				</label>
+				<textarea
+					id="comment"
+					name="comment"
+					placeholder="Any special requests or instructions (optional)"
+					value={comment}
+					oninput={(e) => handleCommentChange(e)}
+					rows="3"
+					class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-none"
+				></textarea>
 			</div>
 		</div>
 	</div>

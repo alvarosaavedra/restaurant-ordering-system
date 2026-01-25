@@ -20,6 +20,9 @@
 		id: string;
 		customerName: string;
 		customerPhone: string | null;
+		deliveryDateTime: Date | string | null;
+		address: string | null;
+		comment: string | null;
 		totalAmount: number;
 		status: 'pending' | 'preparing' | 'ready' | 'delivered';
 		createdAt: Date | string;
@@ -85,6 +88,9 @@
 	}
 
 	let currentStatus = $derived(isUpdating ? previousStatus : order.status);
+
+	let deliveryDate = $derived(order.deliveryDateTime ? new Date(order.deliveryDateTime) : null);
+	let deliveryIsoDate = $derived(deliveryDate ? deliveryDate.toISOString() : '');
 </script>
 
 <div class="bg-white rounded-2xl shadow-lg border border-gray-100 card-hover" role="article" aria-labelledby={`order-${order.id}-title`}>
@@ -122,6 +128,41 @@
 				<div class="text-xs text-gray-400">Order #{order.id.slice(-6)}</div>
 			</div>
 		</div>
+
+		<!-- Delivery Information -->
+		{#if deliveryDate || order.address || order.comment}
+			<div class="mb-4 p-4 bg-gray-50 rounded-xl space-y-2">
+				{#if deliveryDate}
+					<div class="flex items-center gap-2 text-sm">
+						<svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+						</svg>
+						<span class="font-medium text-gray-700">Delivery:</span>
+						<time datetime={deliveryIsoDate} class="text-gray-900">
+							{deliveryDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} at {
+							deliveryDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
+						</time>
+					</div>
+				{/if}
+				{#if order.address}
+					<div class="flex items-start gap-2 text-sm">
+						<svg class="w-4 h-4 text-primary-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+						</svg>
+						<span class="text-gray-900 break-words">{order.address}</span>
+					</div>
+				{/if}
+				{#if order.comment}
+					<div class="flex items-start gap-2 text-sm">
+						<svg class="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+						</svg>
+						<span class="text-gray-700 italic">"{order.comment}"</span>
+					</div>
+				{/if}
+			</div>
+		{/if}
 
 		<!-- Order Items -->
 		<div class="mb-4" role="list" aria-label="Order items">

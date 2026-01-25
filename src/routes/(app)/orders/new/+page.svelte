@@ -25,6 +25,9 @@
 	let cart: CartItem[] = $state([]);
 	let customerName: string = $state('');
 	let customerPhone: string = $state('');
+	let deliveryDateTime: string = $state('');
+	let address: string = $state('');
+	let comment: string = $state('');
 	let categories = $derived(data.categories || []);
 	let totalAmount: number = $derived(
 		cart.reduce((total, cartItem) => total + (cartItem.item.price * cartItem.quantity), 0)
@@ -79,6 +82,11 @@
 			return;
 		}
 
+		if (!deliveryDateTime.trim()) {
+			toast.warning('Please enter delivery date/time');
+			return;
+		}
+
 		isSubmitting = true;
 		try {
 			const response = await fetch('/api/orders', {
@@ -89,6 +97,9 @@
 				body: JSON.stringify({
 					customerName,
 					customerPhone,
+					deliveryDateTime,
+					address,
+					comment,
 					items: cart.map(cartItem => ({
 						menuItemId: cartItem.item.id,
 						quantity: cartItem.quantity
@@ -101,6 +112,9 @@
 				cart = [];
 				customerName = '';
 				customerPhone = '';
+				deliveryDateTime = '';
+				address = '';
+				comment = '';
 				await goto('/orders');
 			} else {
 				const errorData = await response.json();
@@ -122,9 +136,15 @@
 			<CustomerInfo
 				customerName={customerName}
 				customerPhone={customerPhone}
+				deliveryDateTime={deliveryDateTime}
+				address={address}
+				comment={comment}
 				onUpdate={(data) => {
 					if (data.customerName !== undefined) customerName = data.customerName;
 					if (data.customerPhone !== undefined) customerPhone = data.customerPhone;
+					if (data.deliveryDateTime !== undefined) deliveryDateTime = data.deliveryDateTime;
+					if (data.address !== undefined) address = data.address;
+					if (data.comment !== undefined) comment = data.comment;
 				}}
 				showErrors={showValidationErrors}
 			/>
