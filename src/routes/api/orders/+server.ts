@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { order, orderItem, menuItem, user } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { order, orderItem, menuItem, user, client } from '$lib/server/db/schema';
+import { eq, or } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 import type { RequestHandler } from '@sveltejs/kit';
 
@@ -65,7 +65,45 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return json({ error: 'At least one item is required' }, { status: 400 });
 		}
 
-		// Calculate total amount
+		const trimmedPhone = customerPhone?.trim() || null;
+
+		let existingClient = null;
+
+		if (trimmedPhone) {
+			existingClient = await db
+				.select()
+				.from(client)
+				.where(eq(client.phone, trimmedPhone))
+				.limit(1);
+		}
+
+		if ((!existingClient || existingClient.length === 0) && customerName) {
+			existingClient = await db
+				.select()
+				.from(client)
+				.where(eq(client.name, customerName.trim()))
+				.limit(1);
+		}
+
+		if (!existingClient || existingClient.length === 0) {
+			if (trimmedPhone) {
+				await db.insert(client).values({
+					id: nanoid(),
+					name: customerName.trim(),
+					phone: trimmedPhone,
+					address: address?.trim() || null
+				});
+			}
+		} else {
+			const clientData = existingClient[0];
+			if (address?.trim() && !clientData.address) {
+				await db
+					.update(client)
+					.set({ address: address.trim() })
+					.where(eq(client.id, clientData.id));
+			}
+		}
+
 		let totalAmount = 0;
 		const orderItems: typeof orderItem.$inferInsert[] = [];
 		

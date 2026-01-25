@@ -1,7 +1,15 @@
 <script lang="ts">
 	import Card from '$lib/components/ui/Card.svelte';
 	import Input from '$lib/components/ui/Input.svelte';
+	import ClientSearch from '$lib/components/ClientSearch.svelte';
 	import type { CreateOrderForm } from '$lib/types/orders';
+
+	interface ClientResult {
+		id: string;
+		name: string;
+		phone: string;
+		address: string | null;
+	}
 
 	interface Props {
 		customerName: string;
@@ -45,11 +53,6 @@
 		return null;
 	});
 
-	function handleNameChange(event: Event) {
-		const target = event.target as HTMLInputElement;
-		onUpdate({ customerName: target.value });
-	}
-
 	function handlePhoneChange(event: Event) {
 		const target = event.target as HTMLInputElement;
 		onUpdate({ customerPhone: target.value });
@@ -69,6 +72,18 @@
 		const target = event.target as HTMLTextAreaElement;
 		onUpdate({ comment: target.value });
 	}
+
+	function selectClient(client: ClientResult) {
+		onUpdate({
+			customerName: client.name,
+			customerPhone: client.phone,
+			address: client.address || ''
+		});
+	}
+
+	function handleClearName() {
+		onUpdate({ customerName: '' });
+	}
 </script>
 
 <Card>
@@ -85,19 +100,19 @@
 		<div class="space-y-4">
 			<div>
 				<label for="customerName" class="block text-sm font-semibold text-gray-700 mb-2">
-					Customer Name
+					Customer Name <span class="text-xs font-normal text-gray-500">(or search existing clients)</span>
 				</label>
-				<Input
-					id="customerName"
-					name="customerName"
-					type="text"
-					required
-					placeholder="Enter customer name"
-					value={customerName}
-					oninput={(e) => handleNameChange(e)}
-					class="w-full"
-					error={nameError || undefined}
+				<ClientSearch
+					customerName={customerName}
+					onSelect={selectClient}
+					onClear={handleClearName}
+					onUpdate={(name) => onUpdate({ customerName: name })}
+					placeholder="Search clients by name..."
+					aria-label="Customer name or search existing clients"
 				/>
+				{#if nameError}
+					<p class="mt-1 text-sm text-red-600" role="alert">{nameError}</p>
+				{/if}
 			</div>
 
 			<div>
