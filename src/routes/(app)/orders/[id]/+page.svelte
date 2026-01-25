@@ -144,7 +144,15 @@
 							{#if order.address}
 								<div>
 									<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Delivery Address</p>
-									<p class="text-gray-900 font-medium break-words">{order.address}</p>
+									<a
+										href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.address)}`}
+										target="_blank"
+										rel="noopener noreferrer"
+										class="text-primary-600 hover:text-primary-700 hover:underline focus:outline-none focus:underline break-words font-medium"
+										aria-label={`Open ${order.address} in Google Maps`}
+									>
+										{order.address}
+									</a>
 								</div>
 							{/if}
 

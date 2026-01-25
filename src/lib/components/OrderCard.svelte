@@ -147,10 +147,18 @@
 				{#if order.address}
 					<div class="flex items-start gap-2 text-sm">
 						<svg class="w-4 h-4 text-primary-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 8 0 1111.314 0z" />
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
 						</svg>
-						<span class="text-gray-900 break-words">{order.address}</span>
+						<a
+							href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.address)}`}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="text-primary-600 hover:text-primary-700 hover:underline focus:outline-none focus:underline break-words"
+							aria-label={`Open ${order.address} in Google Maps`}
+						>
+							{order.address}
+						</a>
 					</div>
 				{/if}
 				{#if order.comment}
