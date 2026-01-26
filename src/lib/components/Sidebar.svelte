@@ -50,32 +50,34 @@
 
 	$effect(() => {
 		if (isOpen && sidebarRef) {
-			const firstLink = sidebarRef?.querySelector('a');
-			firstLink?.focus();
+			setTimeout(() => {
+				const firstLink = sidebarRef?.querySelector('a');
+				firstLink?.focus();
+			}, 50);
 		}
 	});
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
 
-<!-- Mobile Overlay -->
-{#if isOpen}
+ <!-- Mobile Overlay -->
+ {#if isOpen}
 	<div
-		class="fixed inset-0 bg-neutral-900/50 z-[60] lg:hidden"
+		class="fixed inset-0 bg-neutral-900/50 z-[70] lg:hidden"
 		transition:fade={{ duration: 200 }}
 		onclick={onClose}
 		aria-hidden="true"
 	></div>
-{/if}
+ {/if}
 
-<aside
+ <aside
 	bind:this={sidebarRef}
-	class="fixed top-0 left-0 h-full w-60 bg-white border-r border-neutral-200 z-[70] overflow-y-auto transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto lg:border-t-0 lg:shadow-none lg:top-auto lg:left-auto {
-			isOpen ? 'translate-x-0' : '-translate-x-full'
+	class="fixed top-0 left-0 h-full w-60 bg-white border-r border-neutral-200 z-[80] overflow-y-auto transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto lg:border-t-0 lg:shadow-none lg:top-auto lg:left-auto {
+			isOpen ? 'translate-x-0 pointer-events-auto' : '-translate-x-full pointer-events-none'
 		}"
 	role="navigation"
 	aria-label="Main navigation"
-	aria-hidden={!isOpen}
+	inert={!isOpen}
 >
 	<!-- Logo Area -->
 	<div class="gradient-bg p-6 border-b border-bakery-600">

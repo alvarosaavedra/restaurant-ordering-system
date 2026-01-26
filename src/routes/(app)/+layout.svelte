@@ -26,11 +26,11 @@
 	}
 </script>
 
-<!-- Only render if user is authenticated -->
-{#if isLoggedIn}
-	<div class="min-h-screen bg-neutral-50 flex">
+ <!-- Only render if user is authenticated -->
+ {#if isLoggedIn}
+	<div class="min-h-screen bg-neutral-50 flex relative">
 		<!-- Mobile Header -->
-		<header class="lg:hidden bg-white border-b border-neutral-200 px-4 py-3 flex items-center justify-between sticky top-0 z-50">
+		<header class="lg:hidden bg-white border-b border-neutral-200 px-4 py-3 flex items-center justify-between fixed top-0 left-0 right-0 z-[100]">
 			<div class="flex items-center gap-3">
 				<div class="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center" aria-hidden="true">
 					<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
