@@ -30,7 +30,7 @@ async function setupDatabaseSchema(testDbPath: string) {
 export default async function globalSetup() {
 	console.log('🌱 Setting up test database schema...');
 
-	const numWorkers = 8;
+	const numWorkers = 1;
 	const baseDbPath = path.join(__dirname, '..', 'test-worker');
 
 	for (let i = 0; i < numWorkers; i++) {

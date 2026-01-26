@@ -12,7 +12,7 @@ export default defineConfig({
 	testDir: 'e2e',
 	fullyParallel: true,
 	forbidOnly: !!process.env.CI,
-	workers: 8,
+	workers: 1,
 	reporter: 'html',
 	use: {
 		baseURL: 'http://localhost:4173',
