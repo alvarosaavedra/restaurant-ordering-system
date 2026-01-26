@@ -72,8 +72,7 @@ export function setSessionTokenCookie(event: RequestEvent | { request: Request }
 		request.cookies.set(sessionCookieName, token, {
 			expires: expiresAt,
 			path: '/',
-			sameSite: 'none',
-			domain: ''
+			sameSite: 'lax'
 		});
 	}
 }
