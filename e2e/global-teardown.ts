@@ -6,16 +6,19 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export default async function globalTeardown() {
-	const testDbPath = path.join(__dirname, '..', 'test.db');
+	const numWorkers = 8;
+	const baseDbPath = path.join(__dirname, '..', 'test-worker');
 
-	if (fs.existsSync(testDbPath)) {
-		try {
-			fs.unlinkSync(testDbPath);
-			console.log('✅ Test database cleaned up successfully');
-		} catch (error) {
-			console.error('❌ Error cleaning up test database:', error);
+	for (let i = 0; i < numWorkers; i++) {
+		const testDbPath = `${baseDbPath}-${i}.db`;
+
+		if (fs.existsSync(testDbPath)) {
+			try {
+				fs.unlinkSync(testDbPath);
+				console.log(`✅ Worker ${i} database cleaned up successfully`);
+			} catch (error) {
+				console.error(`❌ Error cleaning up worker ${i} database:`, error);
+			}
 		}
-	} else {
-		console.log('ℹ️ Test database not found, nothing to clean up');
 	}
 }

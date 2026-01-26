@@ -13,6 +13,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 		return json({ error: 'Forbidden' }, { status: 403 });
 	}
 
+	console.log('Delivery API called - User:', locals.user.email, 'Role:', locals.user.role);
+
 	try {
 		const orders = await db
 			.select({
@@ -57,6 +59,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			})
 		);
 
+		console.log('Delivery API returning orders:', ordersWithItems.length);
 		return json(ordersWithItems);
 	} catch (error) {
 		console.error('Error fetching delivery orders:', error);

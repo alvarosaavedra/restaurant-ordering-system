@@ -6,12 +6,13 @@
 	import type { PageData } from './$types';
  
 	let { data }: { data: PageData } = $props();
- 
+
 	let orders = $state<any[]>([]);
 	let isRefreshing = $state(false);
 	let lastUpdated = $state<Date | null>(null);
- 
+
 	$effect(() => {
+		console.log('Initial orders from server load:', data.orders?.length);
 		orders = (data.orders || []).map((order: any) => ({
 			...order,
 			deliveryDateTime: order.deliveryDateTime || null,
@@ -24,17 +25,22 @@
  
 	async function fetchOrders() {
 		if (isRefreshing) return;
- 
+
 		isRefreshing = true;
 		abortController = new AbortController();
- 
+
 		try {
+			console.log('Fetching orders from /api/delivery/orders');
 			const response = await fetch('/api/delivery/orders', {
 				signal: abortController.signal
 			});
- 
+
+			console.log('Response status:', response.status);
+			console.log('Response ok:', response.ok);
+
 			if (response.ok) {
 				const newOrders = await response.json();
+				console.log('Orders received:', newOrders.length);
 				orders = newOrders.map((order: any) => ({
 					...order,
 					deliveryDateTime: order.deliveryDateTime || null,
@@ -42,6 +48,9 @@
 					comment: order.comment || null
 				}));
 				lastUpdated = new Date();
+			} else {
+				const errorData = await response.json();
+				console.error('API error:', errorData);
 			}
 		} catch (error) {
 			if (error instanceof Error && error.name !== 'AbortError') {
@@ -54,8 +63,9 @@
 	}
  
 	onMount(() => {
+		console.log('Delivery page mounted - initial orders:', data.orders?.length);
 		fetchOrders();
-		
+
 		intervalId = setInterval(() => {
 			fetchOrders();
 		}, 30000);
