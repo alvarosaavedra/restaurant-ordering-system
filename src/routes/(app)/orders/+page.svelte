@@ -174,7 +174,8 @@
 					</Button>
 				</div>
 			</div>
-		</Card>
+		</div>
+	</Card>
 
 		<!-- Orders List -->
 		{#if orders.length === 0}
@@ -207,7 +208,6 @@
 		<div class="space-y-4">
 			{#each orders as order (order.id)}
 				<Card variant="elevated" class="p-6 animate-slide-up shadow-warm-glow-sm">
-					<div class="flex items-start justify-between mb-4 pb-4 border-b border-neutral-200">
 					<div class="flex items-start justify-between mb-4 pb-4 border-b border-neutral-200">
 						<div class="flex items-center gap-1">
 							<h3 class="font-bold text-lg text-neutral-900 font-display">{order.customerName}</h3>

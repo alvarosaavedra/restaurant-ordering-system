@@ -21,7 +21,7 @@
 
 	let { user, isOpen, onClose }: Props = $props();
 
-	let sidebarRef = $state<HTMLDivElement | null>(null);
+	let sidebarRef = $state<HTMLElement | null>(null);
 
 	const navigationItems: NavItem[] = [
 		{ href: '/', label: 'Dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7-7', roles: ['order_taker', 'kitchen', 'delivery', 'admin'] },

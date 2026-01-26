@@ -19,12 +19,18 @@
 		subtle: 'bg-neutral-50 hover:bg-neutral-100 hover:shadow-sm hover:-translate-y-1 active:shadow-none active:translate-y-0'
 	};
 
-	const clickableClasses = clickable ? 'cursor-pointer' : '';
+	let clickableClasses = $derived(clickable ? 'cursor-pointer' : '');
 </script>
 
 {#if clickable}
 	<div
 		onclick={onclick}
+		onkeydown={(e: KeyboardEvent) => {
+			if (e.key === 'Enter' || e.key === ' ') {
+				e.preventDefault();
+				onclick?.();
+			}
+		}}
 		class={`${baseClasses} ${variantClasses[variant]} ${clickableClasses} ${className}`}
 		role="button"
 		tabindex="0"
