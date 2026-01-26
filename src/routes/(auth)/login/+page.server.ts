@@ -6,17 +6,33 @@ import { validateSessionToken, createSession, setSessionTokenCookie, generateSes
 import type { Actions, PageServerLoad } from './$types';
 import type { RequestEvent } from '@sveltejs/kit';
 
-	export const actions: Actions = {
-		default: async ({ request, cookies }) => {
-			const data = await request.formData();
-			const email = data.get('email') as string;
-			const password = data.get('password') as string;
+export const load: PageServerLoad = async ({ cookies, url }) => {
+	const sessionToken = cookies.get('auth-session');
 
-			if (!email || !password) {
-				return fail(400, { error: 'Email and password are required' });
-			}
+	if (!sessionToken) {
+		redirect(302, '/login');
+	}
 
-		// Find user by email
+	const { session, user } = await validateSessionToken(sessionToken);
+
+	if (!session || !user) {
+		cookies.delete('auth-session', { path: '/' });
+		redirect(302, '/login');
+	}
+
+	return { user };
+};
+
+export const actions: Actions = {
+	default: async ({ request, cookies }) => {
+		const data = await request.formData();
+		const email = data.get('email') as string;
+		const password = data.get('password') as string;
+
+		if (!email || !password) {
+			return fail(400, { error: 'Email and password are required' });
+		}
+
 		const [existingUser] = await db
 			.select()
 			.from(user)
@@ -26,18 +42,14 @@ import type { RequestEvent } from '@sveltejs/kit';
 			return fail(400, { error: 'Invalid email or password' });
 		}
 
-			// For MVP: Simple password check (plain text comparison)
-			// In production: Use proper password hashing with bcrypt/argon2
-			if (existingUser.passwordHash !== password) {
-				return fail(400, { error: 'Invalid email or password' });
-			}
+		if (existingUser.passwordHash !== password) {
+			return fail(400, { error: 'Invalid email or password' });
+		}
 
-		// Create session
 		const sessionToken = generateSessionToken();
 		const session = await createSession(sessionToken, existingUser.id);
-		setSessionTokenCookie({ request } as RequestEvent, sessionToken, session.expiresAt);
+		setSessionTokenCookie({ request }, sessionToken, session.expiresAt);
 
-		// Redirect based on user role
 		switch (existingUser.role) {
 			case 'kitchen':
 				redirect(302, '/kitchen');

@@ -66,18 +66,23 @@ export async function invalidateSession(sessionId: string) {
 	await db.delete(table.session).where(eq(table.session.id, sessionId));
 }
 
-export function setSessionTokenCookie(event: RequestEvent | Request, token: string, expiresAt: Date) {
-	const request = (event as any).request;
-	request.cookies.set(sessionCookieName, token, {
-		expires: expiresAt,
-		path: '/',
-		sameSite: 'none',
-		domain: ''
-	});
+export function setSessionTokenCookie(event: RequestEvent | { request: Request }, token: string, expiresAt: Date) {
+	const request = 'request' in event ? (event as any).request : event;
+	if (request && request.cookies) {
+		request.cookies.set(sessionCookieName, token, {
+			expires: expiresAt,
+			path: '/',
+			sameSite: 'none',
+			domain: ''
+		});
+	}
 }
 
-export function deleteSessionTokenCookie(event: RequestEvent) {
-	event.cookies.delete(sessionCookieName, {
-		path: '/'
-	});
+export function deleteSessionTokenCookie(event: RequestEvent | { request: Request }) {
+	const request = 'request' in event ? (event as any).request : event;
+	if (request && request.cookies) {
+		request.cookies.delete(sessionCookieName, {
+			path: '/'
+		});
+	}
 }
