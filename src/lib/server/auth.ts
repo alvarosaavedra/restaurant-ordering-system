@@ -30,7 +30,6 @@ export async function validateSessionToken(token: string) {
 	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 	const [result] = await db
 		.select({
-			// Adjust user table here to tweak returned data
 			user: { id: table.user.id, name: table.user.name, email: table.user.email, role: table.user.role },
 			session: table.session
 		})
@@ -70,7 +69,9 @@ export async function invalidateSession(sessionId: string) {
 export function setSessionTokenCookie(event: RequestEvent, token: string, expiresAt: Date) {
 	event.cookies.set(sessionCookieName, token, {
 		expires: expiresAt,
-		path: '/'
+		path: '/',
+		sameSite: 'none',
+		domain: ''
 	});
 }
 
