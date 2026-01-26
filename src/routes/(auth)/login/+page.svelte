@@ -1,9 +1,12 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
+	import { goto } from '$app/navigation';
 	import Button from '$lib/components/ui/Button.svelte';
 	import Card from '$lib/components/ui/Card.svelte';
 	import Input from '$lib/components/ui/Input.svelte';
 
-	let { form } = $props<{ form: { error?: string } }>();
+	let { form } = $props<{ form: { error?: string; success?: boolean; redirectTo?: string } }>();
+	let isLoading = $state(false);
 </script>
 
 <div class="min-h-screen subtle-gradient flex items-center justify-center p-4">
@@ -19,7 +22,21 @@
 		</div>
 
 		<Card class="p-8">
-			<form method="POST" class="space-y-5">
+			<form
+				method="POST"
+				use:enhance={(input) => {
+					return async ({ result }: any) => {
+						if (result.type === 'redirect') {
+							input.cancel();
+							await goto(result.location, { replaceState: false });
+						} else {
+							isLoading = false;
+						}
+					};
+				}}
+				onsubmit={() => isLoading = true}
+				class="space-y-5"
+			>
 				<div>
 					<label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
 					<Input id="email" name="email" type="email" required placeholder="you@example.com" class="w-full" />
@@ -39,7 +56,7 @@
 					</div>
 				{/if}
 
-				<Button type="submit" class="w-full">Sign In</Button>
+				<Button type="submit" disabled={isLoading} class="w-full">{isLoading ? 'Signing in...' : 'Sign In'}</Button>
 			</form>
 
 			<div class="mt-8 pt-6 border-t border-gray-200">

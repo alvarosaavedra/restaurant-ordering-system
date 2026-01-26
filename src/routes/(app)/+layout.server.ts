@@ -4,16 +4,14 @@ import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ cookies, url }) => {
 	const sessionToken = cookies.get('auth-session');
-	
+
 	if (!sessionToken) {
-		// Not authenticated, redirect to login
 		redirect(302, '/login');
 	}
 
 	const { session, user } = await validateSessionToken(sessionToken);
-	
+
 	if (!session || !user) {
-		// Invalid session, clear cookie and redirect to login
 		cookies.delete('auth-session', { path: '/' });
 		redirect(302, '/login');
 	}

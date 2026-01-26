@@ -2,22 +2,21 @@ import { fail, redirect } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import { user } from '$lib/server/db/schema';
-import { validateSessionToken, createSession, setSessionTokenCookie, generateSessionToken } from '$lib/server/auth';
+import { validateSessionToken, createSession, generateSessionToken } from '$lib/server/auth';
 import type { Actions, PageServerLoad } from './$types';
-import type { RequestEvent } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ cookies, url }) => {
+export const load: PageServerLoad = async ({ cookies }) => {
 	const sessionToken = cookies.get('auth-session');
 
 	if (!sessionToken) {
-		redirect(302, '/login');
+		return {};
 	}
 
 	const { session, user } = await validateSessionToken(sessionToken);
 
 	if (!session || !user) {
 		cookies.delete('auth-session', { path: '/' });
-		redirect(302, '/login');
+		return {};
 	}
 
 	return { user };
@@ -48,15 +47,20 @@ export const actions: Actions = {
 
 		const sessionToken = generateSessionToken();
 		const session = await createSession(sessionToken, existingUser.id);
-		setSessionTokenCookie({ request }, sessionToken, session.expiresAt);
+
+		cookies.set('auth-session', sessionToken, {
+			expires: session.expiresAt,
+			path: '/',
+			httpOnly: false,
+			secure: false,
+			sameSite: 'lax'
+		});
 
 		switch (existingUser.role) {
 			case 'kitchen':
 				redirect(302, '/kitchen');
-				break;
 			case 'delivery':
 				redirect(302, '/delivery');
-				break;
 			case 'admin':
 			case 'order_taker':
 			default:
