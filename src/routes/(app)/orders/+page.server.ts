@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db';
 import { order, orderItem, menuItem, user } from '$lib/server/db/schema';
-import { eq, inArray, desc, asc, or, ilike } from 'drizzle-orm';
+import { eq, inArray, desc, asc, or, like } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
@@ -19,7 +19,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		const conditions = [];
 
 		if (search) {
-			conditions.push(ilike(order.customerName, `%${search}%`));
+			conditions.push(like(order.customerName, `%${search}%`));
 		}
 
 		if (status && ['pending', 'preparing', 'ready', 'delivered'].includes(status)) {

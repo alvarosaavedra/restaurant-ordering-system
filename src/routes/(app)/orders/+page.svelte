@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
 	import Button from '$lib/components/ui/Button.svelte';
 	import Card from '$lib/components/ui/Card.svelte';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
@@ -50,12 +49,6 @@
 		sort = data.sort || 'newest';
 	});
 
-	let expandedOrderId = $state<string | null>(null);
-
-	function toggleExpanded(orderId: string) {
-		expandedOrderId = expandedOrderId === orderId ? null : orderId;
-	}
-
 	function updateUrl() {
 		const params = new URLSearchParams();
 		if (search) params.set('search', search);
@@ -83,10 +76,6 @@
 			minute: '2-digit',
 			hour12: true
 		});
-	}
-
-	function handleViewOrder(orderId: string) {
-		goto(`/orders/${orderId}`);
 	}
 
 	let totalPages = $derived(Math.ceil(totalCount / limit));
@@ -205,81 +194,27 @@
 			</div>
 		</Card>
 	{:else}
-		<div class="space-y-4">
-			{#each orders as order (order.id)}
-				<Card variant="elevated" class="p-6 animate-slide-up shadow-warm-glow-sm">
-					<div class="flex items-start justify-between mb-4 pb-4 border-b border-neutral-200">
-						<div class="flex items-center gap-1">
-							<h3 class="font-bold text-lg text-neutral-900 font-display">{order.customerName}</h3>
+		<Card variant="elevated" class="p-6 shadow-warm-glow-sm">
+			<div class="space-y-3">
+				{#each orders as order (order.id)}
+					<a href="/orders/{order.id}" class="flex items-center justify-between p-4 bg-neutral-50 rounded-lg hover:bg-neutral-100 transition-colors cursor-pointer">
+						<div class="flex items-center gap-4 flex-1 min-w-0">
 							<StatusBadge status={order.status} />
-						</div>
-						<div class="flex items-center gap-4 text-sm text-neutral-500">
-							<div class="flex items-center gap-1">
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-								</svg>
-								{formatDate(order.createdAt)}
+							<div class="flex-1 min-w-0">
+								<h3 class="font-semibold text-neutral-900 truncate">{order.customerName}</h3>
+								<p class="text-sm text-neutral-500">{order.items?.length || 0} item{order.items?.length !== 1 ? 's' : ''} · ${order.totalAmount?.toFixed(2) || '0.00'}</p>
 							</div>
-							{#if order.employee}
-								<div class="flex items-center gap-1">
-									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7 7z" />
-									</svg>
-									{order.employee.name}
-								</div>
-							{/if}
 						</div>
-					</div>
-					<div class="flex items-center gap-6 text-sm">
-						<div class="flex items-center gap-1 text-neutral-600">
-							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002 2V7a2 2 0 00-2 2h-2M9 5a2 2 0 012 2h2a2 2 0 012 2" />
+						<div class="flex items-center gap-3">
+							<span class="text-sm text-neutral-500 whitespace-nowrap">{formatDate(order.createdAt)}</span>
+							<svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
 							</svg>
-							<span>{order.items?.length || 0} item{order.items?.length !== 1 ? 's' : ''}</span>
 						</div>
-						<div class="flex items-center gap-1 font-bold text-bakery-700">
-							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l2.293 2.293c-.63.63-.184 1.707.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-							</svg>
-							<span>${order.totalAmount?.toFixed(2) || '0.00'}</span>
-						</div>
-					</div>
-				</Card>
-
-				<div class="mb-4">
-					<Button
-						variant="ghost"
-						onclick={() => toggleExpanded(order.id)}
-						class="text-sm text-bakery-600 hover:text-bakery-700 font-medium flex items-center gap-1"
-					>
-						{expandedOrderId === order.id ? 'Hide Details' : 'View Details'}
-						<svg
-							class="w-4 h-4 transition-transform {expandedOrderId === order.id ? 'rotate-180' : ''}"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-							aria-hidden="true"
-						>
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7" />
-						</svg>
-					</Button>
-				</div>
-
-				{#if expandedOrderId === order.id}
-					<div class="space-y-2 mt-3">
-						{#each order.items as item (item.id)}
-							<div class="flex items-center justify-between py-2 px-3 bg-neutral-50 rounded-lg">
-								<div class="flex items-center gap-3">
-									<span class="font-medium text-neutral-600 w-6 text-center">×{item.quantity}</span>
-									<span class="text-neutral-900">{item.menuItem?.name || 'Unknown'}</span>
-								</div>
-								<span class="font-medium text-neutral-900">${(item.quantity * item.unitPrice).toFixed(2)}</span>
-							</div>
-						{/each}
-					</div>
-				{/if}
-			{/each}
-		</div>
+					</a>
+				{/each}
+			</div>
+		</Card>
 		{/if}
 
 	<!-- Pagination -->
