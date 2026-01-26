@@ -3,7 +3,8 @@ import { eq } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import { user } from '$lib/server/db/schema';
 import { validateSessionToken, createSession, setSessionTokenCookie, generateSessionToken } from '$lib/server/auth';
-import type { Actions } from './$types';
+import type { Actions, PageServerLoad } from './$types';
+import type { RequestEvent } from '@sveltejs/kit';
 
 	export const actions: Actions = {
 		default: async ({ request, cookies }) => {
@@ -34,7 +35,7 @@ import type { Actions } from './$types';
 		// Create session
 		const sessionToken = generateSessionToken();
 		const session = await createSession(sessionToken, existingUser.id);
-		setSessionTokenCookie({ cookies } as any, sessionToken, session.expiresAt);
+		setSessionTokenCookie({ request } as RequestEvent, sessionToken, session.expiresAt);
 
 		// Redirect based on user role
 		switch (existingUser.role) {
