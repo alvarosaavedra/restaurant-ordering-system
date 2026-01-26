@@ -130,6 +130,17 @@
 </script>
 
 <div class="px-4 py-6 max-w-7xl mx-auto">
+	<div class="mb-6">
+		<div class="flex items-center gap-3">
+			<div class="w-10 h-10 bg-bakery-100 rounded-lg flex items-center justify-center" aria-hidden="true">
+				<svg class="w-5 h-5 text-bakery-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+				</svg>
+			</div>
+			<h1 class="text-3xl font-bold text-neutral-900 font-display">New Order</h1>
+		</div>
+	</div>
+
 	<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 		<!-- Customer Information Form -->
 		<div class="lg:col-span-1">

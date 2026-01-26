@@ -94,17 +94,17 @@
 </script>
 
 <div class="bg-white rounded-lg shadow-md shadow-warm-glow border border-neutral-200 flex flex-col h-full card-hover" role="article" aria-labelledby={`order-${order.id}-title`}>
-	<div class="p-6 flex flex-col flex-1">
+	<div class="p-4 sm:p-6 flex flex-col flex-1">
 		<!-- Order Header -->
-		<div class="flex items-start justify-between mb-4 pb-4 border-b border-neutral-200">
-			<div class="flex-1">
-				<div class="flex items-center gap-3 mb-2">
-					<h3 id={`order-${order.id}-title`} class="font-bold text-lg text-gray-900">
+		<div class="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 pb-4 border-b border-neutral-200 gap-3 sm:gap-0">
+			<div class="flex-1 w-full sm:w-auto">
+				<div class="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
+					<h3 id={`order-${order.id}-title`} class="font-bold text-base sm:text-lg text-neutral-900">
 						{order.customerName}
 					</h3>
 					<StatusBadge status={currentStatus} />
 				</div>
-				<div class="flex items-center gap-4 text-sm text-gray-500">
+				<div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-neutral-500">
 					{#if order.customerPhone}
 						<div class="flex items-center gap-1">
 							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -114,7 +114,7 @@
 								href={`https://wa.me/${order.customerPhone.replace(/[^0-9]/g, '')}`}
 								target="_blank"
 								rel="noopener noreferrer"
-								class="text-bakery-600 hover:text-bakery-700 hover:underline focus:outline-none focus:underline"
+								class="text-bakery-600 hover:text-bakery-700 hover:underline focus:outline-none focus:underline break-all"
 								aria-label={`Send WhatsApp message to ${order.customerName}`}
 							>
 								{order.customerPhone}
@@ -122,15 +122,15 @@
 						</div>
 					{/if}
 					<div class="flex items-center gap-1">
-						<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+						<svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
 						</svg>
 						<time datetime={isoDate}>{formatDate(createdAt)}</time>
 					</div>
 				</div>
 			</div>
-			<div class="text-right">
-				<div class="text-2xl font-black text-bakery-700">${order.totalAmount.toFixed(2)}</div>
+			<div class="text-right w-full sm:w-auto">
+				<div class="text-xl sm:text-2xl font-black text-bakery-700">${order.totalAmount.toFixed(2)}</div>
 				<div class="text-xs text-neutral-400">Order #{order.id.slice(-6)}</div>
 			</div>
 		</div>
