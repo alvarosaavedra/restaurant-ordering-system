@@ -68,10 +68,11 @@
 	}
 
 	function formatDate(date: Date): string {
-		return new Date(date).toLocaleDateString('en-US', {
-			month: 'short',
+		const d = new Date(date);
+		// Shorter format for mobile displays
+		return d.toLocaleDateString('en-US', {
+			month: 'numeric',
 			day: 'numeric',
-			'year': 'numeric',
 			hour: '2-digit',
 			minute: '2-digit',
 			hour12: true
@@ -197,17 +198,17 @@
 		<Card variant="elevated" class="p-6 shadow-warm-glow-sm">
 			<div class="space-y-3">
 				{#each orders as order (order.id)}
-					<a href="/orders/{order.id}" class="flex items-center justify-between p-4 bg-neutral-50 rounded-lg hover:bg-neutral-100 transition-colors cursor-pointer">
-						<div class="flex items-center gap-4 flex-1 min-w-0">
+					<a href="/orders/{order.id}" class="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-neutral-50 rounded-lg hover:bg-neutral-100 transition-colors cursor-pointer gap-3">
+						<div class="flex items-center gap-3 flex-1 min-w-0">
 							<StatusBadge status={order.status} />
 							<div class="flex-1 min-w-0">
 								<h3 class="font-semibold text-neutral-900 truncate">{order.customerName}</h3>
 								<p class="text-sm text-neutral-500">{order.items?.length || 0} item{order.items?.length !== 1 ? 's' : ''} · ${order.totalAmount?.toFixed(2) || '0.00'}</p>
 							</div>
 						</div>
-						<div class="flex items-center gap-3">
-							<span class="text-sm text-neutral-500 whitespace-nowrap">{formatDate(order.createdAt)}</span>
-							<svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+						<div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
+							<span class="text-sm text-neutral-500">{formatDate(order.createdAt)}</span>
+							<svg class="w-4 h-4 text-neutral-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
 							</svg>
 						</div>

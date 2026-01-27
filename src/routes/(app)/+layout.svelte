@@ -61,7 +61,7 @@
 		<Sidebar user={user} isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
 
 		<!-- Main Content Area -->
-		<main id="main-content" class="flex-1 lg:ml-60 py-6 px-4 sm:px-6 lg:px-8" tabindex="-1">
+		<main id="main-content" class="flex-1 lg:ml-60 pt-20 pb-24 lg:pt-6 lg:pb-6 px-4 sm:px-6 lg:px-8" tabindex="-1">
 			{@render children()}
 		</main>
 
