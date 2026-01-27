@@ -66,42 +66,40 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		const trimmedPhone = customerPhone?.trim() || null;
+		const trimmedName = customerName?.trim();
 
 		let existingClient = null;
 
 		if (trimmedPhone) {
-			existingClient = await db
+			const clientsByPhone = await db
 				.select()
 				.from(client)
 				.where(eq(client.phone, trimmedPhone))
 				.limit(1);
+			existingClient = clientsByPhone.length > 0 ? clientsByPhone[0] : null;
 		}
 
-		if ((!existingClient || existingClient.length === 0) && customerName) {
-			existingClient = await db
+		if (!existingClient && trimmedName) {
+			const clientsByName = await db
 				.select()
 				.from(client)
-				.where(eq(client.name, customerName.trim()))
+				.where(eq(client.name, trimmedName))
 				.limit(1);
+			existingClient = clientsByName.length > 0 ? clientsByName[0] : null;
 		}
 
-		if (!existingClient || existingClient.length === 0) {
-			if (trimmedPhone) {
-				await db.insert(client).values({
-					id: nanoid(),
-					name: customerName.trim(),
-					phone: trimmedPhone,
-					address: address?.trim() || null
-				});
-			}
-		} else {
-			const clientData = existingClient[0];
-			if (address?.trim() && !clientData.address) {
-				await db
-					.update(client)
-					.set({ address: address.trim() })
-					.where(eq(client.id, clientData.id));
-			}
+		if (!existingClient && trimmedName) {
+			await db.insert(client).values({
+				id: nanoid(),
+				name: trimmedName,
+				phone: trimmedPhone,
+				address: address?.trim() || null
+			});
+		} else if (existingClient && address?.trim() && !existingClient.address) {
+			await db
+				.update(client)
+				.set({ address: address.trim() })
+				.where(eq(client.id, existingClient.id));
 		}
 
 		let totalAmount = 0;
