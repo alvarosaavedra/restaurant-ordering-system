@@ -53,6 +53,7 @@
 		"vitest-browser-svelte": "^2.0.1"
 	},
 	"dependencies": {
-		"nanoid": "^5.1.6"
+		"nanoid": "^5.1.6",
+		"pino": "^10.3.0"
 	}
 }

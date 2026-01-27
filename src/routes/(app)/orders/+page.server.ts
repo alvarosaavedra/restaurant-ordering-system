@@ -1,10 +1,12 @@
 import { db } from '$lib/server/db';
 import { order, orderItem, menuItem, user } from '$lib/server/db/schema';
 import { eq, inArray, desc, asc, or, like } from 'drizzle-orm';
+import { orderLogger } from '$lib/server/logger';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	if (!locals.user) {
+		orderLogger.warn({ event: 'unauthorized_access' }, 'Unauthorized access to orders history');
 		return { orders: [], totalCount: 0 };
 	}
 
@@ -15,6 +17,20 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		const page = parseInt(url.searchParams.get('page') || '1');
 		const limit = parseInt(url.searchParams.get('limit') || '20');
 		const offset = (page - 1) * limit;
+
+		orderLogger.debug(
+			{
+				event: 'fetching_orders_history',
+				userId: locals.user.id,
+				role: locals.user.role,
+				search,
+				status,
+				sort,
+				page,
+				limit
+			},
+			'Fetching orders history'
+		);
 
 		const conditions = [];
 
@@ -83,6 +99,17 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			.from(order)
 			.where(conditions.length > 0 ? or(...conditions) : undefined);
 
+		orderLogger.info(
+			{
+				event: 'orders_history_fetched',
+				userId: locals.user.id,
+				role: locals.user.role,
+				count: orders.length,
+				totalCount: totalCount.length
+			},
+			'Orders history fetched'
+		);
+
 		return {
 			orders: ordersWithItems,
 			totalCount: totalCount.length,
@@ -93,7 +120,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			sort
 		};
 	} catch (error) {
-		console.error('Error fetching orders:', error);
+		orderLogger.error({ event: 'fetch_orders_history_error', userId: locals.user.id, error }, 'Error fetching orders');
 		return {
 			orders: [],
 			totalCount: 0,

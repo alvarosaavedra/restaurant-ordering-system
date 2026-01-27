@@ -3,10 +3,13 @@ import { db } from '$lib/server/db';
 import { order, orderItem, menuItem, user, client } from '$lib/server/db/schema';
 import { eq, or } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
+import { orderLogger } from '$lib/server/logger';
 import type { RequestHandler } from '@sveltejs/kit';
 
 export const GET: RequestHandler = async () => {
 	try {
+		orderLogger.debug({ event: 'fetching_all_orders' }, 'Fetching all orders');
+
 		const orders = await db
 			.select({
 				id: order.id,
@@ -27,15 +30,18 @@ export const GET: RequestHandler = async () => {
 			.leftJoin(user, eq(order.employeeId, user.id))
 			.orderBy(order.createdAt);
 
+		orderLogger.info({ event: 'orders_fetched', count: orders.length }, 'Fetched all orders');
+
 		return json({ orders });
 	} catch (error) {
-		console.error('Error fetching orders:', error);
+		orderLogger.error({ event: 'fetch_orders_error', error }, 'Error fetching orders');
 		return json({ error: 'Failed to fetch orders' }, { status: 500 });
 	}
 };
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.user) {
+		orderLogger.warn({ event: 'unauthorized_order_creation' }, 'Unauthorized order creation attempt');
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
@@ -43,25 +49,40 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const data = await request.json();
 		const { customerName, customerPhone, deliveryDateTime, address, comment, items } = data;
 
-		// Validate input
+		orderLogger.info(
+			{
+				event: 'order_creation_attempt',
+				userId: locals.user.id,
+				userRole: locals.user.role,
+				customerName,
+				itemCount: items?.length || 0
+			},
+			'Order creation attempt'
+		);
+
 		if (!customerName?.trim()) {
+			orderLogger.warn({ event: 'validation_failed', field: 'customerName' }, 'Customer name is required');
 			return json({ error: 'Customer name is required' }, { status: 400 });
 		}
 
 		if (!deliveryDateTime) {
+			orderLogger.warn({ event: 'validation_failed', field: 'deliveryDateTime' }, 'Delivery date/time is required');
 			return json({ error: 'Delivery date/time is required' }, { status: 400 });
 		}
 
 		const parsedDeliveryDateTime = new Date(deliveryDateTime);
 		if (isNaN(parsedDeliveryDateTime.getTime())) {
+			orderLogger.warn({ event: 'validation_failed', field: 'deliveryDateTime', value: deliveryDateTime }, 'Invalid delivery date/time');
 			return json({ error: 'Invalid delivery date/time' }, { status: 400 });
 		}
 
 		if (parsedDeliveryDateTime < new Date()) {
+			orderLogger.warn({ event: 'validation_failed', field: 'deliveryDateTime', value: deliveryDateTime }, 'Delivery date/time must be in the future');
 			return json({ error: 'Delivery date/time must be in the future' }, { status: 400 });
 		}
 
 		if (!items || items.length === 0) {
+			orderLogger.warn({ event: 'validation_failed', field: 'items' }, 'At least one item is required');
 			return json({ error: 'At least one item is required' }, { status: 400 });
 		}
 
@@ -89,22 +110,25 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		if (!existingClient && trimmedName) {
+			const newClientId = nanoid();
 			await db.insert(client).values({
-				id: nanoid(),
+				id: newClientId,
 				name: trimmedName,
 				phone: trimmedPhone,
 				address: address?.trim() || null
 			});
+			orderLogger.info({ event: 'client_created', clientId: newClientId, name: trimmedName, phone: trimmedPhone }, 'New client created');
 		} else if (existingClient && address?.trim() && !existingClient.address) {
 			await db
 				.update(client)
 				.set({ address: address.trim() })
 				.where(eq(client.id, existingClient.id));
+			orderLogger.info({ event: 'client_updated', clientId: existingClient.id }, 'Client address updated');
 		}
 
 		let totalAmount = 0;
 		const orderItems: typeof orderItem.$inferInsert[] = [];
-		
+
 		for (const item of items) {
 			const menuItemRecord = await db
 				.select()
@@ -113,12 +137,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				.limit(1);
 
 			if (!menuItemRecord || menuItemRecord.length === 0) {
+				orderLogger.warn({ event: 'menu_item_not_found', menuItemId: item.menuItemId }, 'Menu item not found');
 				return json({ error: `Menu item ${item.menuItemId} not found` }, { status: 400 });
 			}
 
 			const menuItemData = menuItemRecord[0];
-			
+
 			if (!menuItemData.isAvailable) {
+				orderLogger.warn({ event: 'menu_item_unavailable', menuItemId: item.menuItemId, name: menuItemData.name }, 'Menu item not available');
 				return json({ error: `Menu item ${menuItemData.name} is not available` }, { status: 400 });
 			}
 
@@ -127,14 +153,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 			orderItems.push({
 				id: nanoid(),
-				orderId: '', // Will be set after order creation
+				orderId: '',
 				menuItemId: item.menuItemId,
 				quantity: item.quantity,
 				unitPrice: menuItemData.price
 			});
 		}
 
-		// Create order
 		const orderId = nanoid();
 		await db.insert(order).values({
 			id: orderId,
@@ -148,7 +173,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			employeeId: locals.user.id
 		});
 
-		// Create order items with order ID
 		const orderItemsWithOrderId = orderItems.map(item => ({
 			...item,
 			orderId
@@ -156,14 +180,28 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		await db.insert(orderItem).values(orderItemsWithOrderId);
 
-		return json({ 
+		orderLogger.info(
+			{
+				event: 'order_created',
+				orderId,
+				userId: locals.user.id,
+				customerName,
+				customerPhone,
+				totalAmount,
+				itemCount: orderItems.length,
+				deliveryDateTime: parsedDeliveryDateTime
+			},
+			'Order created successfully'
+		);
+
+		return json({
 			success: true,
 			orderId,
 			message: 'Order created successfully'
 		});
 
 	} catch (error) {
-		console.error('Error creating order:', error);
+		orderLogger.error({ event: 'order_creation_error', userId: locals.user.id, error }, 'Error creating order');
 		return json({ error: 'Failed to create order' }, { status: 500 });
 	}
 };
