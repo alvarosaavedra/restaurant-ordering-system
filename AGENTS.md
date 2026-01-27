@@ -176,13 +176,29 @@ After completing the code, ask the user if they want a playground link. Only cal
 - TypeScript with strict mode
 
 ### 🚧 Next Phase Development
-- **Phase 3**: Order Taking Interface
-  - Menu display and item selection
-  - Client lookup and creation (phone-based)
-  - Customer information forms (defaults from client)
-  - Real-time order total calculation
-  - Order creation and persistence
-  - Basic error handling and validation
+- **Phase 3**: Order Taking Interface (Complete)
+- **Phase 4**: Kitchen View (Complete)
+- **Phase 5**: Delivery View (Complete)
+- **Phase 6**: Admin Dashboard (Complete)
+
+## Documentation Structure
+
+All project documentation is organized under `docs/`:
+
+### Development Plans (`docs/plans/`)
+- `MVP_PLAN.md` - Initial MVP scope and requirements
+- `IMPLEMENTATION_PLAN.md` - Full implementation roadmap
+- `ADMIN_MENU_MGMT_PLAN.md` - Admin menu management features
+- `ORDER_ENHANCEMENT_PLAN.md` - Order system enhancements
+
+### Setup Guides (`docs/setup/`)
+- `CHROME_DEVTOOLS_SETUP.md` - Chrome DevTools configuration
+- `DOCKER_PLAYWRIGHT.md` - Playwright Docker setup
+- `PLAYWRIGHT_REMOTE_SERVER.md` - Remote Playwright server configuration
+
+### Core Documentation
+- `AGENTS.md` - This file: Development guidelines for agents
+- `README.md` - Project overview and getting started guide
 
 ## Admin - Client Management
 
@@ -226,66 +242,3 @@ Admin users can manage clients at `/admin/clients`:
 - Load functions in `+layout.server.ts` files
 - Client-side state management with Svelte 5 runes
 - Database operations through Drizzle ORM queries
-
-## Code Style Guidelines
-
-### TypeScript Configuration
-- Strict mode enabled with comprehensive type checking
-- Use `import type` for type-only imports
-- Svelte 5 runes syntax (`$state`, `$props`, `$derived`) preferred
-- File extensions: `.ts` for TypeScript, `.svelte` for components
-
-### Import Organization
-- SvelteKit imports first: `$app/*`, `$lib/*`
-- External libraries second
-- Local imports third
-- Type imports use `import type`
-- Relative imports use `./` prefix
-
-### Component Structure
-- Use Svelte 5 `<script lang="ts">` with runes
-- Props destructuring: `let { prop1, prop2 } = $props();`
-- State management with `$state()`, `$derived()`
-- Children slots: `let { children } = $props();`
-
-### Database Patterns
-- Drizzle ORM with SQLite
-- Schema defined in `src/lib/server/db/schema.ts`
-- Types inferred with `$inferSelect`, `$inferInsert`
-- Server-only code in `src/lib/server/*`
-
-### Testing Patterns
-- Unit tests: `src/**/*.spec.ts` or `src/**/*.test.ts`
-- Component tests: `src/**/*.svelte.spec.ts` with `vitest-browser-svelte`
-- E2E tests: `e2e/*.spec.ts` with Playwright
-- Use `describe`, `it`, `expect` from Vitest
-
-### Error Handling
-- Server code: Use SvelteKit error handling (`error`, `redirect`)
-- Client code: Try-catch blocks with proper error logging
-- Database operations: Handle connection and query errors
-- Form validation: Client and server-side validation
-
-### Naming Conventions
-- Files: kebab-case for routes, PascalCase for components
-- Variables: camelCase
-- Constants: UPPER_SNAKE_CASE
-- Functions: descriptive verbs, async functions prefixed with `async`
-- Database tables: snake_case
-
-### Styling
-- Tailwind CSS v4 with Vite plugin
-- Component-scoped styles preferred
-- Utility classes for layout and spacing
-- Responsive design with mobile-first approach
-
-### Internationalization
-- Paraglide.js for i18n
-- Locales managed in `src/lib/paraglide/`
-- Use `$lib/paraglide/runtime` for locale utilities
-
-### Security
-- Session management with Oslo.js crypto
-- CSRF protection via SvelteKit
-- Environment variables for secrets
-- Input validation and sanitization
