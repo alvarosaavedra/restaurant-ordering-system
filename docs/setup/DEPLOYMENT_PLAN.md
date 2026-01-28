@@ -2,6 +2,8 @@
 
 Complete deployment strategy for the Restaurant Ordering System on DigitalOcean with CI/CD automation.
 
+**Domain Configuration:** `orders.radbug.dev`
+
 ## Table of Contents
 
 - [Project Analysis](#project-analysis)
@@ -294,8 +296,7 @@ const config = {
   preprocess: vitePreprocess(),
 
   kit: {
-    // adapter-auto only supports some environments
-    // For DigitalOcean Droplet with Bun, use svelte-adapter-bun
+    // adapter-bun for Bun runtime on DigitalOcean Droplet
     adapter: adapter()
   }
 };
@@ -305,43 +306,23 @@ export default config;
 
 ### 2.2 Update Database Configuration
 
-Create a production-optimized database client:
+**Note**: Using `@libsql/client` for both development and production. It supports both `file://` URLs (for local development and production volume) and avoids build issues.
 
-**Create `src/lib/server/db/client.ts`:**
+**Update `src/lib/server/db/index.ts`:**
 
 ```typescript
-import { Database } from 'bun:sqlite';
-import { drizzle } from 'drizzle-orm/bun-sqlite';
+import { drizzle } from 'drizzle-orm/libsql';
+import { createClient } from '@libsql/client';
 import * as schema from './schema';
 
-// Use DATABASE_URL environment variable
-const dbPath = process.env.DATABASE_URL || '/mnt/sqlite-data/database.db';
+// @ts-expect-error - SvelteKit $env types are generated at build time
+import { env } from '$env/dynamic/private';
 
-const sqlite = new Database(dbPath, {
-  strict: true,
-  readwrite: true
-});
+if (!env.DATABASE_URL) throw new Error('DATABASE_URL is not set');
 
-// Enable WAL (Write-Ahead Logging) mode for better performance
-// Allows simultaneous reads and writes
-sqlite.exec('PRAGMA journal_mode=WAL');
+const client = createClient({ url: env.DATABASE_URL });
 
-// Use NORMAL synchronous mode for performance
-// Balances safety and performance
-sqlite.exec('PRAGMA synchronous=NORMAL');
-
-// Enable foreign key constraints
-sqlite.exec('PRAGMA foreign_keys=ON');
-
-export const db = drizzle(sqlite, { schema });
-```
-
-**Update `src/lib/server/db/index.ts` to use the new client:**
-
-```typescript
-import { db } from './client';
-export * from './schema';
-export { db };
+export const db = drizzle(client, { schema });
 ```
 
 ### 2.3 Environment Configuration
@@ -356,8 +337,8 @@ DATABASE_URL=/mnt/sqlite-data/database.db
 NODE_ENV=production
 PORT=3000
 
-# CORS origin (replace with your actual domain)
-ORIGIN=https://yourdomain.com
+# CORS origin
+ORIGIN=https://orders.radbug.dev
 ```
 
 **Update `.gitignore` to ensure sensitive files aren't committed:**
@@ -427,7 +408,7 @@ module.exports = {
       NODE_ENV: 'production',
       PORT: 3000,
       DATABASE_URL: '/mnt/sqlite-data/database.db',
-      ORIGIN: 'https://yourdomain.com'
+      ORIGIN: 'https://orders.radbug.dev'
     },
 
     // Log configuration
@@ -465,24 +446,24 @@ upstream sveltekit_backend {
 }
 
 # HTTP server (redirect to HTTPS)
-server {
-  listen 80;
-  listen [::]:80;
-  server_name yourdomain.com www.yourdomain.com;
+  server {
+    listen 80;
+    listen [::]:80;
+    server_name orders.radbug.dev;
 
-  # Redirect all HTTP traffic to HTTPS
-  return 301 https://$server_name$request_uri;
-}
+    # Redirect all HTTP traffic to HTTPS
+    return 301 https://$server_name$request_uri;
+  }
 
-# HTTPS server
-server {
-  listen 443 ssl http2;
-  listen [::]:443 ssl http2;
-  server_name yourdomain.com www.yourdomain.com;
+  # HTTPS server
+  server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name orders.radbug.dev;
 
-  # SSL certificate paths (will be created by Certbot)
-  ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
-  ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
+    # SSL certificate paths (will be created by Certbot)
+    ssl_certificate /etc/letsencrypt/live/orders.radbug.dev/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/orders.radbug.dev/privkey.pem;
   ssl_protocols TLSv1.2 TLSv1.3;
   ssl_ciphers HIGH:!aNULL:!MD5;
   ssl_prefer_server_ciphers on;
@@ -783,7 +764,7 @@ systemctl stop nginx
 
 ```bash
 # Obtain SSL certificate
-certbot --nginx -d yourdomain.com -d www.yourdomain.com
+certbot --nginx -d orders.radbug.dev
 
 # You will be prompted to:
 # 1. Enter your email address
@@ -815,7 +796,7 @@ certbot renew --dry-run
 certbot certificates
 
 # View certificate details
-certbot certificates --cert-name yourdomain.com
+certbot certificates --cert-name orders.radbug.dev
 ```
 
 ### 4.5 Manual Renewal (if needed)
@@ -1009,7 +990,7 @@ cat > .env.production << 'EOF'
 DATABASE_URL=/mnt/sqlite-data/database.db
 NODE_ENV=production
 PORT=3000
-ORIGIN=https://yourdomain.com
+ORIGIN=https://orders.radbug.dev
 EOF
 
 # Set secure permissions
@@ -1067,7 +1048,7 @@ Update `/etc/nginx/sites-available/restaurant-orders` with your actual domain:
 nano /etc/nginx/sites-available/restaurant-orders
 ```
 
-Replace `yourdomain.com` with your actual domain name.
+The configuration already uses `orders.radbug.dev`. No changes needed.
 
 **Step 8: Test and Restart Nginx**
 
@@ -1086,7 +1067,7 @@ systemctl status nginx
 
 ```bash
 # Obtain SSL certificate
-certbot --nginx -d yourdomain.com -d www.yourdomain.com
+certbot --nginx -d orders.radbug.dev
 
 # Follow the prompts (choose redirect option 2)
 ```
@@ -1398,7 +1379,8 @@ logrotate -f /etc/logrotate.d/restaurant-orders
 
 | Service | Usage | Cost |
 |----------|---------|------|
-| Domain Name | ~1 year | $12/year (average) |
+| Domain Name | `radbug.dev` already owned | $0 |
+| DNS Configuration | A-record for `orders.radbug.dev` | Free (included with domain) |
 | DigitalOcean Spaces | For off-site backups | $0.005/GB/month |
 | Email Service | Transactional emails | Free tier usually sufficient |
 | Monitoring Services | Advanced monitoring | Optional |
@@ -1677,9 +1659,33 @@ pm2 restart restaurant-orders
 
 ---
 
+## DNS Configuration Required
+
+Before deploying, configure DNS for your domain:
+
+1. **Access your DNS registrar** (where you purchased `radbug.dev`)
+2. **Add an A-record:**
+   - Type: A
+   - Name/Host: `orders`
+   - Value/Points to: `<your-droplet-ip-address>`
+   - TTL: 3600 (or default)
+
+3. **Wait for DNS propagation** (usually 5-30 minutes)
+
+4. **Verify DNS resolution:**
+   ```bash
+   dig orders.radbug.dev
+   # OR
+   nslookup orders.radbug.dev
+   ```
+
+After DNS is configured, proceed with the deployment steps below.
+
+---
+
 ## Next Steps
 
-This deployment plan provides a complete roadmap for deploying your Restaurant Ordering System to DigitalOcean with CI/CD automation.
+This deployment plan provides a complete roadmap for deploying your Restaurant Ordering System to DigitalOcean with CI/CD automation using the domain `orders.radbug.dev`.
 
 **To proceed with implementation:**
 
