@@ -235,23 +235,66 @@ The application uses custom session-based authentication:
 
 ## 🚢 Deployment
 
-### Production Build
+### Production Stack
+
+- **Platform**: Vercel (Edge Network)
+- **Database**: Turso (Edge SQLite)
+- **Development**: Local SQLite file
+
+### Quick Deployment
 
 ```bash
-npm run build
+# Install Vercel CLI
+npm i -g vercel
+
+# Login
+vercel login
+
+# Deploy to production
+vercel --prod
 ```
 
-### Adapters
+### Complete Deployment Guide
 
-The project uses `@sveltejs/adapter-auto` which automatically selects the appropriate adapter based on your deployment platform (Vercel, Netlify, etc.).
+For detailed deployment instructions, including:
+
+- Turso database setup
+- Environment configuration
+- Custom domain setup
+- CI/CD pipeline
+- Monitoring and maintenance
+- Troubleshooting guide
+
+See: [**docs/setup/DEPLOYMENT_GUIDE.md**](docs/setup/DEPLOYMENT_GUIDE.md)
+
+### Zero Cost Guarantee
+
+Wondering if deployment will cost anything? See: [**docs/setup/ZERO_COST_GUARANTEE.md**](docs/setup/ZERO_COST_GUARANTEE.md)
+
+**Quick Answer:** Your restaurant will likely process 20-200 orders/day, while free tiers support up to 270,000 orders/month. **You will probably never pay anything.**
 
 ### Environment Variables
 
-Set these in your production environment:
-
+**Development** (`.env`):
 ```bash
-DATABASE_URL=file:local.db  # Or remote database URL
+DATABASE_URL=file:local.db
 ```
+
+**Production** (Vercel environment variables):
+```bash
+DATABASE_URL=libsql://your-db.turso.io
+TURSO_AUTH_TOKEN=your-turso-auth-token
+```
+
+### Platform Benefits
+
+| Feature | Vercel | Turso |
+|---------|----------|-------|
+| **Edge Deployment** | ✅ Global CDN | ✅ Global replicas |
+| **Automatic HTTPS** | ✅ Included | N/A |
+| **Auto-Scaling** | ✅ Automatic | ✅ Automatic |
+| **Backups** | Automatic rollbacks | Point-in-time recovery |
+| **Pricing** | Free tier available | Generous free tier |
 
 ## 🤝 Contributing
 
