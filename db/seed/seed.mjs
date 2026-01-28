@@ -26,13 +26,7 @@ const menuItems = [
 	{ id: nanoid(), categoryId: categories[3].id, name: "Cookies", description: "Assorted fresh baked cookies", price: 2.99, isAvailable: true, createdAt: new Date() }
 ];
 
-const users = [
-	{ id: nanoid(), name: "John Doe", email: "john@bakery.com", passwordHash: "password123", role: "order_taker", createdAt: new Date(), updatedAt: new Date() },
-	{ id: nanoid(), name: "Jane Smith", email: "jane@bakery.com", passwordHash: "password123", role: "kitchen", createdAt: new Date(), updatedAt: new Date() },
-	{ id: nanoid(), name: "Mike Johnson", email: "mike@bakery.com", passwordHash: "password123", role: "delivery", createdAt: new Date(), updatedAt: new Date() },
-	{ id: nanoid(), name: "Admin User", email: "admin@bakery.com", passwordHash: "password123", role: "admin", createdAt: new Date(), updatedAt: new Date() }
-];
-
+const users = [];
 const clientData = [
 	{ id: nanoid(), name: "Alice Johnson", phone: "555-1234", address: "123 Main St", createdAt: new Date(), updatedAt: new Date() },
 	{ id: nanoid(), name: "Bob Smith", phone: "555-5678", address: "456 Oak Ave", createdAt: new Date(), updatedAt: new Date() },

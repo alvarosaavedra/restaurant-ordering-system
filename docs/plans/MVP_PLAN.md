@@ -39,12 +39,6 @@ This is a minimum viable product (MVP) for a restaurant/bakery ordering system w
 - **Kitchen**: Dashboard + Kitchen + Order History
 - **Delivery**: Dashboard + Delivery + Order History
 
-### Sample Users for Testing
-- **john@bakery.com** (Order Taker) → /orders/new
-- **jane@bakery.com** (Kitchen) → /kitchen
-- **mike@bakery.com** (Delivery) → /delivery
-- **Password**: password123 (for all accounts)
-
 ## Phase 3: Order Taking Interface 🚧 IN PROGRESS
 
 ### 1. Menu Management

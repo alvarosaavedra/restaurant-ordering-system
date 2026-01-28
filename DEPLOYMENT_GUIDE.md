@@ -525,7 +525,6 @@ After successful deployment:
 
 3. **Test all features**:
    - Navigate to https://orders.radbug.dev
-   - Test login with test accounts
    - Create test order
    - Test kitchen view
    - Test delivery view

@@ -15,6 +15,13 @@
       "when": 1769350003747,
       "tag": "0001_busy_black_crow",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1769630302531,
+      "tag": "0002_secret_ares",
+      "breakpoints": true
     }
   ]
 }

@@ -150,11 +150,6 @@ After completing the code, ask the user if they want a playground link. Only cal
 
 ## Working with Authentication
 
-### Login Credentials (for testing)
-- **Order Taker**: john@bakery.com / password123 → redirects to `/orders/new`
-- **Kitchen**: jane@bakery.com / password123 → redirects to `/kitchen`
-- **Delivery**: mike@bakery.com / password123 → redirects to `/delivery`
-
 ### Session Management
 - Sessions stored in `session` table with 30-day expiry
 - Session tokens stored as cookies with `auth-session` name

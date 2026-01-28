@@ -13,6 +13,12 @@ import { createClient } from "@libsql/client";
 
 const client = createClient({ url: DATABASE_URL });
 
+// Prevent seeding in production
+if (process.env.NODE_ENV === 'production') {
+  console.log('Skipping database seed in production environment');
+  process.exit(0);
+}
+
 const categories = [
   { id: nanoid(), name: "Bakery Items", display_order: 1, created_at: new Date() },
   { id: nanoid(), name: "Beverages", display_order: 2, created_at: new Date() },
@@ -35,13 +41,7 @@ const menuItems = [
   { id: nanoid(), category_id: categories[3].id, name: "Cookies", description: "Assorted fresh baked cookies", price: 2.99, is_available: 1, created_at: new Date() }
 ];
 
-const users = [
-  { id: nanoid(), name: "John Doe", email: "john@bakery.com", password_hash: "password123", role: "order_taker", created_at: new Date(), updated_at: new Date() },
-  { id: nanoid(), name: "Jane Smith", email: "jane@bakery.com", password_hash: "password123", role: "kitchen", created_at: new Date(), updated_at: new Date() },
-  { id: nanoid(), name: "Mike Johnson", email: "mike@bakery.com", password_hash: "password123", role: "delivery", created_at: new Date(), updated_at: new Date() },
-  { id: nanoid(), name: "Admin User", email: "admin@bakery.com", password_hash: "password123", role: "admin", created_at: new Date(), updated_at: new Date() }
-];
-
+const users = [];
 const clientData = [
   { id: nanoid(), name: "Alice Johnson", phone: "555-1234", address: "123 Main St", created_at: new Date(), updated_at: new Date() },
   { id: nanoid(), name: "Bob Smith", phone: "555-5678", address: "456 Oak Ave", created_at: new Date(), updated_at: new Date() },
@@ -73,14 +73,6 @@ async function seedDatabase() {
       });
     }
 
-    // Insert users
-    for (const user of users) {
-      await client.execute({
-        sql: "INSERT OR IGNORE INTO user (id, name, email, password_hash, role, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-        args: [user.id, user.name, user.email, user.password_hash, user.role, user.created_at, user.updated_at]
-      });
-    }
-
     // Insert clients
     for (const c of clientData) {
       await client.execute({
@@ -88,59 +80,6 @@ async function seedDatabase() {
         args: [c.id, c.name, c.phone, c.address, c.created_at, c.updated_at]
       });
     }
-
-    // Insert orders
-    const order1Id = nanoid();
-    const order2Id = nanoid();
-    const order3Id = nanoid();
-    const order4Id = nanoid();
-
-    const orderData = [
-      { id: order1Id, customer_name: "Alice Johnson", customer_phone: "555-1234", total_amount: 12.47, status: "ready", employee_id: users[0].id, delivery_date_time: now.getTime() + 60 * 60 * 1000, address: "123 Main St", comment: "Leave at door", created_at: now.getTime() - 2 * 60 * 1000, updated_at: now.getTime() - 2 * 60 * 1000 },
-      { id: order2Id, customer_name: "Bob Smith", customer_phone: "555-5678", total_amount: 8.99, status: "ready", employee_id: users[0].id, delivery_date_time: now.getTime() + 90 * 60 * 1000, address: "456 Oak Ave", comment: null, created_at: now.getTime() - 5 * 60 * 1000, updated_at: now.getTime() - 5 * 60 * 1000 },
-      { id: order3Id, customer_name: "Carol Williams", customer_phone: "555-9012", total_amount: 15.98, status: "pending", employee_id: users[0].id, delivery_date_time: now.getTime() + 120 * 60 * 1000, address: null, comment: "Allergic to nuts", created_at: now.getTime() - 10 * 60 * 1000, updated_at: now.getTime() - 10 * 60 * 1000 },
-      { id: order4Id, customer_name: "David Brown", customer_phone: "555-3456", total_amount: 3.99, status: "preparing", employee_id: users[0].id, delivery_date_time: now.getTime() + 30 * 60 * 1000, address: null, comment: null, created_at: now.getTime() - 15 * 60 * 1000, updated_at: now.getTime() - 15 * 60 * 1000 }
-    ];
-
-    for (const order of orderData) {
-      await client.execute({
-        sql: 'INSERT INTO "order" (id, customer_name, customer_phone, total_amount, status, employee_id, delivery_date_time, address, comment, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)',
-        args: [order.id, order.customer_name, order.customer_phone, order.total_amount, order.status, order.employee_id, order.delivery_date_time, order.address, order.comment, order.created_at, order.updated_at]
-      });
-    }
-
-    // Insert order items
-    // Order 1 items
-    await client.execute({
-      sql: "INSERT INTO order_item (id, order_id, menu_item_id, quantity, unit_price, created_at) VALUES ($1, $2, $3, $4, $5, $6)",
-      args: [nanoid(), order1Id, menuItems[1].id, 1, 3.49, now]
-    });
-    await client.execute({
-      sql: "INSERT INTO order_item (id, order_id, menu_item_id, quantity, unit_price, created_at) VALUES ($1, $2, $3, $4, $5, $6)",
-      args: [nanoid(), order1Id, menuItems[2].id, 1, 3.99, now]
-    });
-
-    // Order 2 items
-    await client.execute({
-      sql: "INSERT INTO order_item (id, order_id, menu_item_id, quantity, unit_price, created_at) VALUES ($1, $2, $3, $4, $5, $6)",
-      args: [nanoid(), order2Id, menuItems[6].id, 1, 8.99, now]
-    });
-
-    // Order 3 items
-    await client.execute({
-      sql: "INSERT INTO order_item (id, order_id, menu_item_id, quantity, unit_price, created_at) VALUES ($1, $2, $3, $4, $5, $6)",
-      args: [nanoid(), order3Id, menuItems[0].id, 2, 4.99, now]
-    });
-    await client.execute({
-      sql: "INSERT INTO order_item (id, order_id, menu_item_id, quantity, unit_price, created_at) VALUES ($1, $2, $3, $4, $5, $6)",
-      args: [nanoid(), order3Id, menuItems[4].id, 2, 2.99, now]
-    });
-
-    // Order 4 items
-    await client.execute({
-      sql: "INSERT INTO order_item (id, order_id, menu_item_id, quantity, unit_price, created_at) VALUES ($1, $2, $3, $4, $5, $6)",
-      args: [nanoid(), order4Id, menuItems[5].id, 1, 3.99, now]
-    });
 
     console.log("Database seeded successfully!");
   } catch (error) {

@@ -1,22 +1,17 @@
 import { db } from '$lib/server/db';
 import { json, type RequestHandler } from '@sveltejs/kit';
+import { sql } from 'drizzle-orm';
 
 export const GET: RequestHandler = async () => {
 	try {
-		const healthCheck = db
-			? {
-					status: 'healthy',
-					timestamp: new Date().toISOString(),
-					database: 'connected',
-					uptime: process.uptime()
-			  }
-			: {
-					status: 'unhealthy',
-					timestamp: new Date().toISOString(),
-					database: 'not_initialized'
-			  };
+		const result = db.all(sql`SELECT 1 as test`);
 
-		return json(healthCheck);
+		return json({
+			status: 'healthy',
+			timestamp: new Date().toISOString(),
+			database: 'connected',
+			uptime: process.uptime()
+		});
 	} catch (error) {
 		console.error('Health check failed:', error);
 
@@ -24,7 +19,7 @@ export const GET: RequestHandler = async () => {
 			{
 				status: 'unhealthy',
 				timestamp: new Date().toISOString(),
-				database: 'error',
+				database: 'disconnected',
 				error: error instanceof Error ? error.message : 'Unknown error'
 			},
 			{ status: 503 }

@@ -36,3 +36,4 @@ playwright-report/
 # Browser
 .well-known/
 cookies.txt
+.env*.local

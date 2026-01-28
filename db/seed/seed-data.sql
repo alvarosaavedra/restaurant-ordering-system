@@ -26,9 +26,3 @@ INSERT INTO menu_item (id, category_id, name, description, price, is_available, 
 ('item10', 'cat4', 'Chocolate Cake', 'Rich chocolate cake with frosting', 5.99, 1, 1737202800000),
 ('item11', 'cat4', 'Apple Pie', 'Traditional apple pie with cinnamon', 4.99, 1, 1737202800000),
 ('item12', 'cat4', 'Cookies', 'Assorted fresh baked cookies', 2.99, 1, 1737202800000);
-
--- Insert sample users
-INSERT INTO user (id, name, email, password_hash, role, created_at, updated_at) VALUES
-('user1', 'John Doe', 'john@bakery.com', 'password123', 'order_taker', 1737202800000, 1737202800000),
-('user2', 'Jane Smith', 'jane@bakery.com', 'password123', 'kitchen', 1737202800000, 1737202800000),
-('user3', 'Mike Johnson', 'mike@bakery.com', 'password123', 'delivery', 1737202800000, 1737202800000);

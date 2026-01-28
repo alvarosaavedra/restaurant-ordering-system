@@ -81,16 +81,6 @@ pending → preparing → ready → delivered
 6. **Open in browser**
    Navigate to [http://localhost:5173](http://localhost:5173)
 
-## 👤 Login Credentials (Test Users)
-
-The application comes pre-seeded with test accounts:
-
-| Role | Email | Password | Default Redirect |
-|------|-------|----------|------------------|
-| Order Taker | john@bakery.com | password123 | `/orders/new` |
-| Kitchen | jane@bakery.com | password123 | `/kitchen` |
-| Delivery | mike@bakery.com | password123 | `/delivery` |
-
 ## 📁 Project Structure
 
 ```
