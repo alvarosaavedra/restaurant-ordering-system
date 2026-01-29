@@ -23,8 +23,33 @@ git checkout -b fix/your-fix-name
 git worktree add ../worktree-name branch-name
 ```
 
-### 3. Work in the worktree
-- Navigate to the worktree directory: `cd ../worktree-name`
+### 3. Open a new tmux window with opencode
+After creating the worktree, open a new tmux window and start opencode in the worktree directory (not the main orders directory):
+
+```bash
+# Single command - creates tmux window, sets working directory to worktree, and starts opencode
+tmux new-window -n "worktree-name" -c /home/radbug/Work/worktree-name "opencode"
+```
+
+Or step-by-step:
+```bash
+# Create a new tmux window (adds a window to current session)
+tmux new-window -n "worktree-name"
+
+# Navigate to the worktree directory in the new window
+tmux send-keys -t "worktree-name" "cd /home/radbug/Work/worktree-name" C-m
+
+# Start opencode in the worktree
+tmux send-keys -t "worktree-name" "opencode" C-m
+```
+
+**Important**: Opencode runs in the worktree folder (`/home/radbug/Work/worktree-name`), not in the main orders directory.
+
+### 4. Work in the worktree
+- The new tmux window is now running opencode in the worktree directory
+- Make your changes and commits in the worktree
+- Run `npm run check` and `npm run lint` before committing
+- Test your changes thoroughly
 - Make your changes and commits
 - Run `npm run check` and `npm run lint` before committing
 - Test your changes thoroughly
