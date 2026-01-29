@@ -644,8 +644,8 @@
 	</form>
 </Modal>
 
-{#if form?.error}
-	<div class="fixed top-4 right-4 max-w-sm p-4 bg-error-50 border border-error-200 rounded-xl shadow-lg" role="alert">
+ {#if form?.error}
+	<div class="fixed top-20 right-4 max-w-sm p-4 bg-error-50 border border-error-200 rounded-xl shadow-lg z-[60] animate-in slide-in-from-right duration-300" role="alert">
 		<div class="flex items-center gap-3">
 			<svg class="w-5 h-5 text-error-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -653,10 +653,10 @@
 			<p class="text-sm font-medium text-error-800">{form.error}</p>
 		</div>
 	</div>
-{/if}
+ {/if}
 
-{#if form?.message}
-	<div class="fixed top-4 right-4 max-w-sm p-4 bg-green-50 border border-green-200 rounded-xl shadow-lg" role="alert">
+ {#if form?.message}
+	<div class="fixed top-20 right-4 max-w-sm p-4 bg-green-50 border border-green-200 rounded-xl shadow-lg z-[60] animate-in slide-in-from-right duration-300" role="alert">
 		<div class="flex items-center gap-3">
 			<svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -664,4 +664,4 @@
 			<p class="text-sm font-medium text-green-800">{form.message}</p>
 		</div>
 	</div>
-{/if}
+ {/if}
