@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto, invalidateAll } from '$app/navigation';
 	import { enhance } from '$app/forms';
-	import type { ActionData } from './$types';
 	import Button from '$lib/components/ui/Button.svelte';
 	import Card from '$lib/components/ui/Card.svelte';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
@@ -56,7 +55,7 @@
 		}[];
 	}
 
-	let { data, form }: { data: PageData; form: ActionData } = $props();
+	let { data, form }: { data: PageData; form: { error?: string; message?: string } } = $props();
 
 	let order = $derived(data.order);
 	let isAdmin = $derived(data.isAdmin);
@@ -478,39 +477,48 @@
 	<form method="POST" action="?/updateOrder" use:enhance={handleFormSuccess}>
 		<input type="hidden" name="id" value={orderFormData.id} />
 		<div class="space-y-4">
-			<Input
-				id="customerName"
-				name="customerName"
-				type="text"
-				label="Customer Name"
-				placeholder="Enter customer name"
-				required
-				bind:value={orderFormData.customerName}
-			/>
-			<Input
-				id="customerPhone"
-				name="customerPhone"
-				type="text"
-				label="Customer Phone"
-				placeholder="Enter phone number"
-				bind:value={orderFormData.customerPhone}
-			/>
-			<Input
-				id="deliveryDateTime"
-				name="deliveryDateTime"
-				type="datetime-local"
-				label="Delivery Date/Time"
-				required
-				bind:value={orderFormData.deliveryDateTime}
-			/>
-			<Input
-				id="address"
-				name="address"
-				type="text"
-				label="Delivery Address"
-				placeholder="Enter delivery address"
-				bind:value={orderFormData.address}
-			/>
+			<div>
+				<label for="customerName" class="block text-sm font-medium text-gray-700 mb-1">Customer Name</label>
+				<Input
+					id="customerName"
+					name="customerName"
+					type="text"
+					placeholder="Enter customer name"
+					required
+					bind:value={orderFormData.customerName}
+				/>
+			</div>
+			<div>
+				<label for="customerPhone" class="block text-sm font-medium text-gray-700 mb-1">Customer Phone</label>
+				<Input
+					id="customerPhone"
+					name="customerPhone"
+					type="text"
+					placeholder="Enter phone number"
+					bind:value={orderFormData.customerPhone}
+				/>
+			</div>
+			<div>
+				<label for="deliveryDateTime" class="block text-sm font-medium text-gray-700 mb-1">Delivery Date/Time</label>
+				<input
+					id="deliveryDateTime"
+					name="deliveryDateTime"
+					type="datetime-local"
+					required
+					bind:value={orderFormData.deliveryDateTime}
+					class="block w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+				/>
+			</div>
+			<div>
+				<label for="address" class="block text-sm font-medium text-gray-700 mb-1">Delivery Address</label>
+				<Input
+					id="address"
+					name="address"
+					type="text"
+					placeholder="Enter delivery address"
+					bind:value={orderFormData.address}
+				/>
+			</div>
 			<div>
 				<label for="comment" class="block text-sm font-medium text-gray-700 mb-1">Special Instructions</label>
 				<textarea
@@ -522,19 +530,22 @@
 					bind:value={orderFormData.comment}
 				></textarea>
 			</div>
-			<Select
-				id="status"
-				name="status"
-				options={[
-					{ value: 'pending', label: 'Pending' },
-					{ value: 'preparing', label: 'Preparing' },
-					{ value: 'ready', label: 'Ready' },
-					{ value: 'delivered', label: 'Delivered' }
-				]}
-				placeholder="Select status"
-				required
-				bind:value={orderFormData.status}
-			/>
+			<div>
+				<label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+				<Select
+					id="status"
+					name="status"
+					options={[
+						{ value: 'pending', label: 'Pending' },
+						{ value: 'preparing', label: 'Preparing' },
+						{ value: 'ready', label: 'Ready' },
+						{ value: 'delivered', label: 'Delivered' }
+					]}
+					placeholder="Select status"
+					required
+					bind:value={orderFormData.status}
+				/>
+			</div>
 			<div class="flex gap-3 pt-4">
 				<Button type="button" variant="secondary" onclick={closeAllModals}>Cancel</Button>
 				<Button type="submit">Update Order</Button>
@@ -554,10 +565,10 @@
 				{#each itemsFormData as item, index (index)}
 					<div class="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
 						<span class="flex-1 font-medium">{item.name}</span>
-						<Input
+						<input
 							type="number"
 							min="1"
-							class="w-20"
+							class="w-20 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
 							bind:value={itemsFormData[index].quantity}
 						/>
 						<span class="text-sm text-gray-500">@ ${item.unitPrice.toFixed(2)}</span>
@@ -575,11 +586,19 @@
 				{/each}
 			</div>
 
-			<Select
-				options={data.menuItems.map((m) => ({ value: m.id, label: m.name }))}
-				placeholder="Add item..."
-				onchange={(e) => addItem(e.target.value)}
-			/>
+			<div>
+				<label for="add-item-select" class="block text-sm font-medium text-gray-700 mb-1">Add Item</label>
+				<select
+					id="add-item-select"
+					class="block w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
+					onchange={(e) => addItem((e.target as HTMLSelectElement).value)}
+				>
+					<option value="">Select an item...</option>
+					{#each data.menuItems as menuItem}
+						<option value={menuItem.id}>{menuItem.name}</option>
+					{/each}
+				</select>
+			</div>
 
 			<div class="pt-4 border-t border-gray-200">
 				<div class="flex justify-between items-center">
