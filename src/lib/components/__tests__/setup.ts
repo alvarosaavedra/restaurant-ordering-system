@@ -40,8 +40,10 @@ vi.mock('$app/stores', () => ({
 	}))
 }));
 
-// Setup global fetch mock
-global.fetch = vi.fn();
+// Setup global fetch mock (only for Node/server environment)
+if (typeof global !== 'undefined') {
+	global.fetch = vi.fn();
+}
 
 // Cleanup after each test
 afterEach(() => {
