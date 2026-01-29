@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db';
 import { order, orderItem, menuItem, user } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, isNull, and } from 'drizzle-orm';
 import { orderLogger } from '$lib/server/logger';
 import type { PageServerLoad } from './$types';
 
@@ -31,7 +31,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			})
 			.from(order)
 			.leftJoin(user, eq(order.employeeId, user.id))
-			.where(eq(order.status, 'ready'))
+			.where(and(isNull(order.deletedAt), eq(order.status, 'ready')))
 			.orderBy(order.createdAt);
 
 		orderLogger.info({ event: 'delivery_orders_fetched', userId: locals.user.id, count: deliveryOrders.length }, 'Delivery orders fetched');

@@ -24,125 +24,66 @@ Admin controls at the top of the page (near the header/back button)
 
 ---
 
-## Phase 0: Database Schema Changes
+## Phase 0: Database Schema Changes ✅ COMPLETED
 
-### 0.1 Add `deletedAt` Column
+### 0.1 Add `deletedAt` Column ✅ COMPLETED
 **File**: `src/lib/server/db/schema.ts`
 
-Add to `order` table definition:
-```typescript
-deletedAt: integer('deleted_at', { mode: 'timestamp' })
-```
+**Status**: Column added to schema, database updated
 
-**Migration**: Run `npm run db:push` to update database
+**Changes**: Added `deletedAt: integer('deleted_at', { mode: 'timestamp' })` to order table
 
-**Rationale**: Nullable timestamp field that indicates when an order was soft-deleted. If null, the order is active.
+**Migration**: `npm run db:push` completed successfully
 
-### 0.2 Update Type Definitions
+### 0.2 Update Type Definitions ✅ COMPLETED
 **File**: `src/lib/types/orders.ts`
 
-Update order interfaces to include:
-```typescript
-deletedAt?: Date | null;
-```
+**Status**: Updated `OrderWithItems` and `OrderWithEmployee` interfaces
+
+**Changes**: Added `deletedAt?: Date | null;` to both interfaces
 
 **Impact**: No breaking changes - field is optional and doesn't affect existing code.
 
 ---
 
-## Phase 1: Server-Side Changes
+## Phase 1: Server-Side Changes ✅ COMPLETED
 
 ### File: `src/routes/(app)/orders/[id]/+page.server.ts`
 
-#### 1.1 Update Load Function
-Add admin role check and return `isAdmin` flag:
+**Status**: All server-side changes implemented
 
-```typescript
-export const load: PageServerLoad = async ({ locals, params }) => {
-  if (!locals.user) {
-    throw error(401, 'Unauthorized');
-  }
-
-  const isAdmin = locals.user.role === 'admin';
-
-  // ... existing order fetching logic ...
-
-  return {
-    order: { ...orderRecord, items },
-    isAdmin
-  };
-};
-```
-
-#### 1.2 Add Server Actions
-
-**Action: `updateOrder`**
-- Validates: id, customerName, deliveryDateTime, status (required), customerPhone, address, comment (optional)
-- Checks order exists and is not deleted
-- Updates order fields and `updatedAt` timestamp
-- Logs with `adminLogger.info({ event: 'order_updated', orderId, userId, changes })`
-- Returns: `{ success: true, message: 'Order updated successfully' }`
-
-**Action: `updateOrderItems`**
-- Input: array of `{ menuItemId, quantity, unitPrice }`
-- Validates: at least one item required, all menu items exist and are available
-- Checks order exists and is not deleted
-- Transaction: delete existing items → insert new items → recalculate total → update order
-- Updates `order.totalAmount` and `order.updatedAt`
-- Logs with `adminLogger.info({ event: 'order_items_updated', orderId, userId, itemCount, totalAmount })`
-- Returns: `{ success: true, message: 'Order items updated successfully' }`
-
-**Action: `deleteOrder`**
-- Validates: id (required)
-- Checks order exists and is not already deleted
-- Sets `deletedAt = new Date()` (soft delete)
-- Preserves all order data and items
-- Logs with `adminLogger.info({ event: 'order_deleted', orderId, userId, orderData })`
-- Returns: `redirect(302, '/orders')`
+**Changes Made**:
+- Updated load function to include admin role check and return `isAdmin` flag
+- Added `menuItems` data to load function for edit items modal
+- Added `deletedAt` field to order data query
+- Implemented `updateOrder` action with full validation and logging
+- Implemented `updateOrderItems` action with transaction support and logging
+- Implemented `deleteOrder` action with soft delete and redirect
+- All actions include admin role enforcement
 
 ---
 
-## Phase 2: Query Updates (Filtering Soft-Deleted Orders)
+## Phase 2: Query Updates (Filtering Soft-Deleted Orders) ✅ COMPLETED
 
-### 2.1 Order List Query
+### 2.1 Order List Query ✅ COMPLETED
 **File**: `src/routes/(app)/orders/+page.server.ts`
 
-Add filter to existing query:
-```typescript
-.where(isNull(order.deletedAt))
-```
+**Changes**: Added `isNull(order.deletedAt)` to conditions array in order list query and totalCount query
 
-### 2.2 Kitchen View Query
+### 2.2 Kitchen View Query ✅ COMPLETED
 **File**: `src/routes/(app)/kitchen/+page.server.ts`
 
-Add filter to existing query:
-```typescript
-.where(isNull(order.deletedAt))
-```
+**Changes**: Added `isNull(order.deletedAt)` filter with `and()` to kitchen orders query
 
-### 2.3 Delivery View Query
+### 2.3 Delivery View Query ✅ COMPLETED
 **File**: `src/routes/(app)/delivery/+page.server.ts`
 
-Add filter to existing query:
-```typescript
-.where(isNull(order.deletedAt))
-```
+**Changes**: Added `isNull(order.deletedAt)` filter with `and()` to delivery orders query
 
-### 2.4 Order Status API
+### 2.4 Order Status API ✅ COMPLETED
 **File**: `src/routes/api/orders/[id]/status/+server.ts`
 
-Add check before status update:
-```typescript
-const [orderRecord] = await db.select().from(order).where(eq(order.id, orderId));
-
-if (!orderRecord) {
-  return json({ error: 'Order not found' }, { status: 404 });
-}
-
-if (orderRecord.deletedAt) {
-  return json({ error: 'Cannot update status of deleted order' }, { status: 400 });
-}
-```
+**Changes**: Added order existence check and `deletedAt` validation before status update
 
 ---
 
@@ -603,6 +544,14 @@ None - reusing existing components (Modal, Button, Input, Select)
 - [ ] E2E tests pass
 - [ ] No type errors (`npm run check`)
 - [ ] No lint errors (`npm run lint`)
+
+## Progress Tracking
+
+- [x] Phase 0: Database Schema Changes (COMPLETED)
+- [x] Phase 1: Server-Side Changes (COMPLETED)
+- [x] Phase 2: Query Updates (Filtering Soft-Deleted Orders) (COMPLETED)
+- [ ] Phase 3: Client-Side UI Changes
+- [ ] Phase 4: Testing Strategy
 
 ---
 

@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { order, orderItem, menuItem } from '$lib/server/db/schema';
-import { eq, and, inArray } from 'drizzle-orm';
+import { eq, and, inArray, isNull } from 'drizzle-orm';
 import { orderLogger } from '$lib/server/logger';
 import type { RequestHandler } from '@sveltejs/kit';
 import type { OrderStatus } from '$lib/types/orders';
@@ -44,6 +44,19 @@ export const PATCH: RequestHandler = async ({ request, locals }) => {
 		if (locals.user.role === 'delivery' && (status === 'pending' || status === 'preparing' || status === 'ready')) {
 			orderLogger.warn({ event: 'permission_denied', userId: locals.user.id, role: locals.user.role, requestedStatus: status }, 'Delivery staff can only update to delivered');
 			return json({ error: 'Delivery staff can only update to delivered' }, { status: 403 });
+		}
+
+		const [orderRecord] = await db
+			.select()
+			.from(order)
+			.where(eq(order.id, orderId));
+
+		if (!orderRecord) {
+			return json({ error: 'Order not found' }, { status: 404 });
+		}
+
+		if (orderRecord.deletedAt) {
+			return json({ error: 'Cannot update status of deleted order' }, { status: 400 });
 		}
 
 		await db

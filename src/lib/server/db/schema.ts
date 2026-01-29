@@ -58,6 +58,7 @@ export const order = sqliteTable('order', {
 	deliveryDateTime: integer('delivery_date_time', { mode: 'timestamp' }).notNull(),
 	address: text('address'),
 	comment: text('comment'),
+	deletedAt: integer('deleted_at', { mode: 'timestamp' }),
 	createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$default(() => new Date()),
 	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$default(() => new Date())
 });
