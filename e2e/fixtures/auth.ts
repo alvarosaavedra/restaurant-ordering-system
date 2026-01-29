@@ -1,4 +1,4 @@
-import { test as base, type Page } from '@playwright/test';
+import { test as base } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
 import { createOrder } from './database';
 

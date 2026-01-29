@@ -4,16 +4,39 @@
 	import Spinner from '$lib/components/ui/Spinner.svelte';
 	import { onMount, onDestroy } from 'svelte';
 	import type { PageData } from './$types';
- 
+
+	interface Order {
+		id: string;
+		customerName: string;
+		customerPhone: string | null;
+		deliveryDateTime: Date | string | null;
+		address: string | null;
+		comment: string | null;
+		totalAmount: number;
+		status: 'pending' | 'preparing' | 'ready' | 'delivered';
+		createdAt: Date | string;
+		items: Array<{
+			id: string;
+			quantity: number;
+			unitPrice: number;
+			menuItemId: string;
+			menuItem: {
+				id: string;
+				name: string;
+				categoryId: string;
+			} | null;
+		}>;
+	}
+
 	let { data }: { data: PageData } = $props();
 
-	let orders = $state<any[]>([]);
+	let orders = $state<Order[]>([]);
 	let isRefreshing = $state(false);
 	let lastUpdated = $state<Date | null>(null);
 
 	$effect(() => {
 		console.log('Initial orders from server load:', data.orders?.length);
-		orders = (data.orders || []).map((order: any) => ({
+		orders = (data.orders || []).map((order: Order) => ({
 			...order,
 			deliveryDateTime: order.deliveryDateTime || null,
 			address: order.address || null,
@@ -41,7 +64,7 @@
 			if (response.ok) {
 				const newOrders = await response.json();
 				console.log('Orders received:', newOrders.length);
-				orders = newOrders.map((order: any) => ({
+				orders = newOrders.map((order: Order) => ({
 					...order,
 					deliveryDateTime: order.deliveryDateTime || null,
 					address: order.address || null,

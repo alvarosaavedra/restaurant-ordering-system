@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { goto, invalidateAll } from '$app/navigation';
+	import { invalidateAll } from '$app/navigation';
 	import { enhance } from '$app/forms';
 	import Button from '$lib/components/ui/Button.svelte';
 	import Card from '$lib/components/ui/Card.svelte';
@@ -164,15 +164,15 @@
 <div class="px-4 py-6 max-w-7xl mx-auto">
 	<div class="mb-6">
 		<div class="flex items-center gap-3 mb-2">
-			<button
-				onclick={() => goto('/orders')}
+			<a
+				href="/orders"
 				class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
 				aria-label="Back to orders"
 			>
 				<svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
 				</svg>
-			</button>
+			</a>
 			<div class="flex-1">
 				<h1 class="text-2xl font-bold text-gray-900">Order Details</h1>
 				<p class="text-sm text-gray-600">Order #{order.id.slice(-6)}</p>
@@ -594,7 +594,7 @@
 					onchange={(e) => addItem((e.target as HTMLSelectElement).value)}
 				>
 					<option value="">Select an item...</option>
-					{#each data.menuItems as menuItem}
+					{#each data.menuItems as menuItem (menuItem.id)}
 						<option value={menuItem.id}>{menuItem.name}</option>
 					{/each}
 				</select>

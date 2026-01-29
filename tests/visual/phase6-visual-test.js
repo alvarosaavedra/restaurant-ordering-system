@@ -5,9 +5,9 @@
  * Tests navigation flows and accessibility
  */
 
-const { chromium } = require('playwright');
-const fs = require('fs');
-const path = require('path');
+import { chromium } from 'playwright';
+import fs from 'fs';
+import path from 'path';
 
 // Configuration
 const BASE_URL = 'http://localhost:5173';
@@ -45,6 +45,9 @@ if (!fs.existsSync(EVIDENCE_DIR)) {
 
 /**
  * Login with given credentials
+ * @param {import('playwright').Page} page
+ * @param {keyof typeof CREDENTIALS} role
+ * @returns {Promise<boolean>}
  */
 async function login(page, role) {
   const creds = CREDENTIALS[role];
@@ -79,6 +82,9 @@ async function login(page, role) {
 
 /**
  * Take screenshot with filename
+ * @param {import('playwright').Page} page
+ * @param {string} filename
+ * @returns {Promise<void>}
  */
 async function takeScreenshot(page, filename) {
   const filePath = path.join(EVIDENCE_DIR, filename);
@@ -88,6 +94,9 @@ async function takeScreenshot(page, filename) {
 
 /**
  * Check accessibility issues
+ * @param {import('playwright').Page} page
+ * @param {string} pageName
+ * @returns {Promise<string[]>}
  */
 async function checkAccessibility(page, pageName) {
   console.log(`  ♿ Checking accessibility for ${pageName}...`);
@@ -115,6 +124,9 @@ async function checkAccessibility(page, pageName) {
 
 /**
  * Test navigation menu
+ * @param {import('playwright').Page} page
+ * @param {keyof typeof CREDENTIALS} role
+ * @returns {Promise<void>}
  */
 async function testNavigation(page, role) {
   console.log(`  🔍 Testing navigation for ${role}...`);
@@ -143,6 +155,10 @@ async function testNavigation(page, role) {
 
 /**
  * Test page at specific breakpoint
+ * @param {import('playwright').Browser} browser
+ * @param {{ path: string; name: string }} pageConfig
+ * @param {{ width: number; height: number; name: string }} breakpoint
+ * @returns {Promise<void>}
  */
 async function testPageAtBreakpoint(browser, pageConfig, breakpoint) {
   const { path, name } = pageConfig;
@@ -172,7 +188,8 @@ async function testPageAtBreakpoint(browser, pageConfig, breakpoint) {
     await checkAccessibility(page, `${name}@${breakpointName}`);
 
   } catch (error) {
-    console.error(`  ❌ Error testing ${name}: ${error.message}`);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`  ❌ Error testing ${name}: ${errorMessage}`);
   } finally {
     await context.close();
   }
@@ -198,7 +215,7 @@ async function runTests() {
     await testPageAtBreakpoint(browser, { path: '/login', name: 'login' }, BREAKPOINTS.mobile);
 
     // Test protected pages with login
-    for (const role of ['order_taker', 'kitchen', 'delivery']) {
+    for (const role of /** @type {('order_taker' | 'kitchen' | 'delivery')[]} */ (['order_taker', 'kitchen', 'delivery'])) {
       console.log(`\n🔐 Testing as ${role}...`);
 
       const context = await browser.newContext({
@@ -232,7 +249,8 @@ async function runTests() {
           }
         }
       } catch (error) {
-        console.error(`❌ Error testing as ${role}: ${error.message}`);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.error(`❌ Error testing as ${role}: ${errorMessage}`);
       } finally {
         await context.close();
       }
@@ -248,7 +266,7 @@ async function runTests() {
     ];
 
     for (const pageConfig of responsivePages) {
-      for (const [key, breakpoint] of Object.entries(BREAKPOINTS)) {
+      for (const breakpoint of Object.values(BREAKPOINTS)) {
         await testPageAtBreakpoint(browser, pageConfig, breakpoint);
       }
     }

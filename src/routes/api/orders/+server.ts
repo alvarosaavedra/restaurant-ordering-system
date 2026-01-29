@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { order, orderItem, menuItem, user, client } from '$lib/server/db/schema';
-import { eq, or } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 import { orderLogger } from '$lib/server/logger';
 import type { RequestHandler } from '@sveltejs/kit';

@@ -34,7 +34,6 @@ const menuItems = [
 	{ categoryId: categories[3].id, name: 'Cookies', description: 'Assorted fresh baked cookies', price: 2.99, isAvailable: true }
 ];
 
-const users: any[] = [];
 const clients = [
 	{ id: nanoid(), name: 'Alice Johnson', phone: '555-1234', address: '123 Main St' },
 	{ id: nanoid(), name: 'Bob Smith', phone: '555-5678', address: '456 Oak Ave' },
@@ -57,11 +56,11 @@ export async function seedDatabase() {
 
 		// Insert categories
 		console.log('Inserting categories...');
-		const insertedCategories = await db.insert(schema.category).values(categories.map(cat => ({
+		await db.insert(schema.category).values(categories.map(cat => ({
 			...cat,
 			createdAt: new Date()
-		}))).returning();
-		
+		})));
+
 		// Insert menu items with IDs
 		console.log('Inserting menu items...');
 		const menuItemsWithIds = menuItems.map(item => ({

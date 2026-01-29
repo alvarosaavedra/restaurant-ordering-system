@@ -4,7 +4,7 @@ import { category, menuItem } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
 import type { RequestHandler } from '@sveltejs/kit';
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async () => {
 	try {
 		// Fetch all categories with their menu items
 		const categories = await db.select().from(category).orderBy(category.displayOrder);

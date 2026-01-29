@@ -14,8 +14,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	try {
-		const userId = locals.user.id;
-
 		// Get order statistics
 		const stats = await db
 			.select({

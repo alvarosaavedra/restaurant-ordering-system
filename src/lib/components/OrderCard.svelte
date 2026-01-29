@@ -41,7 +41,9 @@
 	let previousStatus = $state<'pending' | 'preparing' | 'ready' | 'delivered'>('pending');
 
 	$effect(() => {
-		previousStatus = order.status;
+		if (!isUpdating) {
+			previousStatus = order.status;
+		}
 	});
 
 	let createdAt = $derived(new Date(order.createdAt));

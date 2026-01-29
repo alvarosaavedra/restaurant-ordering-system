@@ -17,20 +17,17 @@
 
 	let { customerName, onSelect, onClear, onUpdate, placeholder = 'Search clients by name...', 'aria-label': ariaLabel = 'Search existing clients' }: Props = $props();
 
-	let searchQuery = $state('');
+	let searchQuery = $state(customerName);
 	let results = $state<ClientResult[]>([]);
 	let loading = $state(false);
 	let selectedIndex = $state(-1);
 	let showDropdown = $state(false);
 	let inputRef: HTMLInputElement;
 
-	// Track previous customerName to detect external changes
-	let prevCustomerName = $state('');
-
-	// Initialize and update search query from prop (runs once and on prop changes)
 	$effect(() => {
-		searchQuery = customerName;
-		prevCustomerName = customerName;
+		if (searchQuery !== customerName) {
+			searchQuery = customerName;
+		}
 	});
 
 	// Debounced search

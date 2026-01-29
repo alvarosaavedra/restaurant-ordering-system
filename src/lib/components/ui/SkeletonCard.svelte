@@ -27,7 +27,7 @@
 	</div>
 
 	<div class="mb-4 space-y-3">
-		{#each Array(3) as _ (Math.random())}
+		{#each Array(3) as _, i (i)}
 			<div class="flex items-center justify-between py-2">
 				<Skeleton width="150px" height="16px" />
 				<Skeleton width="60px" height="16px" />

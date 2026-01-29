@@ -1,23 +1,10 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import Button from '$lib/components/ui/Button.svelte';
 	import Card from '$lib/components/ui/Card.svelte';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
-
-	interface User {
-		id: string;
-		name: string;
-		email: string;
-		role: string;
-	}
-
-	interface OrderStats {
-		pending: number;
-		preparing: number;
-		ready: number;
-		delivered: number;
-		total: number;
-	}
+	import type { OrderStatus } from '$lib/types/orders';
 
 	interface OrderItem {
 		id: string;
@@ -39,17 +26,34 @@
 		customerName: string;
 		customerPhone: string | null;
 		totalAmount: number;
-		status: 'pending' | 'preparing' | 'ready' | 'delivered';
+		status: OrderStatus;
 		createdAt: Date;
 		employee: {
-			id: string;
 			name: string;
 			email: string;
 		} | null;
 		items: OrderItem[];
 	}
 
-	let { data }: { data: any } = $props();
+	interface PageData {
+		user?: {
+			id: string;
+			name: string;
+			email: string;
+			role: string;
+		};
+		stats?: {
+			totalOrders: number;
+			pendingOrders: number;
+			preparingOrders: number;
+			readyOrders: number;
+			deliveredOrders: number;
+			totalRevenue: number;
+		};
+		recentOrders?: Order[];
+	}
+
+	let { data }: { data: PageData } = $props();
 
 	let user = $derived(data.user);
 	let stats = $derived(data.stats);
@@ -86,7 +90,7 @@
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012 2h2a2 2 0 012 2" />
 						</svg>
 					</div>
-					<div class="text-3xl font-black text-bakery-900">{stats?.total || 0}</div>
+					<div class="text-3xl font-black text-bakery-900">{stats?.totalOrders || 0}</div>
 				</div>
 			</div>
 		</Card>
@@ -101,7 +105,7 @@
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
 						</svg>
 					</div>
-					<div class="text-3xl font-black text-warning-700">{stats?.pending || 0}</div>
+					<div class="text-3xl font-black text-warning-700">{stats?.pendingOrders || 0}</div>
 				</div>
 			</div>
 		</Card>
@@ -116,7 +120,7 @@
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
 						</svg>
 					</div>
-					<div class="text-3xl font-black text-orange-700">{stats?.preparing || 0}</div>
+					<div class="text-3xl font-black text-orange-700">{stats?.preparingOrders || 0}</div>
 				</div>
 			</div>
 		</Card>
@@ -131,7 +135,7 @@
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
 						</svg>
 					</div>
-					<div class="text-3xl font-black text-success-700">{stats?.ready || 0}</div>
+					<div class="text-3xl font-black text-success-700">{stats?.readyOrders || 0}</div>
 				</div>
 			</div>
 		</Card>
@@ -146,7 +150,7 @@
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
 						</svg>
 					</div>
-					<div class="text-3xl font-black text-sage-700">{stats?.delivered || 0}</div>
+					<div class="text-3xl font-black text-sage-700">{stats?.deliveredOrders || 0}</div>
 				</div>
 			</div>
 		</Card>
@@ -165,42 +169,42 @@
 			</div>
 			<div class="space-y-3">
 				{#if user?.role === 'order_taker'}
-					<a href="/orders/new" class="block">
+					<button onclick={() => goto('/orders/new')} class="w-full">
 						<Button variant="primary" class="w-full">
 							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
 							</svg>
 							Create New Order
 						</Button>
-					</a>
+					</button>
 				{/if}
-				<a href="/orders" class="block">
+				<button onclick={() => goto('/orders')} class="w-full">
 					<Button variant="secondary" class="w-full">
 						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012 2h2a2 2 0 012 2" />
 						</svg>
 						View All Orders
 					</Button>
-				</a>
+				</button>
 				{#if user?.role === 'kitchen'}
-					<a href="/kitchen" class="block">
+					<button onclick={() => goto('/kitchen')} class="w-full">
 						<Button variant="secondary" class="w-full">
 							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
 							</svg>
 							Kitchen View
 						</Button>
-					</a>
+					</button>
 				{/if}
 				{#if user?.role === 'delivery'}
-					<a href="/delivery" class="block">
+					<button onclick={() => goto('/delivery')} class="w-full">
 						<Button variant="secondary" class="w-full">
 							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
 							</svg>
 							Delivery View
-						</Button>
-					</a>
+					</Button>
+				</button>
 				{/if}
 			</div>
 		</Card>

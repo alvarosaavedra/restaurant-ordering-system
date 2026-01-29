@@ -1,8 +1,9 @@
 import { db } from '$lib/server/db';
 import { order, orderItem, menuItem, user } from '$lib/server/db/schema';
-import { eq, inArray, desc, asc, or, like, isNull } from 'drizzle-orm';
+import { eq, desc, asc, or, like, isNull } from 'drizzle-orm';
 import { orderLogger } from '$lib/server/logger';
 import type { PageServerLoad } from './$types';
+import type { OrderStatus } from '$lib/types/orders';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	if (!locals.user) {
@@ -39,7 +40,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		}
 
 		if (status && ['pending', 'preparing', 'ready', 'delivered'].includes(status)) {
-			conditions.push(eq(order.status, status as any));
+			conditions.push(eq(order.status, status as OrderStatus));
 		}
 
 		const orderBy = sort === 'oldest' ? asc(order.createdAt) : desc(order.createdAt);

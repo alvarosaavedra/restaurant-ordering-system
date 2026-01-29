@@ -12,6 +12,7 @@
  * Null bytes (\x00) cannot be represented in C strings and must be rejected.
  */
 // biome-ignore lint/suspicious/noControlCharactersInRegex: Null byte detection is intentional for security
+// eslint-disable-next-line no-control-regex
 const SHELL_FORBIDDEN_CHARS = /[\x00]/
 
 /**

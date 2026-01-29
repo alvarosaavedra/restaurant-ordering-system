@@ -3,7 +3,6 @@
 
 	interface Props {
 		user: {
-			name: string;
 			role: 'order_taker' | 'kitchen' | 'delivery' | 'admin';
 		};
 	}
@@ -32,6 +31,7 @@
 					: 'text-neutral-500 hover:text-neutral-900'
 			}"
 			role="menuitem"
+			tabindex="0"
 			aria-current={isActive('/') ? 'page' : undefined}
 		>
 			<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -50,6 +50,7 @@
 						: 'text-neutral-500 hover:text-neutral-900'
 				}"
 				role="menuitem"
+				tabindex="0"
 				aria-current={isActive('/orders/new') ? 'page' : undefined}
 			>
 				<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
