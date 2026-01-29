@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, cleanup as testingLibraryCleanup } from '@testing-library/svelte';
 import MenuItemCard from './MenuItemCard.svelte';
 import type { MenuItemWithCategory } from '$lib/types/orders';
-import { mockMenuItem, mockMenuItem2 } from '../__tests__/fixtures';
+import { mockMenuItem, mockMenuItem2 } from '../fixtures';
 
 describe('MenuItemCard', () => {
 	beforeEach(() => {
@@ -10,7 +10,7 @@ describe('MenuItemCard', () => {
 	});
 
 	it('renders menu item details', async () => {
-		const { container, getByText } = render(MenuItemCard, {
+		const { getByText } = render(MenuItemCard, {
 			item: mockMenuItem
 		});
 
@@ -35,16 +35,22 @@ describe('MenuItemCard', () => {
 	});
 
 	it('shows availability indicator', async () => {
-		const { getByText } = render(MenuItemCard, {
+		const { container, getByText } = render(MenuItemCard, {
 			item: mockMenuItem
 		});
 
 		if (mockMenuItem.isAvailable) {
 			expect(getByText('Available')).toBeInTheDocument();
 			expect(getByText('Unavailable')).not.toBeInTheDocument();
+
+			const statusBadge = container.querySelector('.bg-green-500');
+			expect(statusBadge).toHaveAttribute('aria-label', 'Available');
 		} else {
-			expect(getByText('Unavailable')).toBeInTheDocument();
+			expect(getByText('Out of Stock')).toBeInTheDocument();
 			expect(getByText('Available')).not.toBeInTheDocument();
+
+			const statusBadge = container.querySelector('.bg-red-500');
+			expect(statusBadge).toHaveAttribute('aria-label', 'Out of Stock');
 		}
 	});
 
@@ -87,14 +93,11 @@ describe('MenuItemCard', () => {
 	});
 
 	it('has accessibility attributes', async () => {
-		const { container, getByText } = render(MenuItemCard, {
+		const { container } = render(MenuItemCard, {
 			item: mockMenuItem
 		});
 
 		const card = container.querySelector('.bg-white');
 		expect(card).toHaveAttribute('role', 'listitem');
-
-		const statusIndicator = container.querySelector('[role="status"]');
-		expect(statusIndicator).toHaveAttribute('aria-label');
 	});
 });
