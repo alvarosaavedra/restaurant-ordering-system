@@ -116,7 +116,7 @@
 				deliveryDateTime = '';
 				address = '';
 				comment = '';
-				await goto('/orders');
+				await goto('/orders', { replaceState: false });
 			} else {
 				const errorData = await response.json();
 				toast.error(errorData.error || 'Failed to create order. Please try again.');

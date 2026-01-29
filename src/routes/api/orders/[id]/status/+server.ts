@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { order, orderItem, menuItem } from '$lib/server/db/schema';
-import { eq, and, inArray, isNull } from 'drizzle-orm';
+import { order } from '$lib/server/db/schema';
+import { eq } from 'drizzle-orm';
 import { orderLogger } from '$lib/server/logger';
 import type { RequestHandler } from '@sveltejs/kit';
 import type { OrderStatus } from '$lib/types/orders';

@@ -19,29 +19,6 @@ if (process.env.NODE_ENV === 'production') {
   process.exit(0);
 }
 
-const categories = [
-  { id: nanoid(), name: "Bakery Items", display_order: 1, created_at: new Date() },
-  { id: nanoid(), name: "Beverages", display_order: 2, created_at: new Date() },
-  { id: nanoid(), name: "Sandwiches", display_order: 3, created_at: new Date() },
-  { id: nanoid(), name: "Pastries", display_order: 4, created_at: new Date() }
-];
-
-const menuItems = [
-  { id: nanoid(), category_id: categories[0].id, name: "Fresh Bread", description: "Artisan sourdough bread baked daily", price: 4.99, is_available: 1, created_at: new Date() },
-  { id: nanoid(), category_id: categories[0].id, name: "Croissant", description: "Buttery French croissant", price: 3.49, is_available: 1, created_at: new Date() },
-  { id: nanoid(), category_id: categories[0].id, name: "Baguette", description: "Classic French baguette", price: 3.99, is_available: 1, created_at: new Date() },
-  { id: nanoid(), category_id: categories[1].id, name: "Coffee", description: "Freshly brewed coffee", price: 2.99, is_available: 1, created_at: new Date() },
-  { id: nanoid(), category_id: categories[1].id, name: "Tea", description: "Selection of hot teas", price: 2.49, is_available: 1, created_at: new Date() },
-  { id: nanoid(), category_id: categories[1].id, name: "Orange Juice", description: "Fresh squeezed orange juice", price: 3.99, is_available: 1, created_at: new Date() },
-  { id: nanoid(), category_id: categories[2].id, name: "Turkey Club", description: "Turkey, bacon, lettuce, tomato on sourdough", price: 8.99, is_available: 1, created_at: new Date() },
-  { id: nanoid(), category_id: categories[2].id, name: "BLT", description: "Bacon, lettuce, tomato on toast", price: 7.99, is_available: 1, created_at: new Date() },
-  { id: nanoid(), category_id: categories[2].id, name: "Grilled Cheese", description: "Classic grilled cheese sandwich", price: 6.99, is_available: 1, created_at: new Date() },
-  { id: nanoid(), category_id: categories[3].id, name: "Chocolate Cake", description: "Rich chocolate cake with frosting", price: 5.99, is_available: 1, created_at: new Date() },
-  { id: nanoid(), category_id: categories[3].id, name: "Apple Pie", description: "Traditional apple pie with cinnamon", price: 4.99, is_available: 1, created_at: new Date() },
-  { id: nanoid(), category_id: categories[3].id, name: "Cookies", description: "Assorted fresh baked cookies", price: 2.99, is_available: 1, created_at: new Date() }
-];
-
-const users = [];
 const clientData = [
   { id: nanoid(), name: "Alice Johnson", phone: "555-1234", address: "123 Main St", created_at: new Date(), updated_at: new Date() },
   { id: nanoid(), name: "Bob Smith", phone: "555-5678", address: "456 Oak Ave", created_at: new Date(), updated_at: new Date() },
@@ -55,8 +32,6 @@ async function seedDatabase() {
   console.log("Seeding database...");
 
   try {
-    const now = new Date();
-
     // Insert categories
     for (const cat of categories) {
       await client.execute({

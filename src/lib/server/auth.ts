@@ -10,6 +10,12 @@ const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
 export const sessionCookieName = 'auth-session';
 
+interface CookieOptions {
+	expires?: Date;
+	path?: string;
+	sameSite?: 'lax' | 'strict' | 'none';
+}
+
 export function generateSessionToken() {
 	const bytes = crypto.getRandomValues(new Uint8Array(18));
 	const token = encodeBase64url(bytes);
@@ -75,9 +81,9 @@ export async function invalidateSession(sessionId: string) {
 }
 
 export function setSessionTokenCookie(event: RequestEvent | { request: Request }, token: string, expiresAt: Date) {
-	const request = 'request' in event ? (event as any).request : event;
-	if (request && request.cookies) {
-		request.cookies.set(sessionCookieName, token, {
+	const request = 'request' in event ? (event as { request: Request }).request : event;
+	if (request && 'cookies' in request) {
+		(request as Request & { cookies: { set: (name: string, value: string, opts: CookieOptions) => void } }).cookies.set(sessionCookieName, token, {
 			expires: expiresAt,
 			path: '/',
 			sameSite: 'lax'
@@ -86,9 +92,9 @@ export function setSessionTokenCookie(event: RequestEvent | { request: Request }
 }
 
 export function deleteSessionTokenCookie(event: RequestEvent | { request: Request }) {
-	const request = 'request' in event ? (event as any).request : event;
-	if (request && request.cookies) {
-		request.cookies.delete(sessionCookieName, {
+	const request = 'request' in event ? (event as { request: Request }).request : event;
+	if (request && 'cookies' in request) {
+		(request as Request & { cookies: { delete: (name: string, opts: CookieOptions) => void } }).cookies.delete(sessionCookieName, {
 			path: '/'
 		});
 	}

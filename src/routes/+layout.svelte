@@ -3,7 +3,7 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import { fade } from 'svelte/transition';
 
-	let { data, children }: { data: any; children: import('svelte').Snippet } = $props();
+	let { children }: { children: import('svelte').Snippet } = $props();
 </script>
 
 <svelte:head>

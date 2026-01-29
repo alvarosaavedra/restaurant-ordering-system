@@ -15,8 +15,6 @@ test.describe('Sidebar Navigation - Mobile', () => {
   test('mobile header with hamburger menu is visible', async ({ page, authenticatedAs }) => {
     await authenticatedAs('orderTaker');
 
-    const asideElements = await page.locator('aside').all();
-
     const mobileHeader = page.getByRole('banner').first();
     await expect(mobileHeader).toBeVisible();
 

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { goto } from '$app/navigation';
 	import Button from '$lib/components/ui/Button.svelte';
 	import Card from '$lib/components/ui/Card.svelte';
 
@@ -28,11 +27,11 @@
 				{loading ? 'Logging out...' : 'Logout'}
 			</Button>
 		</form>
-		
+
 		<p class="mt-4 text-center">
-			<a href="/" class="text-blue-600 hover:text-blue-800 text-sm">
+			<button onclick={() => window.history.back()} class="text-blue-600 hover:text-blue-800 text-sm">
 				Cancel
-			</a>
+			</button>
 		</p>
 	</div>
 </Card>

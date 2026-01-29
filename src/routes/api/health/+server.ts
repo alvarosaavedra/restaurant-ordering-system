@@ -4,7 +4,7 @@ import { sql } from 'drizzle-orm';
 
 export const GET: RequestHandler = async () => {
 	try {
-		const result = db.all(sql`SELECT 1 as test`);
+		db.all(sql`SELECT 1 as test`);
 
 		return json({
 			status: 'healthy',

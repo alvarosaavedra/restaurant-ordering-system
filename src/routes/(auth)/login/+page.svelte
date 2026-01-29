@@ -24,11 +24,10 @@
 		<Card class="p-8">
 			<form
 				method="POST"
-				use:enhance={(input) => {
-					return async ({ result }: any) => {
-						if (result.type === 'redirect') {
-							input.cancel();
-							await goto(result.location, { replaceState: false });
+				use:enhance={() => {
+					return async ({ result }: { result: { type: string; location?: string } }) => {
+						if (result.type === 'redirect' && result.location) {
+							await goto(result.location, { replaceState: true });
 						} else {
 							isLoading = false;
 						}

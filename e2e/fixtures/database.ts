@@ -3,8 +3,6 @@ import { createClient } from '@libsql/client';
 import { drizzle } from 'drizzle-orm/libsql';
 import * as schema from '../../src/lib/server/db/schema';
 import { nanoid } from 'nanoid';
-import { sha256 } from '@oslojs/crypto/sha2';
-import { encodeHexLowerCase } from '@oslojs/encoding';
 import type {
 	InsertClient,
 	InsertMenuItem,
@@ -60,11 +58,11 @@ export const test = base.extend<{
 	seedMenuItem: (item: InsertMenuItem) => Promise<string>;
 	seedCategory: (category: InsertCategory) => Promise<string>;
 }>({
-	getDb: async ({}, use) => {
+	getDb: async (_, use) => {
 		use(() => testDb);
 	},
 
-	clearDatabase: async ({}, use) => {
+	clearDatabase: async (_, use) => {
 		await use(async () => {
 			if (!testDb) return;
 
@@ -79,7 +77,7 @@ export const test = base.extend<{
 		});
 	},
 
-	seedClient: async ({}, use) => {
+	seedClient: async (_, use) => {
 		await use(async (clientData) => {
 			const client = {
 				...clientData,
@@ -92,7 +90,7 @@ export const test = base.extend<{
 		});
 	},
 
-	seedMenuItem: async ({}, use) => {
+	seedMenuItem: async (_, use) => {
 		await use(async (itemData) => {
 			const item = {
 				...itemData,
@@ -104,7 +102,7 @@ export const test = base.extend<{
 		});
 	},
 
-	seedCategory: async ({}, use) => {
+	seedCategory: async (_, use) => {
 		await use(async (categoryData) => {
 			const category = {
 				...categoryData,
@@ -125,6 +123,6 @@ test.beforeAll(async () => {
 });
 
 test.afterAll(async () => {
-	testDb = undefined as any;
+	testDb = undefined as unknown;
 });
 

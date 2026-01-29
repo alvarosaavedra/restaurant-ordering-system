@@ -1,11 +1,10 @@
 <script lang="ts">
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import MobileBottomNav from '$lib/components/MobileBottomNav.svelte';
-	import { page } from '$app/state';
 	import '../layout.css';
 	import ToastContainer from '$lib/components/ToastContainer.svelte';
 
-	let { data, children }: { data: any; children: import('svelte').Snippet } = $props();
+	let { data, children }: { data: { user?: { id: string; name: string; email: string; role: 'order_taker' | 'kitchen' | 'delivery' | 'admin' } }; children: import('svelte').Snippet } = $props();
 
 	const user = $derived(data.user);
 	const isLoggedIn = $derived(!!user);
@@ -58,7 +57,7 @@
 		</header>
 
 		<!-- Desktop Sidebar -->
-		<Sidebar user={user} isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
+		<Sidebar user={user!} isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
 
 		<!-- Main Content Area -->
 		<main id="main-content" class="flex-1 lg:ml-60 pt-20 pb-24 lg:pt-6 lg:pb-6 px-4 sm:px-6 lg:px-8" tabindex="-1">
@@ -66,7 +65,7 @@
 		</main>
 
 		<!-- Mobile Bottom Navigation -->
-		<MobileBottomNav user={user} />
+		<MobileBottomNav user={user!} />
 	</div>
 {:else}
 	<!-- Redirect to login if not authenticated -->

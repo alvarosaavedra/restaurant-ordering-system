@@ -1,7 +1,7 @@
- <script lang="ts">
-	import { fly, slide } from 'svelte/transition';
+  <script lang="ts">
+ 	import { fly } from 'svelte/transition';
 
-	interface Props {
+ 	interface Props {
  		id: string;
  		message: string;
  		type: 'success' | 'error' | 'info' | 'warning';
@@ -25,19 +25,17 @@
  		warning: 'bg-warning-50 border-warning-200 text-warning-700'
  	};
 
- 	let isVisible = $state(true);
- 	let isLeaving = $state(false);
+  	let isVisible = $state(true);
 
- 	let timer: ReturnType<typeof setTimeout> | null = null;
+  	let timer: ReturnType<typeof setTimeout> | null = null;
 
- 	function remove() {
- 		if (timer) clearTimeout(timer);
- 		isLeaving = true;
- 		timer = setTimeout(() => {
- 			isVisible = false;
- 			onRemove(id);
- 		}, 300);
- 	}
+  	function remove() {
+  		if (timer) clearTimeout(timer);
+  		timer = setTimeout(() => {
+  			isVisible = false;
+  			onRemove(id);
+  		}, 300);
+  	}
 
  	$effect(() => {
  		if (duration > 0) {

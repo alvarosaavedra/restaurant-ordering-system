@@ -1,7 +1,7 @@
 import { db } from '$lib/server/db';
 import { category, menuItem } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
-import type { Actions, PageServerLoad } from './$types';
+import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Ensure user is authenticated before loading menu data

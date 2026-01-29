@@ -120,7 +120,7 @@ test.describe('Admin Order Management', () => {
 	test('deleted orders do not appear in order history', async ({ page, authenticatedAs }) => {
 		await authenticatedAs('admin');
 
-		const order1 = await createOrder({
+		await createOrder({
 			customerName: 'Active Order',
 			totalAmount: 15.99,
 			employeeId: TEST_USERS.orderTaker.email,
@@ -154,7 +154,7 @@ test.describe('Admin Order Management', () => {
 	test('deleted orders do not appear in kitchen view', async ({ page, authenticatedAs }) => {
 		await authenticatedAs('admin');
 
-		const order1 = await createOrder({
+		await createOrder({
 			customerName: 'Active Kitchen Order',
 			totalAmount: 15.99,
 			employeeId: TEST_USERS.orderTaker.email,
@@ -182,7 +182,7 @@ test.describe('Admin Order Management', () => {
 	test('deleted orders do not appear in delivery view', async ({ page, authenticatedAs }) => {
 		await authenticatedAs('admin');
 
-		const order1 = await createOrder({
+		await createOrder({
 			customerName: 'Active Delivery Order',
 			totalAmount: 15.99,
 			employeeId: TEST_USERS.orderTaker.email,

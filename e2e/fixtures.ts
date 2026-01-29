@@ -21,7 +21,7 @@ type TestFixtures = {
 };
 
 export const test = base.extend<TestFixtures>({
-	workerIndex: async ({}, use) => {
+	workerIndex: async (_, use) => {
 		const workerIndex = process.env.TEST_WORKER_INDEX ? parseInt(process.env.TEST_WORKER_INDEX, 10) : 0;
 		testUtils.setCurrentWorkerIndex(workerIndex);
 		await use(workerIndex);
@@ -29,31 +29,31 @@ export const test = base.extend<TestFixtures>({
 	workerDb: async ({ workerIndex }, use) => {
 		await use(testUtils.getTestDb(workerIndex));
 	},
-	createTestUser: async ({}, use) => {
+	createTestUser: async (_, use) => {
 		await use(testUtils.createTestUser);
 	},
-	createTestUsers: async ({}, use) => {
+	createTestUsers: async (_, use) => {
 		await use(testUtils.createTestUsers);
 	},
-	createTestCategory: async ({}, use) => {
+	createTestCategory: async (_, use) => {
 		await use(testUtils.createTestCategory);
 	},
-	createTestCategories: async ({}, use) => {
+	createTestCategories: async (_, use) => {
 		await use(testUtils.createTestCategories);
 	},
-	createTestMenuItem: async ({}, use) => {
+	createTestMenuItem: async (_, use) => {
 		await use(testUtils.createTestMenuItem);
 	},
-	createTestMenuItems: async ({}, use) => {
+	createTestMenuItems: async (_, use) => {
 		await use(testUtils.createTestMenuItems);
 	},
-	createTestOrder: async ({}, use) => {
+	createTestOrder: async (_, use) => {
 		await use(testUtils.createTestOrder);
 	},
-	createTestOrderItems: async ({}, use) => {
+	createTestOrderItems: async (_, use) => {
 		await use(testUtils.createTestOrderItems);
 	},
-	createTestOrderWithItems: async ({}, use) => {
+	createTestOrderWithItems: async (_, use) => {
 		await use(testUtils.createTestOrderWithItems);
 	},
 	cleanupAllTestData: async ({ workerIndex }, use) => {
