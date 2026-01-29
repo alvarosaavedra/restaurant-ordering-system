@@ -152,7 +152,7 @@ export const actions: Actions = {
 					deliveryDateTime: parsedDate,
 					address,
 					comment,
-					status,
+					status: status as 'pending' | 'preparing' | 'ready' | 'delivered',
 					updatedAt: new Date()
 				})
 				.where(eq(order.id, id));
