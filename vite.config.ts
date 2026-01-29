@@ -13,6 +13,7 @@ export default defineConfig({
 
 	test: {
 		expect: { requireAssertions: true },
+		setupFiles: ['./src/lib/components/__tests__/setup.ts'],
 
 		projects: [
 			{
