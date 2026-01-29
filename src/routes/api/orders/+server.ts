@@ -76,12 +76,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			return json({ error: 'Invalid delivery date/time' }, { status: 400 });
 		}
 
-		const now = new Date();
-		if (parsedDeliveryDateTime <= now) {
-			orderLogger.warn({ event: 'validation_failed', field: 'deliveryDateTime', value: deliveryDateTime, now: now.toISOString() }, 'Delivery date/time must be in the future');
-			return json({ error: 'Delivery date/time must be in the future' }, { status: 400 });
-		}
-
 		if (!items || items.length === 0) {
 			orderLogger.warn({ event: 'validation_failed', field: 'items' }, 'At least one item is required');
 			return json({ error: 'At least one item is required' }, { status: 400 });
