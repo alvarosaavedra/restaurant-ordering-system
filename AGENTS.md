@@ -226,12 +226,20 @@ Admin users can manage clients at `/admin/clients`:
 
 ## Development Workflow
 
+### Git Workflow
+Since the project is in production, **ALWAYS use the `git-worktree` skill** before making any changes. This skill will guide you through creating and managing git worktrees for parallel development.
+
+**Critical**: Never make changes directly in the main worktree. Always create a worktree for feature or bugfix work.
+
+To load the skill instructions, use the `skill` tool with the `git-worktree` name.
+
 ### Before Starting Work
-1. Run `npm run check` to ensure no type errors
-2. Run `npm run lint` to check code quality
-3. Create components using svelte-autofixer
-4. Test functionality regularly
-5. Commit changes with descriptive messages
+1. Ensure you're on a feature/fix branch (not main)
+2. Run `npm run check` to ensure no type errors
+3. Run `npm run lint` to check code quality
+4. Create components using svelte-autofixer
+5. Test functionality regularly
+6. Commit changes with descriptive messages
 
 ### Testing Commands
 - Always run `npm run test:unit` for new components
