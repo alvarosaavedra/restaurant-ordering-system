@@ -89,6 +89,7 @@
 
 		isSubmitting = true;
 		try {
+			const deliveryDateObj = new Date(deliveryDateTime);
 			const response = await fetch('/api/orders', {
 				method: 'POST',
 				headers: {
@@ -97,7 +98,7 @@
 				body: JSON.stringify({
 					customerName,
 					customerPhone,
-					deliveryDateTime,
+					deliveryDateTime: deliveryDateObj.toISOString(),
 					address,
 					comment,
 					items: cart.map(cartItem => ({

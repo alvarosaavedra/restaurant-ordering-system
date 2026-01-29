@@ -46,7 +46,7 @@
 			if (isNaN(parsedDate.getTime())) {
 				return 'Invalid date/time format';
 			}
-			if (parsedDate < new Date()) {
+			if (parsedDate <= new Date()) {
 				return 'Delivery time must be in the future';
 			}
 		}
