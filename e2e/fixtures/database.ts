@@ -8,14 +8,49 @@ import { encodeHexLowerCase } from '@oslojs/encoding';
 import type {
 	InsertClient,
 	InsertMenuItem,
-	InsertCategory
+	InsertCategory,
+	InsertOrder,
+	InsertOrderItem
 } from '../../src/lib/server/db/schema';
 
-	let testDb: ReturnType<typeof drizzle>;
+let testDb: ReturnType<typeof drizzle>;
 
 function getDatabasePath(): string {
 	const workerIndex = process.env.TEST_WORKER_INDEX || '0';
 	return `file:test-worker-${workerIndex}.db`;
+}
+
+export async function createOrder(orderData: Partial<InsertOrder> & { items?: Partial<InsertOrderItem>[] } = {}) {
+	const order = {
+		id: orderData.id || nanoid(),
+		customerName: orderData.customerName || 'Test Customer',
+		customerPhone: orderData.customerPhone || null,
+		totalAmount: orderData.totalAmount || 0,
+		status: orderData.status || 'pending',
+		employeeId: orderData.employeeId || '',
+		deliveryDateTime: orderData.deliveryDateTime || new Date(),
+		address: orderData.address || null,
+		comment: orderData.comment || null,
+		createdAt: orderData.createdAt || new Date(),
+		updatedAt: orderData.updatedAt || new Date()
+	};
+
+	await testDb.insert(schema.order).values(order);
+
+	if (orderData.items) {
+		for (const item of orderData.items) {
+			await testDb.insert(schema.orderItem).values({
+				id: item.id || nanoid(),
+				orderId: order.id,
+				menuItemId: item.menuItemId,
+				quantity: item.quantity || 1,
+				unitPrice: item.unitPrice || 0,
+				createdAt: item.createdAt || new Date()
+			});
+		}
+	}
+
+	return order;
 }
 
 export const test = base.extend<{
@@ -92,3 +127,4 @@ test.beforeAll(async () => {
 test.afterAll(async () => {
 	testDb = undefined as any;
 });
+

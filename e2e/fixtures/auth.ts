@@ -1,5 +1,8 @@
 import { test as base, type Page } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
+import { createOrder } from './database';
+
+export { createOrder };
 
 export const TEST_USERS = {
 	orderTaker: { email: 'john@bakery.com', password: 'password123', role: 'order_taker' },

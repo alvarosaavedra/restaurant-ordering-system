@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db';
 import { order, orderItem, menuItem, user } from '$lib/server/db/schema';
-import { eq, inArray, desc, asc, or, like } from 'drizzle-orm';
+import { eq, inArray, desc, asc, or, like, isNull } from 'drizzle-orm';
 import { orderLogger } from '$lib/server/logger';
 import type { PageServerLoad } from './$types';
 
@@ -32,7 +32,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			'Fetching orders history'
 		);
 
-		const conditions = [];
+		const conditions = [isNull(order.deletedAt)];
 
 		if (search) {
 			conditions.push(like(order.customerName, `%${search}%`));

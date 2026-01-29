@@ -12,6 +12,7 @@ export type MenuItemWithCategory = MenuItem & {
 };
 
 export type OrderWithItems = Order & {
+	deletedAt?: Date | null;
 	employee?: {
 		name: string;
 		email: string;
@@ -22,6 +23,7 @@ export type OrderWithItems = Order & {
 };
 
 export type OrderWithEmployee = Order & {
+	deletedAt?: Date | null;
 	employee: {
 		name: string;
 		email: string;

@@ -1,8 +1,12 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
+	import { enhance } from '$app/forms';
 	import Button from '$lib/components/ui/Button.svelte';
 	import Card from '$lib/components/ui/Card.svelte';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
+	import Modal from '$lib/components/Modal.svelte';
+	import Input from '$lib/components/ui/Input.svelte';
+	import Select from '$lib/components/ui/Select.svelte';
 
 	interface OrderItem {
 		id: string;
@@ -31,6 +35,7 @@
 		createdAt: Date;
 		updatedAt: Date;
 		employeeId: string;
+		deletedAt?: Date | null;
 		employee: {
 			id: string;
 			name: string;
@@ -40,9 +45,43 @@
 		items: OrderItem[];
 	}
 
-	let { data }: { data: any } = $props();
+	interface PageData {
+		order: Order;
+		isAdmin: boolean;
+		menuItems: {
+			id: string;
+			name: string;
+			price: number;
+		}[];
+	}
+
+	let { data, form }: { data: PageData; form: { error?: string; message?: string } } = $props();
 
 	let order = $derived(data.order);
+	let isAdmin = $derived(data.isAdmin);
+
+	let showEditOrderModal = $state(false);
+	let showEditItemsModal = $state(false);
+	let showDeleteOrderModal = $state(false);
+
+	let orderFormData = $state({
+		id: '',
+		customerName: '',
+		customerPhone: '',
+		deliveryDateTime: '',
+		address: '',
+		comment: '',
+		status: 'pending' as 'pending' | 'preparing' | 'ready' | 'delivered'
+	});
+
+	let itemsFormData = $state<
+		{
+			menuItemId: string;
+			name: string;
+			quantity: number;
+			unitPrice: number;
+		}[]
+	>([]);
 
 	function formatDate(date: Date): string {
 		return new Date(date).toLocaleDateString('en-US', {
@@ -62,24 +101,104 @@
 			hour12: true
 		});
 	}
+
+	function openEditOrderModal() {
+		orderFormData = {
+			id: order.id,
+			customerName: order.customerName,
+			customerPhone: order.customerPhone || '',
+			deliveryDateTime: new Date(order.deliveryDateTime || Date.now()).toISOString().slice(0, 16),
+			address: order.address || '',
+			comment: order.comment || '',
+			status: order.status
+		};
+		showEditOrderModal = true;
+	}
+
+	function openEditItemsModal() {
+		itemsFormData = order.items.map((item) => ({
+			menuItemId: item.menuItemId,
+			name: item.menuItem?.name || 'Unknown Item',
+			quantity: item.quantity,
+			unitPrice: item.unitPrice
+		}));
+		showEditItemsModal = true;
+	}
+
+	function openDeleteOrderModal() {
+		showDeleteOrderModal = true;
+	}
+
+	function removeItem(index: number) {
+		itemsFormData.splice(index, 1);
+	}
+
+	function addItem(menuItemId: string) {
+		const menuItem = data.menuItems.find((m) => m.id === menuItemId);
+		if (menuItem) {
+			itemsFormData.push({
+				menuItemId: menuItem.id,
+				name: menuItem.name,
+				quantity: 1,
+				unitPrice: menuItem.price
+			});
+		}
+	}
+
+	function calculateTotal(): number {
+		return itemsFormData.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
+	}
+
+	function closeAllModals() {
+		showEditOrderModal = false;
+		showEditItemsModal = false;
+		showDeleteOrderModal = false;
+	}
+
+	function handleFormSuccess() {
+		closeAllModals();
+		invalidateAll();
+	}
 </script>
 
 <div class="px-4 py-6 max-w-7xl mx-auto">
 	<div class="mb-6">
-	<div class="flex items-center gap-3 mb-2">
-		<button
-			onclick={() => goto('/orders')}
-			class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-			aria-label="Back to orders"
-		>
-			<svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-			</svg>
-		</button>
-		<div>
+		<div class="flex items-center gap-3 mb-2">
+			<button
+				onclick={() => goto('/orders')}
+				class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+				aria-label="Back to orders"
+			>
+				<svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+				</svg>
+			</button>
+			<div class="flex-1">
 				<h1 class="text-2xl font-bold text-gray-900">Order Details</h1>
 				<p class="text-sm text-gray-600">Order #{order.id.slice(-6)}</p>
 			</div>
+			{#if isAdmin}
+				<div class="flex items-center gap-2">
+					<Button variant="secondary" size="sm" onclick={openEditOrderModal}>
+						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+						</svg>
+						Edit Order
+					</Button>
+					<Button variant="secondary" size="sm" onclick={openEditItemsModal}>
+						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+						</svg>
+						Edit Items
+					</Button>
+					<Button variant="danger" size="sm" onclick={openDeleteOrderModal}>
+						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+						</svg>
+						Delete
+					</Button>
+				</div>
+			{/if}
 		</div>
 	</div>
 
@@ -131,14 +250,14 @@
 			{#if order.deliveryDateTime || order.address || order.comment}
 				<Card>
 					<div class="p-6">
-					<div class="flex items-center gap-3 mb-4 pb-4 border-b border-gray-100">
-						<div class="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
-							<svg class="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 24 24">
-								<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-							</svg>
+						<div class="flex items-center gap-3 mb-4 pb-4 border-b border-gray-100">
+							<div class="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
+								<svg class="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 24 24">
+									<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+								</svg>
+							</div>
+							<h2 class="text-lg font-bold text-gray-900">Delivery Information</h2>
 						</div>
-						<h2 class="text-lg font-bold text-gray-900">Delivery Information</h2>
-					</div>
 
 						<div class="space-y-3">
 							{#if order.deliveryDateTime}
@@ -195,7 +314,9 @@
 								<div class="flex-1 min-w-0">
 									<div class="flex items-start justify-between mb-1">
 										<h3 class="font-semibold text-gray-900">{item.menuItem?.name || 'Unknown'}</h3>
-										<span class="font-bold text-gray-900">${(item.quantity * item.unitPrice).toFixed(2)}</span>
+										<span class="font-bold text-gray-900"
+											>${(item.quantity * item.unitPrice).toFixed(2)}</span
+										>
 									</div>
 									{#if item.menuItem?.description}
 										<p class="text-sm text-gray-500 line-clamp-2">{item.menuItem.description}</p>
@@ -350,3 +471,197 @@
 		</div>
 	</div>
 </div>
+
+<!-- Edit Order Modal -->
+<Modal title="Edit Order" open={showEditOrderModal} onclose={closeAllModals}>
+	<form method="POST" action="?/updateOrder" use:enhance={handleFormSuccess}>
+		<input type="hidden" name="id" value={orderFormData.id} />
+		<div class="space-y-4">
+			<div>
+				<label for="customerName" class="block text-sm font-medium text-gray-700 mb-1">Customer Name</label>
+				<Input
+					id="customerName"
+					name="customerName"
+					type="text"
+					placeholder="Enter customer name"
+					required
+					bind:value={orderFormData.customerName}
+				/>
+			</div>
+			<div>
+				<label for="customerPhone" class="block text-sm font-medium text-gray-700 mb-1">Customer Phone</label>
+				<Input
+					id="customerPhone"
+					name="customerPhone"
+					type="text"
+					placeholder="Enter phone number"
+					bind:value={orderFormData.customerPhone}
+				/>
+			</div>
+			<div>
+				<label for="deliveryDateTime" class="block text-sm font-medium text-gray-700 mb-1">Delivery Date/Time</label>
+				<input
+					id="deliveryDateTime"
+					name="deliveryDateTime"
+					type="datetime-local"
+					required
+					bind:value={orderFormData.deliveryDateTime}
+					class="block w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+				/>
+			</div>
+			<div>
+				<label for="address" class="block text-sm font-medium text-gray-700 mb-1">Delivery Address</label>
+				<Input
+					id="address"
+					name="address"
+					type="text"
+					placeholder="Enter delivery address"
+					bind:value={orderFormData.address}
+				/>
+			</div>
+			<div>
+				<label for="comment" class="block text-sm font-medium text-gray-700 mb-1">Special Instructions</label>
+				<textarea
+					id="comment"
+					name="comment"
+					rows="3"
+					class="block w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none min-h-[44px]"
+					placeholder="Special instructions (optional)"
+					bind:value={orderFormData.comment}
+				></textarea>
+			</div>
+			<div>
+				<label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+				<Select
+					id="status"
+					name="status"
+					options={[
+						{ value: 'pending', label: 'Pending' },
+						{ value: 'preparing', label: 'Preparing' },
+						{ value: 'ready', label: 'Ready' },
+						{ value: 'delivered', label: 'Delivered' }
+					]}
+					placeholder="Select status"
+					required
+					bind:value={orderFormData.status}
+				/>
+			</div>
+			<div class="flex gap-3 pt-4">
+				<Button type="button" variant="secondary" onclick={closeAllModals}>Cancel</Button>
+				<Button type="submit">Update Order</Button>
+			</div>
+		</div>
+	</form>
+</Modal>
+
+<!-- Edit Items Modal -->
+<Modal title="Edit Order Items" open={showEditItemsModal} onclose={closeAllModals}>
+	<form method="POST" action="?/updateOrderItems" use:enhance={handleFormSuccess}>
+		<input type="hidden" name="id" value={order.id} />
+		<input type="hidden" name="itemsJson" value={JSON.stringify(itemsFormData)} />
+
+		<div class="space-y-4 max-h-[60vh] overflow-y-auto">
+			<div class="space-y-2">
+				{#each itemsFormData as item, index (index)}
+					<div class="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+						<span class="flex-1 font-medium">{item.name}</span>
+						<input
+							type="number"
+							min="1"
+							class="w-20 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+							bind:value={itemsFormData[index].quantity}
+						/>
+						<span class="text-sm text-gray-500">@ ${item.unitPrice.toFixed(2)}</span>
+						<button
+							type="button"
+							onclick={() => removeItem(index)}
+							class="p-1 text-red-600 hover:bg-red-50 rounded"
+							aria-label="Remove item"
+						>
+							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+							</svg>
+						</button>
+					</div>
+				{/each}
+			</div>
+
+			<div>
+				<label for="add-item-select" class="block text-sm font-medium text-gray-700 mb-1">Add Item</label>
+				<select
+					id="add-item-select"
+					class="block w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
+					onchange={(e) => addItem((e.target as HTMLSelectElement).value)}
+				>
+					<option value="">Select an item...</option>
+					{#each data.menuItems as menuItem}
+						<option value={menuItem.id}>{menuItem.name}</option>
+					{/each}
+				</select>
+			</div>
+
+			<div class="pt-4 border-t border-gray-200">
+				<div class="flex justify-between items-center">
+					<span class="font-medium">Total</span>
+					<span class="text-xl font-bold">${calculateTotal().toFixed(2)}</span>
+				</div>
+			</div>
+
+			<div class="flex gap-3 pt-4">
+				<Button type="button" variant="secondary" onclick={closeAllModals}>Cancel</Button>
+				<Button type="submit">Update Items</Button>
+			</div>
+		</div>
+	</form>
+</Modal>
+
+<!-- Delete Order Modal -->
+<Modal title="Delete Order" open={showDeleteOrderModal} onclose={closeAllModals}>
+	<form method="POST" action="?/deleteOrder" use:enhance={handleFormSuccess}>
+		<input type="hidden" name="id" value={order.id} />
+		<div class="space-y-4">
+			<div class="p-4 bg-warning-50 border border-warning-200 rounded-lg">
+				<div class="flex gap-3">
+					<svg class="w-5 h-5 text-warning-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+					</svg>
+					<div>
+						<p class="font-medium text-warning-800">This action will archive this order</p>
+						<p class="text-sm text-warning-700 mt-1">The order will be hidden from all views but will remain in the database for audit purposes.</p>
+					</div>
+				</div>
+			</div>
+
+			<p class="text-gray-700">
+				Are you sure you want to delete order <strong>#{order.id.slice(-6)}</strong> for <strong>{order.customerName}</strong>?
+			</p>
+
+			<div class="flex gap-3 pt-4">
+				<Button type="button" variant="secondary" onclick={closeAllModals}>Cancel</Button>
+				<Button type="submit" variant="danger">Delete Order</Button>
+			</div>
+		</div>
+	</form>
+</Modal>
+
+ {#if form?.error}
+	<div class="fixed top-20 right-4 max-w-sm p-4 bg-error-50 border border-error-200 rounded-xl shadow-lg z-[60] animate-in slide-in-from-right duration-300" role="alert">
+		<div class="flex items-center gap-3">
+			<svg class="w-5 h-5 text-error-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+			</svg>
+			<p class="text-sm font-medium text-error-800">{form.error}</p>
+		</div>
+	</div>
+ {/if}
+
+ {#if form?.message}
+	<div class="fixed top-20 right-4 max-w-sm p-4 bg-green-50 border border-green-200 rounded-xl shadow-lg z-[60] animate-in slide-in-from-right duration-300" role="alert">
+		<div class="flex items-center gap-3">
+			<svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+			</svg>
+			<p class="text-sm font-medium text-green-800">{form.message}</p>
+		</div>
+	</div>
+ {/if}
