@@ -11,26 +11,24 @@
 	<div class="mb-6">
 		<div class="bg-white rounded-xl shadow-sm border border-gray-200">
 			<div class="flex border-b border-gray-200">
-				<a
-					href="/admin/menu"
-					class="px-6 py-3 text-sm font-medium border-b-2 transition-colors {isActive('/admin/menu')
-						? 'border-primary-600 text-primary-700'
-						: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
+				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+				<a href="/admin/menu" class="px-6 py-3 text-sm font-medium border-b-2 transition-colors {isActive('/admin/menu')
+					? 'border-primary-600 text-primary-700'
+					: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
 					aria-current={isActive('/admin/menu') ? 'page' : undefined}
 				>
 					Menu Management
 				</a>
-				<a
-					href="/admin/clients"
-					class="px-6 py-3 text-sm font-medium border-b-2 transition-colors {isActive('/admin/clients')
-						? 'border-primary-600 text-primary-700'
-						: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
+				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+				<a href="/admin/clients" class="px-6 py-3 text-sm font-medium border-b-2 transition-colors {isActive('/admin/clients')
+					? 'border-primary-600 text-primary-700'
+					: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
 					aria-current={isActive('/admin/clients') ? 'page' : undefined}
 				>
 					Client Management
 				</a>
 			</div>
-	</div>
+		</div>
 </div>
 
 {@render children()}

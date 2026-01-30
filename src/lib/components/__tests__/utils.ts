@@ -11,30 +11,32 @@ afterEach(() => {
 });
 
 export function mockFetch(response: unknown, ok = true) {
-	global.fetch = vi.fn(() =>
-		Promise.resolve({
-			ok,
-			json: async () => response,
-			status: ok ? 200 : 400,
-			statusText: ok ? 'OK' : 'Bad Request'
-		})
-	) as any;
+	global.fetch = vi.fn(
+		() =>
+			Promise.resolve({
+				ok,
+					json: async () => response,
+					status: ok ? 200 : 400,
+					statusText: ok ? 'OK' : 'Bad Request'
+			})
+	) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export function mockFetchError(message: string, status = 400) {
-	global.fetch = vi.fn(() =>
-		Promise.resolve({
-			ok: false,
-			json: async () => ({ error: message }),
-			status,
-			statusText: 'Error'
-		})
-	) as any;
+	global.fetch = vi.fn(
+		() =>
+			Promise.resolve({
+				ok: false,
+					json: async () => ({ error: message }),
+					status,
+					statusText: 'Error'
+			})
+	) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export function mockNavigation() {
 	const mockGoto = vi.fn();
-	(goto as any).mockImplementation(mockGoto);
+	(goto as any).mockImplementation(mockGoto); // eslint-disable-line @typescript-eslint/no-explicit-any
 	return mockGoto;
 }
 
@@ -257,7 +259,7 @@ export function mockIntersectionObserver() {
 		unobserve: () => null,
 		disconnect: () => null
 	});
-	global.IntersectionObserver = mockIntersectionObserver as any;
+	global.IntersectionObserver = mockIntersectionObserver as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export function mockResizeObserver() {
@@ -267,7 +269,7 @@ export function mockResizeObserver() {
 		unobserve: () => null,
 		disconnect: () => null
 	});
-	global.ResizeObserver = mockResizeObserver as any;
+	global.ResizeObserver = mockResizeObserver as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export function mockMediaQuery(matches = false) {

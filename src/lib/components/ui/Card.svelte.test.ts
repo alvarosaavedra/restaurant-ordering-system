@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, cleanup as testingLibraryCleanup } from '@testing-library/svelte';
+import { createRawSnippet } from 'svelte';
 import Card from './Card.svelte';
 
 describe('Card', () => {
@@ -7,10 +8,15 @@ describe('Card', () => {
 		testingLibraryCleanup();
 	});
 
+	const createTestSnippet = (text: string) => {
+		return createRawSnippet(() => ({
+			render: () => text
+		}));
+	};
+
 	it('renders with default variant', async () => {
 		const { container } = render(Card, {
-			// @ts-ignore - Svelte 5 snippet in tests
-			children: () => 'Card Content'
+			children: createTestSnippet('Card Content')
 		});
 
 		const card = container.querySelector('.rounded-lg');
@@ -19,14 +25,11 @@ describe('Card', () => {
 
 	it('renders all variants', async () => {
 		const { container: elevatedContainer } = render(Card, { variant: 'elevated',
-			// @ts-ignore - Svelte 5 snippet in tests
-			children: () => 'Test' });
+			children: createTestSnippet('Test') });
 		const { container: borderedContainer } = render(Card, { variant: 'bordered',
-			// @ts-ignore - Svelte 5 snippet in tests
-			children: () => 'Test' });
+			children: createTestSnippet('Test') });
 		const { container: subtleContainer } = render(Card, { variant: 'subtle',
-			// @ts-ignore - Svelte 5 snippet in tests
-			children: () => 'Test' });
+			children: createTestSnippet('Test') });
 
 		// Check className string for expected classes
 		const elevatedCard = elevatedContainer.querySelector('.rounded-lg');
@@ -42,8 +45,7 @@ describe('Card', () => {
 
 	it('shows children content', async () => {
 		const { container } = render(Card, {
-			// @ts-ignore - Svelte 5 snippet in @testing-library/svelte tests
-			children: () => 'Card Content'
+			children: createTestSnippet('Card Content')
 		});
 
 		// Note: Svelte 5 snippet rendering in tests has limitations
@@ -57,8 +59,7 @@ describe('Card', () => {
 		const { getByRole } = render(Card, {
 			clickable: true,
 			onclick: handleClick,
-			// @ts-ignore - Svelte 5 snippet in @testing-library/svelte tests
-			children: () => 'Clickable Card'
+			children: createTestSnippet('Clickable Card')
 		});
 
 		const card = getByRole('button');
@@ -69,8 +70,7 @@ describe('Card', () => {
 	it('applies custom classes', async () => {
 		const { container } = render(Card, {
 			class: 'custom-class',
-			// @ts-ignore - Svelte 5 snippet in @testing-library/svelte tests
-			children: () => 'Test'
+			children: createTestSnippet('Test')
 		});
 
 		const card = container.querySelector('.rounded-lg');

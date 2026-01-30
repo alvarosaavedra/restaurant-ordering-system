@@ -20,8 +20,6 @@ import {
 	mockMenuItem,
 	mockCategory,
 	mockClient,
-	mockSuccessResponse,
-	mockErrorResponse,
 	createMockOrders,
 	createMockOrderItems
 } from '../fixtures';
@@ -54,6 +52,7 @@ describe('Test Utilities', () => {
 		it('mocks goto function', () => {
 			const mockGoto = mockNavigation();
 
+			// eslint-disable-next-line svelte/no-navigation-without-resolve
 			goto('/test-page');
 
 			expect(mockGoto).toHaveBeenCalledWith('/test-page');

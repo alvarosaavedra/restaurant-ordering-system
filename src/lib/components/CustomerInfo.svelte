@@ -105,7 +105,6 @@
 					onClear={handleClearName}
 					onUpdate={(name) => onUpdate({ customerName: name })}
 					placeholder="Search clients by name..."
-					aria-label="Customer name or search existing clients"
 				/>
 				{#if nameError}
 					<p class="mt-1 text-sm text-red-600" role="alert">{nameError}</p>

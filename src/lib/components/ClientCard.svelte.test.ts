@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, cleanup as testingLibraryCleanup } from '@testing-library/svelte';
 import ClientCard from './ClientCard.svelte';
-import type { Client } from '$lib/server/db/schema';
 import { mockClientWithOrderCount, mockClientWithSingleOrder } from './fixtures';
 
 describe('ClientCard', () => {

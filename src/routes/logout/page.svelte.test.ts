@@ -1,7 +1,6 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { render, cleanup as testingLibraryCleanup } from '@testing-library/svelte';
 import LogoutPage from './+page.svelte';
-import { mockNavigation } from '$lib/components/__tests__/utils';
 
 describe('LogoutPage', () => {
 	beforeEach(() => {
@@ -24,7 +23,7 @@ describe('LogoutPage', () => {
 	});
 
 	it('displays logout confirmation text', async () => {
-		const { container, getByText } = render(LogoutPage);
+		const { container } = render(LogoutPage);
 
 		expect(container.querySelector('.text-gray-600')).toBeInTheDocument();
 	});
@@ -38,7 +37,7 @@ describe('LogoutPage', () => {
 	});
 
 	it('displays cancel button', async () => {
-		const { container, getByText } = render(LogoutPage);
+		const { getByText } = render(LogoutPage);
 
 		expect(getByText('Cancel')).toBeInTheDocument();
 		const cancelButton = getByText('Cancel');

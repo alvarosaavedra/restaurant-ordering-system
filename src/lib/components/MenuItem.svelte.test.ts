@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, cleanup as testingLibraryCleanup } from '@testing-library/svelte';
 import MenuItem from './MenuItem.svelte';
-import type { MenuItemWithCategory } from '$lib/types/orders';
 import { mockMenuItemWithCategory, mockUnavailableMenuItemWithCategory } from './fixtures';
 import { tick } from './__tests__/utils';
 

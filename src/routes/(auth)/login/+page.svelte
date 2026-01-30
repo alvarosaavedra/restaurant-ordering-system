@@ -27,6 +27,7 @@
 				use:enhance={() => {
 					return async ({ result }: { result: { type: string; location?: string } }) => {
 						if (result.type === 'redirect' && result.location) {
+							// eslint-disable-next-line svelte/no-navigation-without-resolve
 							await goto(result.location, { replaceState: true });
 						} else {
 							isLoading = false;

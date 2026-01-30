@@ -1,7 +1,6 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { render, cleanup as testingLibraryCleanup } from '@testing-library/svelte';
 import StatusBadge from './StatusBadge.svelte';
-import type { OrderStatus } from '$lib/types/orders';
 
 describe('StatusBadge', () => {
 	beforeEach(() => {

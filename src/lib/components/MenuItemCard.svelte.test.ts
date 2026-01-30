@@ -1,8 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, cleanup as testingLibraryCleanup } from '@testing-library/svelte';
 import MenuItemCard from './MenuItemCard.svelte';
-import type { MenuItemWithCategory } from '$lib/types/orders';
-import { mockMenuItemWithCategory, mockMenuItem2WithCategory } from './fixtures';
+import { mockMenuItemWithCategory } from './fixtures';
 
 describe('MenuItemCard', () => {
 	beforeEach(() => {

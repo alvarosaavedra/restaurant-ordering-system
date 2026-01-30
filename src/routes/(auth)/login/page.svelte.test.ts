@@ -1,7 +1,6 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { render, cleanup as testingLibraryCleanup } from '@testing-library/svelte';
 import LoginPage from './+page.svelte';
-import { mockNavigation, mockFetch } from '$lib/components/__tests__/utils';
 
 describe('LoginPage', () => {
 	beforeEach(() => {
@@ -16,13 +15,13 @@ describe('LoginPage', () => {
 	});
 
 	it('displays email input', async () => {
-		const { container, getByLabelText } = render(LoginPage);
+		const { getByLabelText } = render(LoginPage);
 
 		expect(getByLabelText('Email Address')).toBeInTheDocument();
 	});
 
 	it('displays password input', async () => {
-		const { container, getByLabelText } = render(LoginPage);
+		const { getByLabelText } = render(LoginPage);
 
 		expect(getByLabelText('Password')).toBeInTheDocument();
 	});

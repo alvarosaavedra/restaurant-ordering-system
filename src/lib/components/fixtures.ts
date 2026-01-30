@@ -284,6 +284,7 @@ export function createMockOrders(count: number, status?: 'pending' | 'preparing'
 		id: `order-${i}`,
 		customerName: `Customer ${i}`,
 		customerPhone: `555-${2000 + i}`,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		status: status || ['pending', 'preparing', 'ready', 'delivered'][i % 4] as any,
 		createdAt: new Date(Date.now() - i * 3600000)
 	}));

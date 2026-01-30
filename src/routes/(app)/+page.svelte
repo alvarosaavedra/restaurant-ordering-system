@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import Button from '$lib/components/ui/Button.svelte';
 	import Card from '$lib/components/ui/Card.svelte';
@@ -169,7 +168,8 @@
 			</div>
 			<div class="space-y-3">
 				{#if user?.role === 'order_taker'}
-					<button onclick={() => goto('/orders/new')} class="w-full">
+					<button onclick={() => { // eslint-disable-next-line svelte/no-navigation-without-resolve
+						goto('/orders/new'); }} class="w-full">
 						<Button variant="primary" class="w-full">
 							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -178,7 +178,8 @@
 						</Button>
 					</button>
 				{/if}
-				<button onclick={() => goto('/orders')} class="w-full">
+				<button onclick={() => { // eslint-disable-next-line svelte/no-navigation-without-resolve
+					goto('/orders'); }} class="w-full">
 					<Button variant="secondary" class="w-full">
 						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012 2h2a2 2 0 012 2" />
@@ -187,7 +188,8 @@
 					</Button>
 				</button>
 				{#if user?.role === 'kitchen'}
-					<button onclick={() => goto('/kitchen')} class="w-full">
+					<button onclick={() => { // eslint-disable-next-line svelte/no-navigation-without-resolve
+						goto('/kitchen'); }} class="w-full">
 						<Button variant="secondary" class="w-full">
 							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -197,7 +199,8 @@
 					</button>
 				{/if}
 				{#if user?.role === 'delivery'}
-					<button onclick={() => goto('/delivery')} class="w-full">
+					<button onclick={() => { // eslint-disable-next-line svelte/no-navigation-without-resolve
+						goto('/delivery'); }} class="w-full">
 						<Button variant="secondary" class="w-full">
 							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
@@ -285,8 +288,9 @@
 					<h2 class="text-lg font-bold text-neutral-900">Recent Orders</h2>
 					<p class="text-sm text-neutral-500">Latest {recentOrders.length} orders</p>
 				</div>
-			</div>
-			<a href="/orders" class="text-bakery-600 hover:text-bakery-700 font-medium text-sm">View All</a>
+		</div>
+		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+		<a href="/orders" class="text-bakery-600 hover:text-bakery-700 font-medium text-sm">View All</a>
 		</div>
 
 		{#if recentOrders.length === 0}
@@ -298,6 +302,7 @@
 				</div>
 				<h3 class="text-lg font-semibold text-neutral-900 mb-2">No orders yet</h3>
 				<p class="text-neutral-500 mb-4">Start taking orders to see them here</p>
+				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 				<a href="/orders/new" class="inline-flex items-center justify-center px-6 py-2.5 bg-bakery-600 text-white font-medium rounded-lg hover:bg-bakery-700 transition-colors min-h-[44px] min-w-[44px]">
 					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -307,8 +312,9 @@
 			</div>
 		{:else}
 			<div class="space-y-3">
-				{#each recentOrders as order (order.id)}
-					<a href="/orders/{order.id}" class="flex items-center justify-between p-4 bg-neutral-50 rounded-lg hover:bg-neutral-100 transition-colors cursor-pointer">
+			{#each recentOrders as order (order.id)}
+				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+				<a href="/orders/{order.id}" class="flex items-center justify-between p-4 bg-neutral-50 rounded-lg hover:bg-neutral-100 transition-colors cursor-pointer">
 						<div class="flex items-center gap-4 flex-1 min-w-0">
 							<StatusBadge status={order.status} />
 							<div class="flex-1 min-w-0">

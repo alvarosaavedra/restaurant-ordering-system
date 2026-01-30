@@ -12,10 +12,9 @@
 		onClear: () => void;
 		onUpdate: (name: string) => void;
 		placeholder?: string;
-		'aria-label'?: string;
 	}
 
-	let { customerName, onSelect, onClear, onUpdate, placeholder = 'Search clients by name...', 'aria-label': ariaLabel = 'Search existing clients' }: Props = $props();
+	let { customerName, onSelect, onClear, onUpdate, placeholder = 'Search clients by name...' }: Props = $props();
 
 	let searchQuery = $derived(customerName);
 	let results = $state<ClientResult[]>([]);
@@ -131,7 +130,7 @@
 			onblur={handleBlur}
 			onkeydown={handleKeydown}
 			placeholder={placeholder}
-			aria-label={ariaLabel}
+			aria-label="Search existing clients"
 			class="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors pr-10"
 			autocomplete="off"
 		/>

@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, cleanup as testingLibraryCleanup } from '@testing-library/svelte';
+import { createRawSnippet } from 'svelte';
 import Modal from './Modal.svelte';
 
 describe('Modal', () => {
@@ -7,13 +8,18 @@ describe('Modal', () => {
 		testingLibraryCleanup();
 	});
 
-	it('renders when open={true}', async () => {
-		const { container } = render(Modal, {
-			open: true,
-			title: 'Test Modal',
-			// @ts-ignore - Svelte 5 snippet in tests
-			children: () => 'Modal Content'
-		});
+	const createTestSnippet = (text: string) => {
+		return createRawSnippet(() => ({
+			render: () => text
+		}));
+	};
+
+		it('renders when open={true}', async () => {
+			const { container } = render(Modal, {
+				open: true,
+				title: 'Test Modal',
+				children: createTestSnippet('Modal Content')
+			});
 
 		expect(container.querySelector('.fixed')).toBeInTheDocument();
 		expect(container.querySelector('.bg-neutral-900\\/50')).toBeInTheDocument();
@@ -23,8 +29,7 @@ describe('Modal', () => {
 		const { container } = render(Modal, {
 			open: false,
 			title: 'Test Modal',
-			// @ts-ignore - Svelte 5 snippet in tests
-			children: () => 'Modal Content'
+			children: createTestSnippet('Modal Content')
 		});
 
 		expect(container.querySelector('.fixed')).toBeNull();
@@ -36,8 +41,7 @@ describe('Modal', () => {
 			open: true,
 			onclose: handleClose,
 			title: 'Test Modal',
-			// @ts-ignore - Svelte 5 snippet in tests
-			children: () => 'Content'
+			children: createTestSnippet('Content')
 		});
 
 		const backdrop = container.querySelector('.bg-neutral-900\\/50');
@@ -56,8 +60,7 @@ describe('Modal', () => {
 			open: true,
 			onclose: handleClose,
 			title: 'Test Modal',
-			// @ts-ignore - Svelte 5 snippet in tests
-			children: () => 'Content'
+			children: createTestSnippet('Content')
 		});
 
 		// Find the close button
@@ -78,8 +81,7 @@ describe('Modal', () => {
 			open: true,
 			class: 'custom-class',
 			title: 'Test Modal',
-			// @ts-ignore - Svelte 5 snippet in tests
-			children: () => 'Content'
+			children: createTestSnippet('Content')
 		});
 
 		// Check that custom class is present in the modal container
@@ -92,8 +94,7 @@ describe('Modal', () => {
 		const { container } = render(Modal, {
 			open: true,
 			title: 'Accessible Modal',
-			// @ts-ignore - Svelte 5 snippet in tests
-			children: () => 'Content'
+			children: createTestSnippet('Content')
 		});
 
 		expect(container.querySelector('[role="dialog"]')).toBeInTheDocument();
@@ -105,8 +106,7 @@ describe('Modal', () => {
 		const { container } = render(Modal, {
 			open: true,
 			title: 'Test Modal',
-			// @ts-ignore - Svelte 5 snippet in tests
-			children: () => 'Content'
+			children: createTestSnippet('Content')
 		});
 
 		expect(container.querySelector('[role="dialog"]')).toBeInTheDocument();
