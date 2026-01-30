@@ -47,6 +47,17 @@ export const mockCategory2 = {
 };
 
 // Mock Menu Item data
+export const mockMenuItemWithCategory = {
+	id: 'item-1',
+	categoryId: 'cat-1',
+	name: 'Sourdough Bread',
+	description: 'Freshly baked artisan sourdough',
+	price: 5.99,
+	isAvailable: true,
+	createdAt: new Date('2024-01-01T00:00:00Z'),
+	category: mockCategory
+};
+
 export const mockMenuItem = {
 	id: 'item-1',
 	categoryId: 'cat-1',
@@ -57,6 +68,17 @@ export const mockMenuItem = {
 	createdAt: new Date('2024-01-01T00:00:00Z')
 };
 
+export const mockMenuItem2WithCategory = {
+	id: 'item-2',
+	categoryId: 'cat-2',
+	name: 'Croissant',
+	description: 'Buttery, flaky French pastry',
+	price: 3.99,
+	isAvailable: true,
+	createdAt: new Date('2024-01-01T00:00:00Z'),
+	category: mockCategory2
+};
+
 export const mockMenuItem2 = {
 	id: 'item-2',
 	categoryId: 'cat-2',
@@ -65,6 +87,17 @@ export const mockMenuItem2 = {
 	price: 3.99,
 	isAvailable: true,
 	createdAt: new Date('2024-01-01T00:00:00Z')
+};
+
+export const mockUnavailableMenuItemWithCategory = {
+	id: 'item-3',
+	categoryId: 'cat-1',
+	name: 'Baguette',
+	description: 'Traditional French bread',
+	price: 4.99,
+	isAvailable: false,
+	createdAt: new Date('2024-01-01T00:00:00Z'),
+	category: mockCategory
 };
 
 export const mockUnavailableMenuItem = {
@@ -260,4 +293,51 @@ export const mockDashboardStats = {
 	preparingOrders: 8,
 	readyOrders: 12,
 	deliveredOrders: 65
+};
+
+// Mock MenuItem with order count (for MenuItemCard)
+export const mockMenuItemCard = {
+	...mockMenuItemWithCategory,
+	orderCount: 5
+};
+
+// Mock Client with order count
+export const mockClientWithOrderCount = {
+	...mockClient,
+	orderCount: 5
+};
+
+export const mockClient2WithOrderCount = {
+	...mockClient2,
+	orderCount: 3
+};
+
+export const mockClient3 = {
+	id: 'client-3',
+	name: 'Charlie Davis',
+	phone: '555-9012',
+	address: '789 Pine Rd, Village, IL 90789',
+	createdAt: new Date('2024-01-03T00:00:00Z'),
+	orderCount: 0
+};
+
+export const mockClient3WithOrderCount = {
+	...mockClient3,
+	orderCount: 0
+};
+
+export const mockClientWithSingleOrder = {
+	...mockClient,
+	orderCount: 1
+};
+
+// Mock Category with item count
+export const mockCategoryWithCount = {
+	...mockCategory,
+	itemCount: 12
+};
+
+export const mockCategory2WithCount = {
+	...mockCategory2,
+	itemCount: 0
 };
