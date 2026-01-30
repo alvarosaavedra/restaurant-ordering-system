@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, cleanup as testingLibraryCleanup } from '@testing-library/svelte';
 import Modal from './Modal.svelte';
 
@@ -38,7 +38,8 @@ describe('Modal', () => {
 		});
 
 		const backdrop = container.querySelector('.bg-neutral-900\\/50');
-		backdrop.click();
+		expect(backdrop).toBeInTheDocument();
+		(backdrop as HTMLDivElement).click();
 
 		expect(handleClose).toHaveBeenCalledTimes(1);
 	});
@@ -63,7 +64,7 @@ describe('Modal', () => {
 
 		expect(closeButton).toBeDefined();
 		if (closeButton) {
-			closeButton.click();
+			(closeButton as HTMLButtonElement).click();
 			expect(handleClose).toHaveBeenCalledTimes(1);
 		}
 	});
@@ -76,8 +77,10 @@ describe('Modal', () => {
 			children: () => 'Content'
 		});
 
-		const modal = container.querySelector('.bg-white');
-		expect(modal).toHaveClass('custom-class');
+		// Check that custom class is present in the modal container
+		const modalDiv = container.querySelector('.bg-white');
+		expect(modalDiv).toBeInTheDocument();
+		expect(modalDiv?.className).toContain('custom-class');
 	});
 
 	it('has accessibility attributes', async () => {

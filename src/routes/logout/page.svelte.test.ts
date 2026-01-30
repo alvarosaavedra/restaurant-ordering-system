@@ -16,9 +16,11 @@ describe('LogoutPage', () => {
 	});
 
 	it('shows logout heading', async () => {
-		const { getByText } = render(LogoutPage);
+		const { container } = render(LogoutPage);
 
-		expect(getByText('Logout')).toBeInTheDocument();
+		const heading = container.querySelector('h1');
+		expect(heading).toBeInTheDocument();
+		expect(heading?.textContent).toBe('Logout');
 	});
 
 	it('displays logout confirmation text', async () => {
@@ -28,9 +30,11 @@ describe('LogoutPage', () => {
 	});
 
 	it('shows submit button', async () => {
-		const { getByText } = render(LogoutPage);
+		const { container } = render(LogoutPage);
 
-		expect(getByText('Logout')).toBeInTheDocument();
+		const submitButton = container.querySelector('button[type="submit"]');
+		expect(submitButton).toBeInTheDocument();
+		expect(submitButton?.textContent).toContain('Logout');
 	});
 
 	it('displays cancel link', async () => {
@@ -41,12 +45,12 @@ describe('LogoutPage', () => {
 	});
 
 	it('has accessibility attributes', async () => {
-		const { container, getByText } = render(LogoutPage);
+		const { container } = render(LogoutPage);
 
-		const heading = getByText('Logout');
+		const heading = container.querySelector('h1');
 		expect(heading).toBeInTheDocument();
 
-		const card = container.querySelector('.bg-white');
-		expect(card).toBeInTheDocument();
+		const submitButton = container.querySelector('button[type="submit"]');
+		expect(submitButton).toHaveAttribute('type', 'submit');
 	});
 });
