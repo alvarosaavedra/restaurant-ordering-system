@@ -10,6 +10,7 @@ describe('Button', () => {
 	describe('Rendering', () => {
 		it('renders with default props', async () => {
 			const { getByRole, container } = render(Button, {
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Click me'
 			});
 
@@ -23,6 +24,7 @@ describe('Button', () => {
 		it('renders with type="submit"', async () => {
 			const { getByRole } = render(Button, {
 				type: 'submit',
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Submit'
 			});
 
@@ -33,6 +35,7 @@ describe('Button', () => {
 		it('renders with type="reset"', async () => {
 			const { getByRole } = render(Button, {
 				type: 'reset',
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Reset'
 			});
 
@@ -45,6 +48,7 @@ describe('Button', () => {
 		it('renders primary variant', async () => {
 			const { getByRole } = render(Button, {
 				variant: 'primary',
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Primary'
 			});
 
@@ -55,6 +59,7 @@ describe('Button', () => {
 		it('renders secondary variant', async () => {
 			const { getByRole } = render(Button, {
 				variant: 'secondary',
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Secondary'
 			});
 
@@ -65,6 +70,7 @@ describe('Button', () => {
 		it('renders success variant', async () => {
 			const { getByRole } = render(Button, {
 				variant: 'success',
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Success'
 			});
 
@@ -75,6 +81,7 @@ describe('Button', () => {
 		it('renders warning variant', async () => {
 			const { getByRole } = render(Button, {
 				variant: 'warning',
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Warning'
 			});
 
@@ -85,6 +92,7 @@ describe('Button', () => {
 		it('renders danger variant', async () => {
 			const { getByRole } = render(Button, {
 				variant: 'danger',
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Danger'
 			});
 
@@ -95,6 +103,7 @@ describe('Button', () => {
 		it('renders ghost variant', async () => {
 			const { getByRole } = render(Button, {
 				variant: 'ghost',
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Ghost'
 			});
 
@@ -107,6 +116,7 @@ describe('Button', () => {
 		it('renders small size', async () => {
 			const { getByRole } = render(Button, {
 				size: 'sm',
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Small'
 			});
 
@@ -117,6 +127,7 @@ describe('Button', () => {
 		it('renders medium size (default)', async () => {
 			const { getByRole } = render(Button, {
 				size: 'md',
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Medium'
 			});
 
@@ -127,6 +138,7 @@ describe('Button', () => {
 		it('renders large size', async () => {
 			const { getByRole } = render(Button, {
 				size: 'lg',
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Large'
 			});
 
@@ -139,6 +151,7 @@ describe('Button', () => {
 		it('is disabled when disabled prop is true', async () => {
 			const { getByRole } = render(Button, {
 				disabled: true,
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Disabled'
 			});
 
@@ -150,6 +163,7 @@ describe('Button', () => {
 		it('is disabled when loading prop is true', async () => {
 			const { getByRole } = render(Button, {
 				loading: true,
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Loading'
 			});
 
@@ -160,6 +174,7 @@ describe('Button', () => {
 
 		it('is not disabled by default', async () => {
 			const { getByRole } = render(Button, {
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Enabled'
 			});
 
@@ -173,6 +188,7 @@ describe('Button', () => {
 		it('shows spinner when loading', async () => {
 			const { getByRole } = render(Button, {
 				loading: true,
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Loading'
 			});
 
@@ -183,6 +199,7 @@ describe('Button', () => {
 		it('does not show spinner when not loading', async () => {
 			const { getByRole } = render(Button, {
 				loading: false,
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Not Loading'
 			});
 
@@ -193,6 +210,7 @@ describe('Button', () => {
 		it('shows spinner and text when loading', async () => {
 			const { getByRole } = render(Button, {
 				loading: true,
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Loading Text'
 			});
 
@@ -208,6 +226,7 @@ describe('Button', () => {
 			const handleClick = vi.fn();
 			const { getByRole } = render(Button, {
 				onclick: handleClick,
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Click Me'
 			});
 
@@ -222,6 +241,7 @@ describe('Button', () => {
 			const { getByRole } = render(Button, {
 				onclick: handleClick,
 				disabled: true,
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Disabled'
 			});
 
@@ -236,6 +256,7 @@ describe('Button', () => {
 			const { getByRole } = render(Button, {
 				onclick: handleClick,
 				loading: true,
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Loading'
 			});
 
@@ -249,6 +270,7 @@ describe('Button', () => {
 	describe('Accessibility', () => {
 		it('has aria-label when provided', async () => {
 			const { getByRole } = render(Button, {
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Button',
 				'aria-label': 'Accessible Button'
 			});
@@ -259,6 +281,7 @@ describe('Button', () => {
 
 		it('has aria-describedby when provided', async () => {
 			const { getByRole } = render(Button, {
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Button',
 				'aria-describedby': 'description-id'
 			});
@@ -269,6 +292,7 @@ describe('Button', () => {
 
 		it('has custom tabindex when provided', async () => {
 			const { getByRole } = render(Button, {
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Button',
 				tabindex: -1
 			});
@@ -279,6 +303,7 @@ describe('Button', () => {
 
 		it('has min accessible size (44x44)', async () => {
 			const { getByRole } = render(Button, {
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Accessible'
 			});
 
@@ -291,6 +316,7 @@ describe('Button', () => {
 		it('applies custom class names', async () => {
 			const { getByRole } = render(Button, {
 				class: 'custom-class another-class',
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Custom'
 			});
 
@@ -303,6 +329,7 @@ describe('Button', () => {
 				variant: 'primary',
 				size: 'lg',
 				class: 'custom-class',
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Combined'
 			});
 
@@ -316,6 +343,7 @@ describe('Button', () => {
 	describe('Button Type Attribute', () => {
 		it('has type="button" by default', async () => {
 			const { getByRole } = render(Button, {
+			// @ts-ignore - Svelte 5 snippet in tests
 				children: () => 'Button'
 			});
 

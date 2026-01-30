@@ -11,7 +11,9 @@ describe('MenuItemCard', () => {
 
 	it('renders menu item details', async () => {
 		const { getByText } = render(MenuItemCard, {
-			item: mockMenuItemWithCategory
+			item: mockMenuItemWithCategory,
+			onedit: vi.fn(),
+			ondelete: vi.fn()
 		});
 
 		expect(getByText(mockMenuItemWithCategory.name)).toBeInTheDocument();
@@ -20,7 +22,9 @@ describe('MenuItemCard', () => {
 
 	it('shows category when item has one', async () => {
 		const { getByText } = render(MenuItemCard, {
-			item: mockMenuItemWithCategory
+			item: mockMenuItemWithCategory,
+			onedit: vi.fn(),
+			ondelete: vi.fn()
 		});
 
 		expect(getByText(mockMenuItemWithCategory.category.name)).toBeInTheDocument();
@@ -28,7 +32,9 @@ describe('MenuItemCard', () => {
 
 	it('displays correct price with formatting', async () => {
 		const { getByText } = render(MenuItemCard, {
-			item: mockMenuItemWithCategory
+			item: mockMenuItemWithCategory,
+			onedit: vi.fn(),
+			ondelete: vi.fn()
 		});
 
 		expect(getByText(`$${mockMenuItemWithCategory.price.toFixed(2)}`)).toBeInTheDocument();
@@ -36,7 +42,9 @@ describe('MenuItemCard', () => {
 
 	it('shows availability indicator', async () => {
 		const { container } = render(MenuItemCard, {
-			item: mockMenuItemWithCategory
+			item: mockMenuItemWithCategory,
+			onedit: vi.fn(),
+			ondelete: vi.fn()
 		});
 
 		if (mockMenuItemWithCategory.isAvailable) {
@@ -60,7 +68,8 @@ describe('MenuItemCard', () => {
 		const handleEdit = vi.fn();
 		const { container } = render(MenuItemCard, {
 			item: mockMenuItemWithCategory,
-			onedit: handleEdit
+			onedit: handleEdit,
+			ondelete: vi.fn()
 		});
 
 		const editButton = container.querySelector('button[aria-label*="Edit"]') as HTMLButtonElement;
@@ -76,6 +85,7 @@ describe('MenuItemCard', () => {
 		const handleDelete = vi.fn();
 		const { container } = render(MenuItemCard, {
 			item: mockMenuItemWithCategory,
+			onedit: vi.fn(),
 			ondelete: handleDelete
 		});
 

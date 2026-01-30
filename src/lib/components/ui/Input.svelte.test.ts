@@ -9,8 +9,7 @@ describe('Input', () => {
 
 	it('renders with default props', async () => {
 		const { getByRole } = render(Input, {
-			name: 'test-input',
-			children: () => {}
+			name: 'test-input'
 		});
 
 		const input = getByRole('textbox');
@@ -21,8 +20,7 @@ describe('Input', () => {
 	it('shows error message', async () => {
 		const { getByText } = render(Input, {
 			name: 'test-input',
-			error: 'This field is required',
-			children: () => {}
+			error: 'This field is required'
 		});
 
 		expect(getByText('This field is required')).toBeInTheDocument();
@@ -33,8 +31,7 @@ describe('Input', () => {
 	it('handles disabled state', async () => {
 		const { getByRole } = render(Input, {
 			name: 'test-input',
-			disabled: true,
-			children: () => {}
+			disabled: true
 		});
 
 		const input = getByRole('textbox');
@@ -45,8 +42,7 @@ describe('Input', () => {
 		const handleInput = vi.fn();
 		const { getByRole } = render(Input, {
 			name: 'test-input',
-			oninput: handleInput,
-			children: () => {}
+			oninput: handleInput
 		});
 
 		const input = getByRole('textbox');
@@ -59,8 +55,7 @@ describe('Input', () => {
 			name: 'test-input',
 			'aria-label': 'Test Input',
 			'aria-describedby': 'test-description',
-			required: true,
-			children: () => {}
+			required: true
 		});
 
 		const input = getByRole('textbox');

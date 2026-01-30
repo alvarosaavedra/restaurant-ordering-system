@@ -17,7 +17,8 @@ describe('Toast', () => {
 			id: 'toast-1',
 			message: 'Success message',
 			type: 'success',
-			duration: 3000
+			duration: 3000,
+			onRemove: vi.fn()
 		});
 		expect(successToast.container.querySelector('.bg-success-50')).toBeInTheDocument();
 
@@ -27,7 +28,8 @@ describe('Toast', () => {
 			id: 'toast-2',
 			message: 'Error message',
 			type: 'error',
-			duration: 3000
+			duration: 3000,
+			onRemove: vi.fn()
 		});
 		expect(errorToast.container.querySelector('.bg-error-50')).toBeInTheDocument();
 
@@ -37,7 +39,8 @@ describe('Toast', () => {
 			id: 'toast-3',
 			message: 'Info message',
 			type: 'info',
-			duration: 3000
+			duration: 3000,
+			onRemove: vi.fn()
 		});
 		expect(infoToast.container.querySelector('.bg-info-50')).toBeInTheDocument();
 
@@ -47,7 +50,8 @@ describe('Toast', () => {
 			id: 'toast-4',
 			message: 'Warning message',
 			type: 'warning',
-			duration: 3000
+			duration: 3000,
+			onRemove: vi.fn()
 		});
 		expect(warningToast.container.querySelector('.bg-warning-50')).toBeInTheDocument();
 	});
@@ -57,7 +61,8 @@ describe('Toast', () => {
 			id: 'toast-1',
 			message: 'Test message',
 			type: 'success',
-			duration: 3000
+			duration: 3000,
+			onRemove: vi.fn()
 		});
 
 		const toastDiv = container.querySelector('.bg-success-50');
@@ -93,7 +98,8 @@ describe('Toast', () => {
 			id: 'toast-1',
 			message: 'Test message',
 			type: 'success',
-			duration: 3000
+			duration: 3000,
+			onRemove: vi.fn()
 		});
 
 		const toastElement = container.querySelector('.bg-success-50');
@@ -106,7 +112,8 @@ describe('Toast', () => {
 			id: 'toast-1',
 			message: 'Test message',
 			type: 'success',
-			duration: 3000
+			duration: 3000,
+			onRemove: vi.fn()
 		});
 
 		const button = getByRole('button');

@@ -11,6 +11,7 @@ describe('Modal', () => {
 		const { container } = render(Modal, {
 			open: true,
 			title: 'Test Modal',
+			// @ts-ignore - Svelte 5 snippet in tests
 			children: () => 'Modal Content'
 		});
 
@@ -22,6 +23,7 @@ describe('Modal', () => {
 		const { container } = render(Modal, {
 			open: false,
 			title: 'Test Modal',
+			// @ts-ignore - Svelte 5 snippet in tests
 			children: () => 'Modal Content'
 		});
 
@@ -34,6 +36,7 @@ describe('Modal', () => {
 			open: true,
 			onclose: handleClose,
 			title: 'Test Modal',
+			// @ts-ignore - Svelte 5 snippet in tests
 			children: () => 'Content'
 		});
 
@@ -53,6 +56,7 @@ describe('Modal', () => {
 			open: true,
 			onclose: handleClose,
 			title: 'Test Modal',
+			// @ts-ignore - Svelte 5 snippet in tests
 			children: () => 'Content'
 		});
 
@@ -74,6 +78,7 @@ describe('Modal', () => {
 			open: true,
 			class: 'custom-class',
 			title: 'Test Modal',
+			// @ts-ignore - Svelte 5 snippet in tests
 			children: () => 'Content'
 		});
 
@@ -87,6 +92,7 @@ describe('Modal', () => {
 		const { container } = render(Modal, {
 			open: true,
 			title: 'Accessible Modal',
+			// @ts-ignore - Svelte 5 snippet in tests
 			children: () => 'Content'
 		});
 
@@ -99,6 +105,7 @@ describe('Modal', () => {
 		const { container } = render(Modal, {
 			open: true,
 			title: 'Test Modal',
+			// @ts-ignore - Svelte 5 snippet in tests
 			children: () => 'Content'
 		});
 

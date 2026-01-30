@@ -9,6 +9,7 @@ describe('Card', () => {
 
 	it('renders with default variant', async () => {
 		const { container } = render(Card, {
+			// @ts-ignore - Svelte 5 snippet in tests
 			children: () => 'Card Content'
 		});
 
@@ -17,9 +18,15 @@ describe('Card', () => {
 	});
 
 	it('renders all variants', async () => {
-		const { container: elevatedContainer } = render(Card, { variant: 'elevated', children: () => 'Test' });
-		const { container: borderedContainer } = render(Card, { variant: 'bordered', children: () => 'Test' });
-		const { container: subtleContainer } = render(Card, { variant: 'subtle', children: () => 'Test' });
+		const { container: elevatedContainer } = render(Card, { variant: 'elevated',
+			// @ts-ignore - Svelte 5 snippet in tests
+			children: () => 'Test' });
+		const { container: borderedContainer } = render(Card, { variant: 'bordered',
+			// @ts-ignore - Svelte 5 snippet in tests
+			children: () => 'Test' });
+		const { container: subtleContainer } = render(Card, { variant: 'subtle',
+			// @ts-ignore - Svelte 5 snippet in tests
+			children: () => 'Test' });
 
 		// Check className string for expected classes
 		const elevatedCard = elevatedContainer.querySelector('.rounded-lg');
@@ -35,6 +42,7 @@ describe('Card', () => {
 
 	it('shows children content', async () => {
 		const { container } = render(Card, {
+			// @ts-ignore - Svelte 5 snippet in @testing-library/svelte tests
 			children: () => 'Card Content'
 		});
 
@@ -49,6 +57,7 @@ describe('Card', () => {
 		const { getByRole } = render(Card, {
 			clickable: true,
 			onclick: handleClick,
+			// @ts-ignore - Svelte 5 snippet in @testing-library/svelte tests
 			children: () => 'Clickable Card'
 		});
 
@@ -60,6 +69,7 @@ describe('Card', () => {
 	it('applies custom classes', async () => {
 		const { container } = render(Card, {
 			class: 'custom-class',
+			// @ts-ignore - Svelte 5 snippet in @testing-library/svelte tests
 			children: () => 'Test'
 		});
 

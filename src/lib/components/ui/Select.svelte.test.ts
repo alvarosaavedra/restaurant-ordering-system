@@ -10,8 +10,7 @@ describe('Select', () => {
 	it('renders with default props', async () => {
 		const { getByRole } = render(Select, {
 			name: 'test-select',
-			options: [{ value: 'opt1', label: 'Option 1' }],
-			children: () => {}
+			options: [{ value: 'opt1', label: 'Option 1' }]
 		});
 
 		const select = getByRole('combobox');
@@ -25,8 +24,7 @@ describe('Select', () => {
 				{ value: 'opt1', label: 'Option 1' },
 				{ value: 'opt2', label: 'Option 2' },
 				{ value: 'opt3', label: 'Option 3' }
-			],
-			children: () => {}
+			]
 		});
 
 		const options = getAllByRole('option');
@@ -38,8 +36,7 @@ describe('Select', () => {
 		const { getByRole } = render(Select, {
 			name: 'test-select',
 			options: [{ value: 'opt1', label: 'Option 1' }],
-			placeholder: 'Select an option',
-			children: () => {}
+			placeholder: 'Select an option'
 		});
 
 		const select = getByRole('combobox');
@@ -52,8 +49,7 @@ describe('Select', () => {
 		const { getByRole } = render(Select, {
 			name: 'test-select',
 			options: [{ value: 'opt1', label: 'Option 1' }],
-			onchange: handleChange,
-			children: () => {}
+			onchange: handleChange
 		});
 
 		const select = getByRole('combobox');
@@ -65,8 +61,7 @@ describe('Select', () => {
 		const { getByRole } = render(Select, {
 			name: 'test-select',
 			options: [{ value: 'opt1', label: 'Option 1' }],
-			disabled: true,
-			children: () => {}
+			disabled: true
 		});
 
 		const select = getByRole('combobox');
@@ -79,8 +74,7 @@ describe('Select', () => {
 			options: [{ value: 'opt1', label: 'Option 1' }],
 			'aria-label': 'Test Select',
 			'aria-describedby': 'test-description',
-			required: true,
-			children: () => {}
+			required: true
 		});
 
 		const select = getByRole('combobox');

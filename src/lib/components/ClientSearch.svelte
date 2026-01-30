@@ -17,18 +17,12 @@
 
 	let { customerName, onSelect, onClear, onUpdate, placeholder = 'Search clients by name...', 'aria-label': ariaLabel = 'Search existing clients' }: Props = $props();
 
-	let searchQuery = $state(customerName);
+	let searchQuery = $derived(customerName);
 	let results = $state<ClientResult[]>([]);
 	let loading = $state(false);
 	let selectedIndex = $state(-1);
 	let showDropdown = $state(false);
 	let inputRef: HTMLInputElement;
-
-	$effect(() => {
-		if (searchQuery !== customerName) {
-			searchQuery = customerName;
-		}
-	});
 
 	// Debounced search
 	let searchTimeout: ReturnType<typeof setTimeout> | null = null;

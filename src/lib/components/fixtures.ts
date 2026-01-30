@@ -116,7 +116,8 @@ export const mockClient = {
 	name: 'Alice Williams',
 	phone: '555-1234',
 	address: '123 Main St, City, ST 12345',
-	createdAt: new Date('2024-01-01T00:00:00Z')
+	createdAt: new Date('2024-01-01T00:00:00Z'),
+	updatedAt: new Date('2024-01-01T00:00:00Z')
 };
 
 export const mockClient2 = {
@@ -124,7 +125,8 @@ export const mockClient2 = {
 	name: 'Bob Brown',
 	phone: '555-5678',
 	address: '456 Oak Ave, Town, ST 67890',
-	createdAt: new Date('2024-01-02T00:00:00Z')
+	createdAt: new Date('2024-01-02T00:00:00Z'),
+	updatedAt: new Date('2024-01-02T00:00:00Z')
 };
 
 // Mock Order Item data
@@ -271,7 +273,8 @@ export function createMockClients(count: number) {
 		name: `Client ${i}`,
 		phone: `555-${1000 + i}`,
 		address: `${i * 100 + 1} Test St, City, ST 12345`,
-		createdAt: new Date('2024-01-01T00:00:00Z')
+		createdAt: new Date('2024-01-01T00:00:00Z'),
+		updatedAt: new Date('2024-01-01T00:00:00Z')
 	}));
 }
 
@@ -318,6 +321,7 @@ export const mockClient3 = {
 	phone: '555-9012',
 	address: '789 Pine Rd, Village, IL 90789',
 	createdAt: new Date('2024-01-03T00:00:00Z'),
+	updatedAt: new Date('2024-01-03T00:00:00Z'),
 	orderCount: 0
 };
 

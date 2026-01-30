@@ -1,4 +1,4 @@
-import { vi, expect, afterEach } from 'vitest';
+import { vi, expect, afterEach, type MockedFunction } from 'vitest';
 import { cleanup } from '@testing-library/svelte';
 import * as matchers from '@testing-library/jest-dom/matchers';
 import { goto } from '$app/navigation';
@@ -172,7 +172,7 @@ export type MockFetchCalls = Array<{
 }>;
 
 export function getFetchCalls(): MockFetchCalls {
-	return (global.fetch as vi.MockedFunction<typeof fetch>).mock.calls.map(([url, options]) => ({
+	return (global.fetch as MockedFunction<typeof fetch>).mock.calls.map(([url, options]) => ({
 		url: url as string,
 		options
 	}));
@@ -191,7 +191,7 @@ export function expectFetchNotCalled() {
 }
 
 export function getLastFetchCall() {
-	const calls = (global.fetch as vi.MockedFunction<typeof fetch>).mock.calls;
+	const calls = (global.fetch as MockedFunction<typeof fetch>).mock.calls;
 	const lastCall = calls[calls.length - 1];
 	if (!lastCall) {
 		return null;
