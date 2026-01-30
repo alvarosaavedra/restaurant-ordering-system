@@ -344,7 +344,8 @@ export const actions: Actions = {
 
 			throw redirect(302, '/orders');
 		} catch (err) {
-			if (err instanceof Response && err.status === 302) {
+			// Check if it's a redirect error (SvelteKit redirect throws an object with status and location)
+			if (err && typeof err === 'object' && 'status' in err && err.status === 302 && 'location' in err) {
 				throw err;
 			}
 			console.error('Error deleting order:', err);

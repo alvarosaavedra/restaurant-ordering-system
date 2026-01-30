@@ -22,6 +22,7 @@ export class LoginPage extends BasePage {
 	}
 
 	async expectErrorMessage(message: string): Promise<void> {
+		await expect(this.errorMessage).toBeVisible({ timeout: 5000 });
 		await expect(this.errorMessage).toContainText(message);
 	}
 

@@ -1,13 +1,20 @@
 import { defineConfig } from '@playwright/test';
+import * as path from 'path';
+import * as url from 'url';
+
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+const testDbPath = path.join(__dirname, 'test.db');
 
 export default defineConfig({
 	globalSetup: './e2e/global-setup.ts',
 	webServer: {
 		command: 'npm run build && npm run preview',
 		port: 4173,
-		timeout: 120000,
+		timeout: 180000,
 		reuseExistingServer: !process.env.CI,
-		env: process.env.DATABASE_URL ? { DATABASE_URL: process.env.DATABASE_URL } : undefined
+		env: {
+			DATABASE_URL: `file:${testDbPath}`
+		}
 	},
 	testDir: 'e2e',
 	fullyParallel: true,

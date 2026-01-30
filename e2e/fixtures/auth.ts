@@ -5,10 +5,10 @@ import { createOrder } from './database';
 export { createOrder };
 
 export const TEST_USERS = {
-	orderTaker: { email: 'john@bakery.com', password: 'password123', role: 'order_taker' },
-	kitchen: { email: 'jane@bakery.com', password: 'password123', role: 'kitchen' },
-	delivery: { email: 'mike@bakery.com', password: 'password123', role: 'delivery' },
-	admin: { email: 'admin@bakery.com', password: 'password123', role: 'admin' }
+	orderTaker: { id: 'user-order-taker', email: 'john@bakery.com', password: 'password123', role: 'order_taker' },
+	kitchen: { id: 'user-kitchen', email: 'jane@bakery.com', password: 'password123', role: 'kitchen' },
+	delivery: { id: 'user-delivery', email: 'mike@bakery.com', password: 'password123', role: 'delivery' },
+	admin: { id: 'user-admin', email: 'admin@bakery.com', password: 'password123', role: 'admin' }
 } as const;
 
 export type UserRole = keyof typeof TEST_USERS;

@@ -25,18 +25,20 @@
 			<form
 				method="POST"
 				use:enhance={() => {
-					return async ({ result }: { result: { type: string; location?: string } }) => {
+					return async ({ result, update }: { result: { type: string; location?: string }; update: () => Promise<void> }) => {
 						if (result.type === 'redirect' && result.location) {
 							// eslint-disable-next-line svelte/no-navigation-without-resolve
 							await goto(result.location, { replaceState: true });
 						} else {
+							// Update form with error data from server
+							await update();
 							isLoading = false;
 						}
 					};
 				}}
-				onsubmit={() => isLoading = true}
-				class="space-y-5"
-			>
+					onsubmit={() => isLoading = true}
+					class="space-y-5"
+				>
 				<div>
 					<label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
 					<Input id="email" name="email" type="email" required placeholder="you@example.com" class="w-full" />

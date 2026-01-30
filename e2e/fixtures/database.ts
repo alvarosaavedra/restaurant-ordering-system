@@ -3,6 +3,8 @@ import { createClient } from '@libsql/client';
 import { drizzle } from 'drizzle-orm/libsql';
 import * as schema from '../../src/lib/server/db/schema';
 import { nanoid } from 'nanoid';
+import * as path from 'path';
+import * as url from 'url';
 import type {
 	InsertClient,
 	InsertMenuItem,
@@ -13,9 +15,12 @@ import type {
 
 let testDb: ReturnType<typeof drizzle>;
 
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+
 function getDatabasePath(): string {
-	const workerIndex = process.env.TEST_WORKER_INDEX || '0';
-	return `file:test-worker-${workerIndex}.db`;
+	// Use the same database path as playwright.config.ts and global-setup.ts
+	const testDbPath = path.join(__dirname, '..', '..', 'test.db');
+	return `file:${testDbPath}`;
 }
 
 export async function createOrder(orderData: Partial<InsertOrder> & { items?: Partial<InsertOrderItem>[] } = {}) {
