@@ -28,7 +28,19 @@ export const load: PageServerLoad = async ({ cookies }) => {
 		'Valid session found for user'
 	);
 
-	return { user };
+	// Redirect already authenticated users to their role-specific page
+	switch (user.role) {
+		case 'kitchen':
+			redirect(302, '/kitchen');
+			break;
+		case 'delivery':
+			redirect(302, '/delivery');
+			break;
+		case 'admin':
+		case 'order_taker':
+		default:
+			redirect(302, '/orders/new');
+	}
 };
 
 export const actions: Actions = {

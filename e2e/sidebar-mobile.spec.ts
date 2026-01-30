@@ -64,6 +64,7 @@ test.describe('Sidebar Navigation - Mobile', () => {
     await hamburgerButton.click();
     await page.waitForTimeout(500);
 
+    const sidebarMenuItems = getSidebarLocator(page).getByRole('menuitem');
     await sidebarMenuItems.getByText('Order History').click();
 
     await page.waitForTimeout(500);

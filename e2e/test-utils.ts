@@ -21,7 +21,8 @@ export function setCurrentWorkerIndex(workerIndex: number) {
 export function getTestDb(workerIndex?: number) {
 	const index = workerIndex ?? currentWorkerIndex;
 	if (!dbConnections.has(index)) {
-		const dbPath = path.join(__dirname, '..', `test-worker-${index}.db`);
+		// Use the same database path as playwright.config.ts and global-setup.ts
+		const dbPath = path.join(__dirname, '..', 'test.db');
 		const db = drizzle(createClient({ url: 'file:' + dbPath }), { schema });
 		dbConnections.set(index, db);
 	}
