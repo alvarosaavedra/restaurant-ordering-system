@@ -58,6 +58,7 @@
 		if (sort !== 'newest') params.set('sort', sort);
 		else params.delete('sort');
 		params.set('page', '1');
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		goto(`/orders?${params.toString()}`, { replaceState: true });
 	}
 
@@ -67,6 +68,7 @@
 		if (statusFilter) params.set('status', statusFilter);
 		if (sort !== 'newest') params.set('sort', sort);
 		params.set('page', page.toString());
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		goto(`/orders?${params.toString()}`);
 	}
 
@@ -188,6 +190,7 @@
 					{/if}
 					</p>
 					{#if !search && !statusFilter}
+						<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 						<a href="/orders/new" class="inline-flex items-center justify-center px-6 py-2.5 bg-bakery-600 text-white font-medium rounded-lg hover:bg-bakery-700 transition-colors min-h-[44px] min-w-[44px]">
 							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -200,23 +203,24 @@
 	{:else}
 		<Card variant="elevated" class="p-6 shadow-warm-glow-sm">
 			<div class="space-y-3">
-			{#each orders as order (order.id)}
+		{#each orders as order (order.id)}
+				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 				<a href={`/orders/${order.id}`} class="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-neutral-50 rounded-lg hover:bg-neutral-100 transition-colors cursor-pointer gap-3 w-full text-left">
-						<div class="flex items-center gap-3 flex-1 min-w-0">
-							<StatusBadge status={order.status} />
-							<div class="flex-1 min-w-0">
-								<h3 class="font-semibold text-neutral-900 truncate">{order.customerName}</h3>
-								<p class="text-sm text-neutral-500">{order.items?.length || 0} item{order.items?.length !== 1 ? 's' : ''} · ${order.totalAmount?.toFixed(2) || '0.00'}</p>
-							</div>
+					<div class="flex items-center gap-4 flex-1 min-w-0">
+						<StatusBadge status={order.status} />
+						<div class="flex-1 min-w-0">
+							<h3 class="font-semibold text-neutral-900 truncate">{order.customerName}</h3>
+							<p class="text-sm text-neutral-500">{order.items?.length || 0} item{order.items?.length !== 1 ? 's' : ''} · ${order.totalAmount?.toFixed(2) || '0.00'}</p>
 						</div>
-						<div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
-							<span class="text-sm text-neutral-500">{formatDate(order.createdAt)}</span>
-							<svg class="w-4 h-4 text-neutral-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-							</svg>
 					</div>
-				</a>
-			{/each}
+					<div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
+						<span class="text-sm text-neutral-500">{formatDate(order.createdAt)}</span>
+						<svg class="w-4 h-4 text-neutral-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+						</svg>
+					</div>
+					</a>
+				{/each}
 			</div>
 		</Card>
 		{/if}

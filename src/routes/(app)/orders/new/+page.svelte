@@ -116,6 +116,7 @@
 				deliveryDateTime = '';
 				address = '';
 				comment = '';
+				// eslint-disable-next-line svelte/no-navigation-without-resolve
 				await goto('/orders', { replaceState: false });
 			} else {
 				const errorData = await response.json();

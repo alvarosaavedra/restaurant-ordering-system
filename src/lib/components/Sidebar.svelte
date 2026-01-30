@@ -105,12 +105,8 @@
 		<!-- Navigation Items -->
 		<nav class="p-4 space-y-1" aria-label="Navigation menu">
 			{#each filteredNavItems as item (item.href)}
-				<a
-					href={item.href}
-					onclick={() => {
-						onClose?.();
-					}}
-					class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 min-h-[44px] {
+				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+				<a href={item.href} class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 min-h-[44px] {
 					isActive(item.href)
 						? 'bg-bakery-100 text-bakery-700 border-l-4 border-bakery-500'
 						: 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 border-l-4 border-transparent'

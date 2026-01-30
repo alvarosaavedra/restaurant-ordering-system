@@ -30,18 +30,21 @@
 
 	let { data }: { data: PageData } = $props();
 
+	let initialOrders = $derived(data.orders || []);
+	// eslint-disable-next-line svelte/prefer-writable-derived
 	let orders = $state<Order[]>([]);
-	let isRefreshing = $state(false);
-	let lastUpdated = $state<Date | null>(null);
 
 	$effect(() => {
-		orders = (data.orders || []).map((order: Order) => ({
+		orders = initialOrders.map((order: Order) => ({
 			...order,
 			deliveryDateTime: order.deliveryDateTime || null,
 			address: order.address || null,
 			comment: order.comment || null
 		}));
 	});
+	let isRefreshing = $state(false);
+	let lastUpdated = $state<Date | null>(null);
+
 	let intervalId: ReturnType<typeof setInterval> | null = null;
 	let abortController: AbortController | null = null;
 

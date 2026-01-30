@@ -29,5 +29,5 @@
 <a href="#main-content" class="skip-link">Skip to main content</a>
 
 <div transition:fade={{ duration: 200 }}>
-	{@render children()}
+	{@render children?.()}
 </div>
