@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, cleanup as testingLibraryCleanup } from '@testing-library/svelte';
-import LoginPage from '../(auth)/login/+page.svelte';
-import { mockNavigation } from '../__tests__/fixtures';
+import LoginPage from './+page.svelte';
+import { mockNavigation, mockFetch } from '$lib/components/__tests__/utils';
 
 describe('LoginPage', () => {
 	beforeEach(() => {

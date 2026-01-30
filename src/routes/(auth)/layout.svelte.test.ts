@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, cleanup as testingLibraryCleanup } from '@testing-library/svelte';
-import AuthLayout from '../(auth)/+layout.svelte';
+import AuthLayout from './+layout.svelte';
 
 describe('AuthLayout', () => {
 	beforeEach(() => {

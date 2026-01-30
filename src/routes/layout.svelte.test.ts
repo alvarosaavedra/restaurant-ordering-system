@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, cleanup as testingLibraryCleanup } from '@testing-library/svelte';
-import RootLayout from '../routes/+layout.svelte';
+import RootLayout from './+layout.svelte';
 
 describe('RootLayout', () => {
 	beforeEach(() => {
