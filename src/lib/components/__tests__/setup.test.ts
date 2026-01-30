@@ -24,7 +24,7 @@ import {
 	mockErrorResponse,
 	createMockOrders,
 	createMockOrderItems
-} from './fixtures';
+} from '../fixtures';
 
 describe('Test Utilities', () => {
 	describe('mockFetch', () => {
