@@ -37,11 +37,12 @@ describe('LogoutPage', () => {
 		expect(submitButton?.textContent).toContain('Logout');
 	});
 
-	it('displays cancel link', async () => {
+	it('displays cancel button', async () => {
 		const { container, getByText } = render(LogoutPage);
 
 		expect(getByText('Cancel')).toBeInTheDocument();
-		expect(container.querySelector('a[href="/"]')).toBeInTheDocument();
+		const cancelButton = getByText('Cancel');
+		expect(cancelButton.tagName).toBe('BUTTON');
 	});
 
 	it('has accessibility attributes', async () => {
