@@ -22,6 +22,13 @@
       "when": 1769630302531,
       "tag": "0002_secret_ares",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1769872532068,
+      "tag": "0003_silky_maximus",
+      "breakpoints": true
     }
   ]
 }

@@ -138,20 +138,20 @@ calculateCartTotals(
 ## Implementation Phases (TDD)
 
 ### Phase 0: Setup & Planning
-- [ ] Create this implementation plan
-- [ ] Set up git worktree for feature branch
-- [ ] Review existing test patterns
+- [x] Create this implementation plan
+- [x] Set up git worktree for feature branch
+- [x] Review existing test patterns
 
-### Phase 1: Database Schema (Tests First)
+### Phase 1: Database Schema (Tests First) ✅ COMPLETED
 **Test Files:**
 - `src/lib/server/db/schema.discounts.test.ts` - Test schema types
 
 **Implementation:**
-- [ ] Write failing tests for discount types
-- [ ] Update `src/lib/server/db/schema.ts` with discount fields
-- [ ] Create migration file
-- [ ] Run migration and verify
-- [ ] Update type exports
+- [x] Write failing tests for discount types (11 tests created)
+- [x] Update `src/lib/server/db/schema.ts` with discount fields
+- [x] Create migration file (0003_silky_maximus.sql)
+- [x] Run migration and verify (local.db created with discount columns)
+- [x] Update type exports (inferred types include discount fields)
 
 ### Phase 2: Discount Logic (Tests First)
 **Test Files:**
