@@ -163,15 +163,15 @@ calculateCartTotals(
 - [x] Edge cases: 0%, 100%, negative prevention, max limits
 - [x] Pass all unit tests (27/27 passing)
 
-### Phase 3: Cart State Management (Tests First)
+### Phase 3: Cart State Management (Tests First) ✅ COMPLETED
 **Test Files:**
-- `src/lib/stores/cart.spec.ts` or inline in component tests
+- `src/lib/stores/cart.spec.ts` - Cart store tests (22 tests)
 
 **Implementation:**
-- [ ] Extend CartItem interface with discount support
-- [ ] Add discount state to cart store
-- [ ] Functions: addItemDiscount, removeItemDiscount, setOrderDiscount, clearAllDiscounts
-- [ ] Test cart total calculations with discounts
+- [x] Extend CartItem interface with discount support
+- [x] Add discount state to cart store (writable stores with derived totals)
+- [x] Functions: addItemDiscount, removeItemDiscount, setOrderDiscount, clearOrderDiscount, clearAllDiscounts
+- [x] Test cart total calculations with discounts (22/22 passing)
 
 ### Phase 4: UI Components (Tests First)
 **Test Files:**
