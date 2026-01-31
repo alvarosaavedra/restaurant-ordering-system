@@ -223,7 +223,7 @@ calculateCartTotals(
 - [x] Update order creation to include discount data
 - [x] All 243 unit tests passing (1 skipped)
 
-### Phase 6: Order Display Updates
+### Phase 6: Order Display Updates 🔄 IN PROGRESS
 **Test Files:**
 - `e2e/orders-discount-display.spec.ts`
 
