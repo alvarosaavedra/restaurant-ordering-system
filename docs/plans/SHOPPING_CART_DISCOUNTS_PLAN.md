@@ -1,0 +1,384 @@
+# Shopping Cart Discounts Implementation Plan
+
+## Overview
+Add discount functionality to the shopping cart in the order creation flow, supporting both per-item and total order discounts with mobile-first design and TDD approach.
+
+## Requirements
+
+### Discount Types
+- **Fixed Amount**: Dollar value discount (e.g., $5.00 off)
+- **Percentage**: Percentage-based discount (e.g., 10% off)
+
+### Discount Scope
+- **Per-item discounts**: Apply to specific menu items in the cart
+- **Total order discounts**: Apply to the entire order subtotal
+- Multiple discounts can be applied (stackable)
+
+### Mobile-First UI
+- Collapsible discount section in order summary
+- Bottom sheet modal for discount entry (mobile-optimized)
+- Large touch targets (min 44px)
+- Clear visual hierarchy
+
+### Display Requirements
+- Show original price with strikethrough
+- Show discount amount
+- Show final discounted price
+- Display discount reason/note
+
+## Data Model
+
+### Updated CartItem Interface
+```typescript
+interface CartItem {
+  item: MenuItemWithCategory;
+  quantity: number;
+  discount?: ItemDiscount;
+}
+
+interface ItemDiscount {
+  type: 'fixed' | 'percentage';
+  value: number;
+  reason?: string;
+}
+```
+
+### Order Discount Interface
+```typescript
+interface OrderDiscount {
+  type: 'fixed' | 'percentage';
+  value: number;
+  reason?: string;
+}
+```
+
+### Database Schema Changes
+
+#### order table additions:
+- `discountAmount: real` - Total discount applied to order
+- `discountType: text` - 'fixed' | 'percentage' | null
+- `discountValue: real` - Original discount value
+- `discountReason: text` - Optional reason for discount
+
+#### orderItem table additions:
+- `discountAmount: real` - Discount amount for this item
+- `discountType: text` - 'fixed' | 'percentage' | null
+- `discountValue: real` - Original discount value
+- `discountReason: text` - Optional reason
+- `finalPrice: real` - Price after discount (for reporting)
+
+## UI Components
+
+### 1. DiscountPanel.svelte
+Main discount management panel in order summary:
+- Toggle between item-level and total-level discounts
+- List of applied discounts with remove option
+- "Add Discount" button opening mobile sheet/modal
+- Real-time calculation display
+
+### 2. DiscountItem.svelte
+Per-item discount display and controls:
+- Inline discount badge on cart items
+- Quick discount button (opens edit modal)
+- Visual indicator of discounted price
+
+### 3. MobileDiscountSheet.svelte
+Bottom sheet for mobile discount entry:
+- Discount type selector (segmented control)
+- Amount input with currency/percentage formatting
+- Item selector (for per-item discounts)
+- Reason text input
+- Save/Cancel actions
+
+### 4. DiscountBadge.svelte
+Small component showing discount info:
+- Shows discount percentage or amount
+- Hover/press to show details
+- Used in cart items and order summary
+
+## Utility Functions
+
+### discounts.ts
+```typescript
+// Calculate discount amount
+calculateDiscountAmount(
+  basePrice: number, 
+  discountType: 'fixed' | 'percentage', 
+  discountValue: number
+): number
+
+// Calculate final price after discount
+calculateFinalPrice(
+  basePrice: number, 
+  discountType: 'fixed' | 'percentage', 
+  discountValue: number
+): number
+
+// Validate discount (prevent negative totals, excessive discounts)
+validateDiscount(
+  basePrice: number,
+  discountType: 'fixed' | 'percentage',
+  discountValue: number,
+  maxDiscountPercentage?: number // default 50%
+): { valid: boolean; error?: string }
+
+// Calculate cart totals with discounts
+calculateCartTotals(
+  cart: CartItem[],
+  orderDiscount?: OrderDiscount
+): {
+  subtotal: number;
+  itemDiscounts: number;
+  orderDiscount: number;
+  totalDiscount: number;
+  finalTotal: number;
+}
+```
+
+## Implementation Phases (TDD)
+
+### Phase 0: Setup & Planning
+- [ ] Create this implementation plan
+- [ ] Set up git worktree for feature branch
+- [ ] Review existing test patterns
+
+### Phase 1: Database Schema (Tests First)
+**Test Files:**
+- `src/lib/server/db/schema.discounts.test.ts` - Test schema types
+
+**Implementation:**
+- [ ] Write failing tests for discount types
+- [ ] Update `src/lib/server/db/schema.ts` with discount fields
+- [ ] Create migration file
+- [ ] Run migration and verify
+- [ ] Update type exports
+
+### Phase 2: Discount Logic (Tests First)
+**Test Files:**
+- `src/lib/utils/discounts.spec.ts` - Core calculation tests
+
+**Implementation:**
+- [ ] Write failing tests for all discount functions
+- [ ] Create `src/lib/utils/discounts.ts` with calculation logic
+- [ ] Edge cases: 0%, 100%, negative prevention, max limits
+- [ ] Pass all unit tests
+
+### Phase 3: Cart State Management (Tests First)
+**Test Files:**
+- `src/lib/stores/cart.spec.ts` or inline in component tests
+
+**Implementation:**
+- [ ] Extend CartItem interface with discount support
+- [ ] Add discount state to cart store
+- [ ] Functions: addItemDiscount, removeItemDiscount, setOrderDiscount, clearAllDiscounts
+- [ ] Test cart total calculations with discounts
+
+### Phase 4: UI Components (Tests First)
+**Test Files:**
+- `src/lib/components/DiscountPanel.svelte.test.ts`
+- `src/lib/components/DiscountItem.svelte.test.ts`
+- `src/lib/components/MobileDiscountSheet.svelte.test.ts`
+- `src/lib/components/DiscountBadge.svelte.test.ts`
+
+**Implementation:**
+- [ ] Write failing component tests
+- [ ] Implement DiscountBadge (simplest first)
+- [ ] Implement DiscountItem
+- [ ] Implement MobileDiscountSheet with mobile interactions
+- [ ] Implement DiscountPanel
+- [ ] Pass all component tests
+
+### Phase 5: Integration (Tests First)
+**Test Files:**
+- `src/routes/(app)/orders/new/page.svelte.test.ts` - Updated tests
+- `e2e/shopping-cart-discounts.spec.ts` - E2E workflow
+
+**Implementation:**
+- [ ] Update `+page.svelte` with discount panel
+- [ ] Update cart display to show discount badges
+- [ ] Update `+page.server.ts` to handle discount data
+- [ ] Update API endpoint `/api/orders` to store discounts
+- [ ] Test full workflow in browser
+
+### Phase 6: Order Display Updates
+**Test Files:**
+- `e2e/orders-discount-display.spec.ts`
+
+**Implementation:**
+- [ ] Update order detail page to show discount breakdown
+- [ ] Update orders list to indicate discounted orders
+- [ ] Update order cards with discount badges
+
+### Phase 7: Mobile Optimization & Polish
+- [ ] Test on mobile viewport (320px - 428px)
+- [ ] Verify touch targets are 44px+
+- [ ] Test bottom sheet behavior
+- [ ] Verify animations are smooth
+- [ ] Accessibility audit (keyboard nav, screen readers)
+
+### Phase 8: Final Testing & Documentation
+- [ ] Run full test suite: `npm run test`
+- [ ] Run lint: `npm run lint`
+- [ ] Run type check: `npm run check`
+- [ ] Update documentation with discount feature
+- [ ] Create user guide for discounts
+
+## Business Rules
+
+### Discount Validation
+1. **Maximum Discount**: 50% of item/order subtotal (prevents excessive discounts)
+2. **No Negative Totals**: Final total cannot be less than $0
+3. **Minimum Amount**: Discount must be > $0.01 for fixed, > 0% for percentage
+4. **Reason Optional**: Discount reason is optional but recommended
+5. **Stackable**: Multiple item discounts + one order discount allowed
+6. **Calculation Order**: Item discounts applied first, then order discount on subtotal
+
+### Display Rules
+1. Always show original price with strikethrough when discounted
+2. Show discount amount with minus sign (e.g., "-$5.00")
+3. Show final price prominently
+4. Display discount reason in smaller text below
+5. Use success/warning colors to indicate discount status
+
+## API Changes
+
+### POST /api/orders Request Body
+```json
+{
+  "customerName": "...",
+  "customerPhone": "...",
+  "items": [
+    {
+      "menuItemId": "...",
+      "quantity": 2,
+      "discount": {
+        "type": "percentage",
+        "value": 10,
+        "reason": "Loyalty discount"
+      }
+    }
+  ],
+  "orderDiscount": {
+    "type": "fixed",
+    "value": 5.00,
+    "reason": "First order discount"
+  }
+}
+```
+
+### Response
+Same as current, but now includes discount details in stored order.
+
+## Mobile UX Specifications
+
+### Discount Panel (Order Summary)
+```
+┌─────────────────────────────────────┐
+│ Order Summary                       │
+│                                     │
+│ Subtotal:        $50.00             │
+│ ┌─────────────────────────────────┐ │
+│ │ Discounts        [+ Add ▼]      │ │
+│ │ ─────────────────────────────── │ │
+│ │ 🏷️ 10% off Item A       -$3.00 │ │
+│ │    Loyalty discount     [✕]     │ │
+│ │ 🏷️ $5.00 off Total      -$5.00 │ │
+│ │    First order          [✕]     │ │
+│ └─────────────────────────────────┘ │
+│                                     │
+│ You saved:       -$8.00             │
+│                                     │
+│ Total:           $42.00             │
+│                                     │
+│ [    Clear    ] [  Create Order  ]  │
+└─────────────────────────────────────┘
+```
+
+### Mobile Discount Sheet (Bottom Sheet)
+```
+┌─────────────────────────────────────┐
+│         ───────                    │ ← Drag handle
+│                                     │
+│ Add Discount                        │
+│                                     │
+│ [Per Item ▼] [Total Order ▼]       │
+│                                     │
+│ Apply to:                           │
+│ ┌─────────────────────────────────┐ │
+│ │ 🔍 Search items...              │ │
+│ │ ○ Chocolate Cake                │ │
+│ │ ● Vanilla Cupcake          $5.00│ │
+│ └─────────────────────────────────┘ │
+│                                     │
+│ Discount Type:                      │
+│ [  Fixed Amount  │  Percentage  ]   │
+│                                     │
+│ Amount:                             │
+│ ┌─────────────────────────────────┐ │
+│ │ $ 5.00                          │ │
+│ └─────────────────────────────────┘ │
+│                                     │
+│ Reason (optional):                  │
+│ ┌─────────────────────────────────┐ │
+│ │ Loyalty discount                │ │
+│ └─────────────────────────────────┘ │
+│                                     │
+│ Preview: $5.00 → $4.50 (-$0.50)     │
+│                                     │
+│ [    Cancel    ] [     Save     ]   │
+└─────────────────────────────────────┘
+```
+
+## Testing Strategy
+
+### Unit Tests Coverage
+- Discount calculation accuracy (all combinations)
+- Validation rules (edge cases)
+- Cart total calculations with multiple discounts
+- Type safety
+
+### Component Tests Coverage
+- Rendering with and without discounts
+- User interactions (add, edit, remove)
+- Form validation
+- Mobile sheet open/close
+- Accessibility attributes
+
+### E2E Tests Coverage
+- Full workflow: menu → cart → discounts → order creation
+- Mobile viewport testing (iPhone SE, iPhone 14, Pixel 7)
+- Discount persistence verification in database
+- Order detail page discount display
+
+## Success Criteria
+
+1. ✅ Users can add per-item discounts (fixed and percentage)
+2. ✅ Users can add total order discounts (fixed and percentage)
+3. ✅ Discount calculations are accurate to 2 decimal places
+4. ✅ UI works perfectly on mobile devices (320px+ width)
+5. ✅ All tests pass (unit, component, E2E)
+6. ✅ Discounts are stored in database and visible in order history
+7. ✅ Code follows existing project patterns and conventions
+8. ✅ No lint or type errors
+9. ✅ Accessibility compliant (WCAG 2.1 AA)
+
+## Timeline Estimate
+
+- Phase 1 (Database): 2 hours
+- Phase 2 (Logic): 3 hours
+- Phase 3 (Cart State): 2 hours
+- Phase 4 (Components): 6 hours
+- Phase 5 (Integration): 4 hours
+- Phase 6 (Display): 2 hours
+- Phase 7 (Mobile): 2 hours
+- Phase 8 (Final): 2 hours
+
+**Total: ~23 hours**
+
+## Notes
+
+- Reuse existing color scheme (bakery-600 for primary actions)
+- Follow existing component patterns (Button, Card, Input)
+- Maintain existing animation style (animate-slide-up)
+- Use existing toast notifications for feedback
+- Keep accessibility patterns (aria-labels, role attributes)
