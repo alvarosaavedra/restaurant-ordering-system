@@ -13,6 +13,12 @@
 		quantity: number;
 		unitPrice: number;
 		menuItemId: string;
+		// Discount fields
+		discountAmount: number | null;
+		discountType: 'fixed' | 'percentage' | null;
+		discountValue: number | null;
+		discountReason: string | null;
+		finalPrice: number | null;
 		menuItem: {
 			id: string;
 			name: string;
@@ -36,6 +42,11 @@
 		updatedAt: Date;
 		employeeId: string;
 		deletedAt?: Date | null;
+		// Discount fields
+		discountAmount: number | null;
+		discountType: 'fixed' | 'percentage' | null;
+		discountValue: number | null;
+		discountReason: string | null;
 		employee: {
 			id: string;
 			name: string;
@@ -158,6 +169,43 @@
 	function handleFormSuccess() {
 		closeAllModals();
 		invalidateAll();
+	}
+
+	// Discount calculation helpers
+	function calculateItemOriginalTotal(item: OrderItem): number {
+		return item.quantity * item.unitPrice;
+	}
+
+	function calculateItemDiscountAmount(item: OrderItem): number {
+		if (!item.discountAmount) return 0;
+		return item.discountAmount * item.quantity;
+	}
+
+	function calculateSubtotal(): number {
+		return order.items.reduce((sum, item) => sum + calculateItemOriginalTotal(item), 0);
+	}
+
+	function calculateTotalItemDiscounts(): number {
+		return order.items.reduce((sum, item) => sum + calculateItemDiscountAmount(item), 0);
+	}
+
+	function calculateOrderDiscountAmount(): number {
+		if (!order.discountAmount) return 0;
+		return order.discountAmount;
+	}
+
+	function calculateTotalSavings(): number {
+		return calculateTotalItemDiscounts() + calculateOrderDiscountAmount();
+	}
+
+	function hasDiscounts(): boolean {
+		return calculateTotalSavings() > 0;
+	}
+
+	function formatDiscountLabel(type: 'fixed' | 'percentage' | null, value: number | null): string {
+		if (!type || !value) return '';
+		if (type === 'percentage') return `${value}% off`;
+		return `$${value.toFixed(2)} off`;
 	}
 </script>
 
@@ -311,31 +359,83 @@
 								<div class="flex-1 min-w-0">
 									<div class="flex items-start justify-between mb-1">
 										<h3 class="font-semibold text-gray-900">{item.menuItem?.name || 'Unknown'}</h3>
-										<span class="font-bold text-gray-900"
-											>${(item.quantity * item.unitPrice).toFixed(2)}</span
-										>
+										<div class="text-right">
+											{#if item.discountAmount && item.discountAmount > 0}
+												<div class="flex flex-col items-end">
+													<span class="text-sm text-gray-400 line-through">
+														${calculateItemOriginalTotal(item).toFixed(2)}
+													</span>
+													<span class="font-bold text-gray-900">
+														${(calculateItemOriginalTotal(item) - calculateItemDiscountAmount(item)).toFixed(2)}
+													</span>
+												</div>
+											{:else}
+												<span class="font-bold text-gray-900">
+													${calculateItemOriginalTotal(item).toFixed(2)}
+												</span>
+											{/if}
+										</div>
 									</div>
 									{#if item.menuItem?.description}
 										<p class="text-sm text-gray-500 line-clamp-2">{item.menuItem.description}</p>
 									{/if}
-									{#if item.menuItem?.categoryName}
-										<div class="flex items-center gap-2 mt-1">
+									<div class="flex items-center gap-2 mt-1 flex-wrap">
+										{#if item.menuItem?.categoryName}
 											<span class="text-xs font-medium text-primary-600 bg-primary-50 px-2 py-0.5 rounded-full">
 												{item.menuItem.categoryName}
 											</span>
-											<span class="text-xs text-gray-500">×{item.quantity}</span>
-											<span class="text-xs text-gray-500">@ ${item.unitPrice.toFixed(2)}</span>
-										</div>
-									{:else}
-										<div class="flex items-center gap-2 mt-1">
-											<span class="text-xs text-gray-500">×{item.quantity}</span>
-											<span class="text-xs text-gray-500">@ ${item.unitPrice.toFixed(2)}</span>
-										</div>
-									{/if}
+										{/if}
+										<span class="text-xs text-gray-500">×{item.quantity}</span>
+										<span class="text-xs text-gray-500">@ ${item.unitPrice.toFixed(2)}</span>
+										{#if item.discountAmount && item.discountAmount > 0}
+											<span class="text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+												{formatDiscountLabel(item.discountType, item.discountValue)}
+											</span>
+											{#if item.discountReason}
+												<span class="text-xs text-gray-400 italic">({item.discountReason})</span>
+											{/if}
+										{/if}
+									</div>
 								</div>
 							</div>
 						{/each}
 					</div>
+
+					<!-- Discount Breakdown -->
+					{#if hasDiscounts()}
+						<div class="mt-6 pt-4 border-t border-gray-200">
+							<div class="space-y-2">
+								<div class="flex items-center justify-between text-sm">
+									<span class="text-gray-600">Subtotal</span>
+									<span class="font-medium text-gray-900">${calculateSubtotal().toFixed(2)}</span>
+								</div>
+								
+								{#if calculateTotalItemDiscounts() > 0}
+									<div class="flex items-center justify-between text-sm">
+										<span class="text-gray-600">Item Discounts</span>
+										<span class="font-medium text-green-600">-${calculateTotalItemDiscounts().toFixed(2)}</span>
+									</div>
+								{/if}
+								
+								{#if order.discountAmount && order.discountAmount > 0}
+									<div class="flex items-center justify-between text-sm">
+										<span class="text-gray-600">
+											Order Discount
+											{#if order.discountReason}
+												<span class="text-gray-400">({order.discountReason})</span>
+											{/if}
+										</span>
+										<span class="font-medium text-green-600">-${order.discountAmount.toFixed(2)}</span>
+									</div>
+								{/if}
+								
+								<div class="flex items-center justify-between text-sm pt-2 border-t border-dashed border-gray-200">
+									<span class="font-semibold text-green-700">You Saved</span>
+									<span class="font-bold text-green-700">-${calculateTotalSavings().toFixed(2)}</span>
+								</div>
+							</div>
+						</div>
+					{/if}
 
 					<div class="mt-6 pt-4 border-t border-gray-200">
 						<div class="flex items-center justify-between">
@@ -588,7 +688,7 @@
 				<select
 					id="add-item-select"
 					class="block w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
-					onchange={(e) => addItem((e.target as HTMLSelectElement).value)}
+					onchange={(e: Event) => addItem((e.target as HTMLSelectElement).value)}
 				>
 					<option value="">Select an item...</option>
 					{#each data.menuItems as menuItem (menuItem.id)}

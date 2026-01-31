@@ -223,14 +223,37 @@ calculateCartTotals(
 - [x] Update order creation to include discount data
 - [x] All 243 unit tests passing (1 skipped)
 
-### Phase 6: Order Display Updates 🔄 IN PROGRESS
+### Phase 6: Order Display Updates ✅ COMPLETED
 **Test Files:**
-- `e2e/orders-discount-display.spec.ts`
+- `e2e/orders-discount-display.spec.ts` - 12 E2E tests covering order discount display
 
 **Implementation:**
-- [ ] Update order detail page to show discount breakdown
-- [ ] Update orders list to indicate discounted orders
-- [ ] Update order cards with discount badges
+- [x] Update order detail page to show discount breakdown
+  - Added discount fields to Order and OrderItem interfaces
+  - Added discount calculation helper functions
+  - Show item discounts with badges and strikethrough pricing
+  - Show order discount with label and reason
+  - Display total savings in discount breakdown section
+- [x] Update orders list to indicate discounted orders
+  - Added discount helper functions to check for discounts
+  - Show green "Saved $X.XX" badge on discounted orders
+  - Calculate total savings from item + order discounts
+- [x] Update order cards with discount badges
+  - Added discount fields to OrderCard component interfaces
+  - Show strikethrough original price and discounted total
+  - Display discount badges on individual items
+  - Added discount summary section with breakdown
+  - Show order discount with label and reason
+
+**Files Modified:**
+- `src/routes/(app)/orders/[id]/+page.server.ts` - Added discount fields to queries
+- `src/routes/(app)/orders/[id]/+page.svelte` - Added discount display UI
+- `src/routes/(app)/orders/+page.server.ts` - Added discount fields to queries
+- `src/routes/(app)/orders/+page.svelte` - Added discount indicators
+- `src/lib/components/OrderCard.svelte` - Added discount badges and summary
+- `e2e/orders-discount-display.spec.ts` - Created comprehensive E2E tests
+
+**Status:** ✅ All changes complete, lint passing
 
 ### Phase 7: Mobile Optimization & Polish
 - [ ] Test on mobile viewport (320px - 428px)
