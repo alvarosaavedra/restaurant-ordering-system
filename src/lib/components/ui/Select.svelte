@@ -38,7 +38,7 @@
 	let errorId = $derived(error ? `${id}-error` : undefined);
 	let combinedAriaDescribedby = $derived(ariaDescribedby && errorId ? `${ariaDescribedby} ${errorId}` : (ariaDescribedby || errorId));
 
-	const baseClasses = 'appearance-none block w-full px-4 py-3 min-h-[48px] pr-10 border rounded-xl shadow-sm bg-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-200 disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-400 text-base cursor-pointer';
+	const baseClasses = 'appearance-none block w-full px-4 py-3 min-h-[48px] pr-10 border rounded-xl shadow-sm bg-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-200 disabled:bg-gray-50 disabled:border-gray-200 disabled:text-gray-400 cursor-pointer text-[16px]';
 
 	const errorState = $derived.by(() => {
 		if (error) {
@@ -56,11 +56,19 @@
 		background-size: 1.5rem 1.5rem;
 	}
 
+	/* Mobile-specific fixes */
 	@media (pointer: coarse) {
 		select {
 			background-position: right 0.75rem center;
 			padding-right: 2.5rem;
+			font-size: 16px !important; /* Prevent iOS zoom */
 		}
+	}
+
+	/* Ensure select is clickable on mobile */
+	select {
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
 	}
 </style>
 
