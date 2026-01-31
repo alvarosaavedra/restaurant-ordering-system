@@ -153,15 +153,15 @@ calculateCartTotals(
 - [x] Run migration and verify (local.db created with discount columns)
 - [x] Update type exports (inferred types include discount fields)
 
-### Phase 2: Discount Logic (Tests First)
+### Phase 2: Discount Logic (Tests First) ✅ COMPLETED
 **Test Files:**
-- `src/lib/utils/discounts.spec.ts` - Core calculation tests
+- `src/lib/utils/discounts.spec.ts` - Core calculation tests (27 tests)
 
 **Implementation:**
-- [ ] Write failing tests for all discount functions
-- [ ] Create `src/lib/utils/discounts.ts` with calculation logic
-- [ ] Edge cases: 0%, 100%, negative prevention, max limits
-- [ ] Pass all unit tests
+- [x] Write failing tests for all discount functions (27 tests)
+- [x] Create `src/lib/utils/discounts.ts` with calculation logic
+- [x] Edge cases: 0%, 100%, negative prevention, max limits
+- [x] Pass all unit tests (27/27 passing)
 
 ### Phase 3: Cart State Management (Tests First)
 **Test Files:**
