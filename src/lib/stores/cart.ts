@@ -1,6 +1,6 @@
 import type { MenuItemWithCategory } from '$lib/types/orders';
-import { calculateCartTotals, type OrderDiscount as UtilsOrderDiscount } from '$lib/utils/discounts';
-import { writable, derived, get, type Readable } from 'svelte/store';
+import { calculateCartTotals } from '$lib/utils/discounts';
+import { writable, derived, type Readable } from 'svelte/store';
 
 export interface ItemDiscount {
 	type: 'fixed' | 'percentage';
@@ -114,7 +114,8 @@ export function createCartStore(): CartStore {
 		itemsStore.update((items) =>
 			items.map((cartItem) => {
 				if (cartItem.item.id === itemId) {
-					const { discount: _, ...rest } = cartItem;
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const { discount, ...rest } = cartItem;
 					return rest;
 				}
 				return cartItem;
@@ -134,7 +135,8 @@ export function createCartStore(): CartStore {
 		// Remove all item discounts
 		itemsStore.update((items) =>
 			items.map((cartItem) => {
-				const { discount: _, ...rest } = cartItem;
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { discount, ...rest } = cartItem;
 				return rest;
 			})
 		);

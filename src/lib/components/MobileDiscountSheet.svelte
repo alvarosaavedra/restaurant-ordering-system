@@ -112,8 +112,8 @@
 							Apply to
 						</label>
 						<div class="space-y-2 max-h-40 overflow-y-auto border border-neutral-200 rounded-lg p-2">
-							{#each cartItems as cartItem}
-								<label class="flex items-center gap-3 p-2 rounded-lg cursor-pointer hover:bg-neutral-50 {selectedItem === cartItem.item.id ? 'bg-bakery-50 border border-bakery-200' : ''}">
+			{#each cartItems as cartItem (cartItem.item.id)}
+				<label class="flex items-center gap-3 p-2 rounded-lg cursor-pointer hover:bg-neutral-50 {selectedItem === cartItem.item.id ? 'bg-bakery-50 border border-bakery-200' : ''}">
 									<input
 										type="radio"
 										name="item"

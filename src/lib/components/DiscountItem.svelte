@@ -1,7 +1,7 @@
 <script lang="ts">
 	import DiscountBadge from './DiscountBadge.svelte';
 	import { calculateDiscountAmount } from '$lib/utils/discounts';
-	import type { CartItem, ItemDiscount } from '$lib/stores/cart';
+	import type { CartItem } from '$lib/stores/cart';
 
 	interface Props {
 		cartItem: CartItem;

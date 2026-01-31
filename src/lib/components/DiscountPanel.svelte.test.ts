@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, cleanup as testingLibraryCleanup, fireEvent } from '@testing-library/svelte';
+import { render, cleanup as testingLibraryCleanup } from '@testing-library/svelte';
 import DiscountPanel from './DiscountPanel.svelte';
 import type { CartItem } from '$lib/stores/cart';
 
