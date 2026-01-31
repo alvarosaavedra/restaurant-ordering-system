@@ -68,7 +68,7 @@
 			type: discountType,
 			value: numAmount,
 			reason: reason.trim() || undefined,
-			itemId: mode === 'item' ? selectedItem : undefined
+			itemId: mode === 'item' ? (selectedItem ?? undefined) : undefined
 		});
 	}
 
@@ -90,7 +90,7 @@
 		<div
 			data-testid="mobile-discount-sheet"
 			class="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-xl max-h-[85vh] overflow-y-auto"
-			onclick={(e) => e.stopPropagation()}
+			onclick={(e: MouseEvent) => e.stopPropagation()}
 			role="dialog"
 			aria-modal="true"
 			aria-label="Add discount"
@@ -169,16 +169,16 @@
 						{#if discountType === 'fixed'}
 							<span class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500">$</span>
 						{/if}
-						<input
-							type="number"
-							name="amount"
-							value={amount}
-							oninput={(e) => amount = e.currentTarget.value}
-							placeholder={discountType === 'fixed' ? '0.00' : '0'}
-							step="0.01"
-							min="0"
-							class="w-full py-3 {discountType === 'fixed' ? 'pl-8' : 'pl-3'} pr-3 text-base border border-neutral-300 rounded-lg focus:ring-2 focus:ring-bakery-500 focus:border-bakery-500"
-						/>
+					<input
+						type="number"
+						name="amount"
+						value={amount}
+						oninput={(e: Event & { currentTarget: HTMLInputElement }) => amount = e.currentTarget.value}
+						placeholder={discountType === 'fixed' ? '0.00' : '0'}
+						step="0.01"
+						min="0"
+						class="w-full py-3 {discountType === 'fixed' ? 'pl-8' : 'pl-3'} pr-3 text-base border border-neutral-300 rounded-lg focus:ring-2 focus:ring-bakery-500 focus:border-bakery-500"
+					/>
 						{#if discountType === 'percentage'}
 							<span class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500">%</span>
 						{/if}
@@ -193,13 +193,13 @@
 					<label class="block text-sm font-medium text-neutral-700 mb-1.5">
 						Reason (optional)
 					</label>
-					<input
-						type="text"
-						value={reason}
-						oninput={(e) => reason = e.currentTarget.value}
-						placeholder="e.g., Loyalty discount"
-						class="w-full py-3 px-3 text-base border border-neutral-300 rounded-lg focus:ring-2 focus:ring-bakery-500 focus:border-bakery-500"
-					/>
+				<input
+					type="text"
+					value={reason}
+					oninput={(e: Event & { currentTarget: HTMLInputElement }) => reason = e.currentTarget.value}
+					placeholder="e.g., Loyalty discount"
+					class="w-full py-3 px-3 text-base border border-neutral-300 rounded-lg focus:ring-2 focus:ring-bakery-500 focus:border-bakery-500"
+				/>
 				</div>
 
 				<!-- Error Message -->
@@ -209,9 +209,10 @@
 					</div>
 				{/if}
 
-				<!-- Preview -->
-				{#if preview()}
-					{@const p = preview()}
+			<!-- Preview -->
+			{#if preview()}
+				{@const p = preview()}
+				{#if p}
 					<div class="mb-4 p-3 bg-neutral-50 border border-neutral-200 rounded-lg">
 						<p class="text-sm text-neutral-600 mb-1">Preview:</p>
 						<div class="flex items-center justify-between">
@@ -221,6 +222,7 @@
 						</div>
 					</div>
 				{/if}
+			{/if}
 
 				<!-- Actions -->
 				<div class="flex gap-3 pt-2">

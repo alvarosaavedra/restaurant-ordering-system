@@ -89,12 +89,13 @@ export interface CartItem {
 			name: string;
 			displayOrder: number;
 			createdAt: Date;
-		};
+		} | null;
 	};
 	quantity: number;
 	discount?: {
 		type: 'fixed' | 'percentage';
 		value: number;
+		reason?: string;
 	};
 }
 
