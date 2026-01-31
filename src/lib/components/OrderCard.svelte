@@ -9,6 +9,11 @@
 		quantity: number;
 		unitPrice: number;
 		menuItemId: string;
+		// Discount fields
+		discountAmount: number | null;
+		discountType: 'fixed' | 'percentage' | null;
+		discountValue: number | null;
+		discountReason: string | null;
 		menuItem: {
 			id: string;
 			name: string;
@@ -26,6 +31,11 @@
 		totalAmount: number;
 		status: 'pending' | 'preparing' | 'ready' | 'delivered';
 		createdAt: Date | string;
+		// Discount fields
+		discountAmount: number | null;
+		discountType: 'fixed' | 'percentage' | null;
+		discountValue: number | null;
+		discountReason: string | null;
 		items: OrderItemWithType[];
 	}
 
@@ -89,6 +99,50 @@
 		});
 	}
 
+	// Discount calculation helpers
+	function calculateItemOriginalTotal(item: OrderItemWithType): number {
+		return item.quantity * item.unitPrice;
+	}
+
+	function calculateItemDiscountAmount(item: OrderItemWithType): number {
+		if (!item.discountAmount) return 0;
+		return item.discountAmount * item.quantity;
+	}
+
+	function calculateSubtotal(): number {
+		return order.items.reduce((sum, item) => sum + calculateItemOriginalTotal(item), 0);
+	}
+
+	function calculateTotalItemDiscounts(): number {
+		return order.items.reduce((sum, item) => sum + calculateItemDiscountAmount(item), 0);
+	}
+
+	function calculateOrderDiscountAmount(): number {
+		return order.discountAmount ?? 0;
+	}
+
+	function calculateTotalSavings(): number {
+		return calculateTotalItemDiscounts() + calculateOrderDiscountAmount();
+	}
+
+	function hasItemDiscounts(): boolean {
+		return order.items.some(item => item.discountAmount && item.discountAmount > 0);
+	}
+
+	function hasOrderDiscount(): boolean {
+		return !!(order.discountAmount && order.discountAmount > 0);
+	}
+
+	function hasAnyDiscount(): boolean {
+		return hasItemDiscounts() || hasOrderDiscount();
+	}
+
+	function formatDiscountLabel(type: 'fixed' | 'percentage' | null, value: number | null): string {
+		if (!type || !value) return '';
+		if (type === 'percentage') return `${value}% off`;
+		return `$${value.toFixed(2)} off`;
+	}
+
 	let currentStatus = $derived(isUpdating ? previousStatus : order.status);
 
 	let deliveryDate = $derived(order.deliveryDateTime ? new Date(order.deliveryDateTime) : null);
@@ -132,7 +186,17 @@
 				</div>
 			</div>
 			<div class="text-right w-full sm:w-auto">
-				<div class="text-xl sm:text-2xl font-black text-bakery-700">${order.totalAmount.toFixed(2)}</div>
+				{#if hasAnyDiscount()}
+					<div class="flex flex-col items-end">
+						<div class="text-xl sm:text-2xl font-black text-bakery-700">${order.totalAmount.toFixed(2)}</div>
+						<div class="flex items-center gap-1 text-xs">
+							<span class="text-neutral-400 line-through">${calculateSubtotal().toFixed(2)}</span>
+							<span class="text-green-600 font-medium">-${calculateTotalSavings().toFixed(2)}</span>
+						</div>
+					</div>
+				{:else}
+					<div class="text-xl sm:text-2xl font-black text-bakery-700">${order.totalAmount.toFixed(2)}</div>
+				{/if}
 				<div class="text-xs text-neutral-400">Order #{order.id.slice(-6)}</div>
 			</div>
 		</div>
@@ -183,14 +247,66 @@
 		<div class="mb-4" role="list" aria-label="Order items">
 			{#each order.items as item (item.id)}
 				<div class="flex items-center justify-between py-2 text-sm" role="listitem">
-					<div class="flex items-center gap-3">
+					<div class="flex items-center gap-2 flex-wrap">
 						<span class="font-medium text-gray-600 w-6 text-center" aria-label={`Quantity: ${item.quantity}`}>×{item.quantity}</span>
 						<span class="text-gray-900">{item.menuItem?.name || 'Unknown'}</span>
+						{#if item.discountAmount && item.discountAmount > 0}
+							<span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">
+								{formatDiscountLabel(item.discountType, item.discountValue)}
+							</span>
+						{/if}
 					</div>
-					<span class="font-medium text-gray-900">${(item.quantity * item.unitPrice).toFixed(2)}</span>
+					<div class="text-right">
+						{#if item.discountAmount && item.discountAmount > 0}
+							<div class="flex flex-col items-end">
+								<span class="text-xs text-gray-400 line-through">${calculateItemOriginalTotal(item).toFixed(2)}</span>
+								<span class="font-medium text-gray-900">${(calculateItemOriginalTotal(item) - calculateItemDiscountAmount(item)).toFixed(2)}</span>
+							</div>
+						{:else}
+							<span class="font-medium text-gray-900">${calculateItemOriginalTotal(item).toFixed(2)}</span>
+						{/if}
+					</div>
 				</div>
 			{/each}
 		</div>
+
+		<!-- Discount Summary -->
+		{#if hasAnyDiscount()}
+			<div class="mb-4 p-3 bg-green-50 rounded-lg border border-green-100">
+				<div class="flex items-center gap-2 mb-2">
+					<svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+					</svg>
+					<span class="font-medium text-green-800 text-sm">Discounts Applied</span>
+				</div>
+				<div class="space-y-1 text-sm">
+					{#if calculateTotalItemDiscounts() > 0}
+						<div class="flex justify-between text-green-700">
+							<span>Item Discounts</span>
+							<span>-${calculateTotalItemDiscounts().toFixed(2)}</span>
+						</div>
+					{/if}
+					{#if hasOrderDiscount()}
+						<div class="flex justify-between text-green-700">
+							<span>
+								Order Discount
+								<span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700 ml-1">
+									{formatDiscountLabel(order.discountType, order.discountValue)}
+								</span>
+								{#if order.discountReason}
+									<span class="text-green-600 text-xs">({order.discountReason})</span>
+								{/if}
+							</span>
+							<span>-${order.discountAmount?.toFixed(2)}</span>
+						</div>
+					{/if}
+					<div class="flex justify-between font-semibold text-green-800 pt-1 border-t border-green-200">
+						<span>Total Saved</span>
+						<span>-${calculateTotalSavings().toFixed(2)}</span>
+					</div>
+				</div>
+			</div>
+		{/if}
 
 		<!-- Action Buttons -->
 		{#if showActions}

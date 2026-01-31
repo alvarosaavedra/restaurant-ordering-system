@@ -39,6 +39,33 @@ export default defineConfig({
 					channel: 'chromium'
 				}
 			}
+		},
+		{
+			name: 'mobile-chrome-small',
+			use: {
+				viewport: { width: 320, height: 568 },
+				launchOptions: {
+					channel: 'chromium'
+				}
+			}
+		},
+		{
+			name: 'mobile-chrome-medium',
+			use: {
+				viewport: { width: 375, height: 667 },
+				launchOptions: {
+					channel: 'chromium'
+				}
+			}
+		},
+		{
+			name: 'mobile-chrome-large',
+			use: {
+				viewport: { width: 428, height: 926 },
+				launchOptions: {
+					channel: 'chromium'
+				}
+			}
 		}
 	]
 });

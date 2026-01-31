@@ -4,13 +4,11 @@
 	import Card from '$lib/components/ui/Card.svelte';
 	import MenuItem from '$lib/components/MenuItem.svelte';
 	import CustomerInfo from '$lib/components/CustomerInfo.svelte';
+	import DiscountPanel from '$lib/components/DiscountPanel.svelte';
+	import MobileDiscountSheet from '$lib/components/MobileDiscountSheet.svelte';
+	import { cartStore, type CartItem, type ItemDiscount, type OrderDiscount } from '$lib/stores/cart';
 	import { toast } from '$lib/utils/toast';
 	import type { MenuItemWithCategory } from '$lib/types/orders';
-
-	interface CartItem {
-		item: MenuItemWithCategory;
-		quantity: number;
-	}
 
 	interface CategoryWithItems {
 		id: string;
@@ -22,31 +20,41 @@
 
 	let { data }: { data: { categories: CategoryWithItems[] } } = $props();
 
-	let cart: CartItem[] = $state([]);
+	// Subscribe to cart store using Svelte 5 store syntax
+	let cart = $state<CartItem[]>([]);
+	let orderDiscount = $state<OrderDiscount | null>(null);
+	let cartTotals = $state({ subtotal: 0, itemDiscounts: 0, orderDiscount: 0, totalDiscount: 0, finalTotal: 0 });
+	
+	// Store subscriptions
+	$effect(() => {
+		cartStore.items.subscribe((value: CartItem[]) => cart = value);
+	});
+	
+	$effect(() => {
+		cartStore.orderDiscount.subscribe((value: OrderDiscount | null) => orderDiscount = value);
+	});
+	
+	$effect(() => {
+		cartStore.totals.subscribe((value: typeof cartTotals) => cartTotals = value);
+	});
+
 	let customerName: string = $state('');
 	let customerPhone: string = $state('');
 	let deliveryDateTime: string = $state('');
 	let address: string = $state('');
 	let comment: string = $state('');
 	let categories = $derived(data.categories || []);
-	let totalAmount: number = $derived(
-		cart.reduce((total, cartItem) => total + (cartItem.item.price * cartItem.quantity), 0)
-	);
 	let isSubmitting: boolean = $state(false);
 	let showValidationErrors: boolean = $state(false);
 
-	function addToOrder(item: MenuItemWithCategory, quantity: number) {
-		const existingItem = cart.find(cartItem => cartItem.item.id === item.id);
+	// Mobile discount sheet state
+	let showDiscountSheet: boolean = $state(false);
+	let discountSheetMode: 'item' | 'total' = $state('total');
+	let selectedItemIdForDiscount: string | null = $state(null);
+	let editingDiscount: ItemDiscount | OrderDiscount | null = $state(null);
 
-		if (existingItem) {
-			cart = cart.map(cartItem =>
-				cartItem.item.id === item.id
-					? { ...cartItem, quantity: cartItem.quantity + quantity }
-					: cartItem
-			);
-		} else {
-			cart = [...cart, { item, quantity }];
-		}
+	function addToOrder(item: MenuItemWithCategory, quantity: number) {
+		cartStore.addItem(item, quantity);
 	}
 
 	function getTotalItems(): number {
@@ -54,19 +62,63 @@
 	}
 
 	function removeFromCart(itemId: string) {
-		cart = cart.filter(cartItem => cartItem.item.id !== itemId);
+		cartStore.removeItem(itemId);
 	}
 
 	function updateCartQuantity(itemId: string, newQuantity: number) {
-		if (newQuantity <= 0) {
-			cart = cart.filter(cartItem => cartItem.item.id !== itemId);
+		cartStore.updateQuantity(itemId, newQuantity);
+	}
+
+	function handleAddDiscount() {
+		discountSheetMode = 'total';
+		selectedItemIdForDiscount = null;
+		editingDiscount = orderDiscount;
+		showDiscountSheet = true;
+	}
+
+	function handleAddItemDiscount(itemId: string) {
+		discountSheetMode = 'item';
+		selectedItemIdForDiscount = itemId;
+		const item = cart.find(c => c.item.id === itemId);
+		editingDiscount = item?.discount || null;
+		showDiscountSheet = true;
+	}
+
+	function handleSaveDiscount(discount: { type: 'fixed' | 'percentage'; value: number; reason?: string; itemId?: string }) {
+		if (discountSheetMode === 'item' && discount.itemId) {
+			const itemDiscount: ItemDiscount = {
+				type: discount.type,
+				value: discount.value,
+				reason: discount.reason
+			};
+			cartStore.addItemDiscount(discount.itemId, itemDiscount);
+			toast.success('Item discount applied');
 		} else {
-			cart = cart.map(cartItem =>
-				cartItem.item.id === itemId
-					? { ...cartItem, quantity: newQuantity }
-					: cartItem
-			);
+			const orderDisc: OrderDiscount = {
+				type: discount.type,
+				value: discount.value,
+				reason: discount.reason
+			};
+			cartStore.setOrderDiscount(orderDisc);
+			toast.success('Order discount applied');
 		}
+		showDiscountSheet = false;
+	}
+
+	function handleRemoveItemDiscount(itemId: string) {
+		cartStore.removeItemDiscount(itemId);
+		toast.info('Item discount removed');
+	}
+
+	function handleRemoveOrderDiscount() {
+		cartStore.clearOrderDiscount();
+		toast.info('Order discount removed');
+	}
+
+	function handleCloseDiscountSheet() {
+		showDiscountSheet = false;
+		selectedItemIdForDiscount = null;
+		editingDiscount = null;
 	}
 
 	async function createOrder() {
@@ -103,14 +155,16 @@
 					comment,
 					items: cart.map(cartItem => ({
 						menuItemId: cartItem.item.id,
-						quantity: cartItem.quantity
-					}))
+						quantity: cartItem.quantity,
+						discount: cartItem.discount
+					})),
+					orderDiscount: orderDiscount
 				})
 			});
 
 			if (response.ok) {
 				toast.success('Order created successfully!');
-				cart = [];
+				cartStore.clearCart();
 				customerName = '';
 				customerPhone = '';
 				deliveryDateTime = '';
@@ -227,15 +281,50 @@
 					<!-- Cart Items List -->
 					<div class="mb-6 space-y-3 max-h-64 overflow-y-auto pr-2">
 						{#each cart as cartItem (cartItem.item.id)}
+							{@const displayPrice = cartItem.discount 
+								? Math.max(0, (cartItem.item.price * cartItem.quantity) - (cartItem.discount.type === 'percentage' 
+									? (cartItem.item.price * cartItem.quantity) * (cartItem.discount.value / 100)
+									: cartItem.discount.value))
+								: cartItem.item.price * cartItem.quantity}
 							<Card variant="subtle" class="p-3">
 								<div class="flex items-center justify-between">
 									<div class="flex-1 min-w-0">
-										<h4 class="font-semibold text-neutral-900 text-sm truncate">{cartItem.item.name}</h4>
+										<div class="flex items-center gap-2">
+											<h4 class="font-semibold text-neutral-900 text-sm truncate">{cartItem.item.name}</h4>
+											{#if cartItem.discount}
+												<span class="text-xs font-medium text-success-600 bg-success-50 px-1.5 py-0.5 rounded">
+													{cartItem.discount.type === 'percentage' ? `${cartItem.discount.value}%` : `$${cartItem.discount.value.toFixed(2)}`} off
+												</span>
+											{/if}
+										</div>
 										{#if cartItem.item.category}
 											<p class="text-xs text-neutral-500 mt-0.5">{cartItem.item.category.name}</p>
 										{/if}
+										{#if cartItem.discount}
+											{@const originalPrice = cartItem.item.price * cartItem.quantity}
+											{@const discountAmount = cartItem.discount.type === 'percentage' 
+												? originalPrice * (cartItem.discount.value / 100)
+												: cartItem.discount.value}
+											{@const finalPrice = Math.max(0, originalPrice - discountAmount)}
+											<p class="text-xs text-success-600 mt-0.5">
+												<span class="line-through text-neutral-400">${originalPrice.toFixed(2)}</span>
+												<span class="font-medium">${finalPrice.toFixed(2)}</span>
+												<span class="text-success-600">(-${discountAmount.toFixed(2)})</span>
+											</p>
+										{/if}
 									</div>
-									<div class="flex items-center gap-3 ml-3">
+									<div class="flex items-center gap-2 ml-3">
+										<button
+											type="button"
+											class="p-1.5 text-bakery-500 hover:text-bakery-700 hover:bg-bakery-50 rounded-lg transition-colors"
+											onclick={() => handleAddItemDiscount(cartItem.item.id)}
+											aria-label={cartItem.discount ? `Edit discount for ${cartItem.item.name}` : `Add discount for ${cartItem.item.name}`}
+											title={cartItem.discount ? 'Edit discount' : 'Add discount'}
+										>
+											<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" />
+											</svg>
+										</button>
 										<div class="flex items-center border border-neutral-200 rounded-lg" role="group" aria-label="Quantity selector">
 											<Button variant="ghost" size="sm" onclick={() => updateCartQuantity(cartItem.item.id, cartItem.quantity - 1)} disabled={cartItem.quantity <= 1} aria-label={`Decrease ${cartItem.item.name} quantity`}>
 												<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -253,7 +342,7 @@
 												</svg>
 											</Button>
 										</div>
-										<span class="font-bold text-neutral-900 text-sm w-16 text-right">${(cartItem.item.price * cartItem.quantity).toFixed(2)}</span>
+										<span class="font-bold text-neutral-900 text-sm w-16 text-right">${displayPrice.toFixed(2)}</span>
 										<button
 											type="button"
 											class="p-1.5 text-error-500 hover:text-error-700 hover:bg-error-50 rounded-lg transition-colors ml-1 min-w-[44px] min-h-[44px] flex items-center justify-center"
@@ -270,23 +359,23 @@
 						{/each}
 					</div>
 
-					<!-- Totals -->
-					<div class="space-y-3 mb-6 border-t border-neutral-200 pt-4">
-						<div class="flex justify-between items-center py-2 px-4 bg-neutral-50 rounded-lg">
-							<span class="text-neutral-600 font-medium">Total Items:</span>
-							<span class="font-bold text-neutral-900 text-lg">{getTotalItems()}</span>
-						</div>
-						<div class="flex justify-between items-center py-2 px-4 bg-bakery-50 rounded-lg">
-							<span class="text-neutral-600 font-medium">Total Amount:</span>
-							<span class="font-black text-xl text-bakery-700">${totalAmount.toFixed(2)}</span>
-						</div>
+					<!-- Discount Panel -->
+					<div class="mb-6">
+						<DiscountPanel
+							cartItems={cart}
+							orderDiscount={orderDiscount}
+							totals={cartTotals}
+							onAddDiscount={handleAddDiscount}
+							onRemoveItemDiscount={handleRemoveItemDiscount}
+							onRemoveOrderDiscount={handleRemoveOrderDiscount}
+						/>
 					</div>
 
 					<div class="flex flex-col sm:flex-row gap-3">
 						<Button
 							variant="secondary"
 							class="flex-1"
-							onclick={() => cart = []}
+							onclick={() => cartStore.clearCart()}
 							aria-label="Clear all items from order"
 						>
 							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -321,3 +410,14 @@
 		</div>
 	{/if}
 </div>
+
+<!-- Mobile Discount Sheet -->
+<MobileDiscountSheet
+	isOpen={showDiscountSheet}
+	mode={discountSheetMode}
+	cartItems={cart}
+	selectedItemId={selectedItemIdForDiscount}
+	initialDiscount={editingDiscount}
+	onSave={handleSaveDiscount}
+	onClose={handleCloseDiscountSheet}
+/>

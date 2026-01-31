@@ -59,6 +59,11 @@ export const order = sqliteTable('order', {
 	address: text('address'),
 	comment: text('comment'),
 	deletedAt: integer('deleted_at', { mode: 'timestamp' }),
+	// Discount fields
+	discountAmount: real('discount_amount'),
+	discountType: text('discount_type', { enum: ['fixed', 'percentage'] }),
+	discountValue: real('discount_value'),
+	discountReason: text('discount_reason'),
 	createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$default(() => new Date()),
 	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$default(() => new Date())
 });
@@ -70,6 +75,12 @@ export const orderItem = sqliteTable('order_item', {
 	menuItemId: text('menu_item_id').notNull().references(() => menuItem.id),
 	quantity: integer('quantity').notNull(),
 	unitPrice: real('unit_price').notNull(),
+	// Discount fields
+	discountAmount: real('discount_amount'),
+	discountType: text('discount_type', { enum: ['fixed', 'percentage'] }),
+	discountValue: real('discount_value'),
+	discountReason: text('discount_reason'),
+	finalPrice: real('final_price'),
 	createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$default(() => new Date())
 });
 

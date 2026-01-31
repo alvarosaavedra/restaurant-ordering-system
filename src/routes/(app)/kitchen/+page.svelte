@@ -15,11 +15,21 @@
 		totalAmount: number;
 		status: 'pending' | 'preparing' | 'ready' | 'delivered';
 		createdAt: Date | string;
+		// Discount fields
+		discountAmount: number | null;
+		discountType: 'fixed' | 'percentage' | null;
+		discountValue: number | null;
+		discountReason: string | null;
 		items: Array<{
 			id: string;
 			quantity: number;
 			unitPrice: number;
 			menuItemId: string;
+			// Item discount fields
+			discountAmount: number | null;
+			discountType: 'fixed' | 'percentage' | null;
+			discountValue: number | null;
+			discountReason: string | null;
 			menuItem: {
 				id: string;
 				name: string;

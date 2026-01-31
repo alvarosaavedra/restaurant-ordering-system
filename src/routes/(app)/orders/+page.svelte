@@ -10,6 +10,11 @@
 		quantity: number;
 		unitPrice: number;
 		menuItemId: string;
+		// Discount fields
+		discountAmount: number | null;
+		discountType: 'fixed' | 'percentage' | null;
+		discountValue: number | null;
+		discountReason: string | null;
 		menuItem: {
 			id: string;
 			name: string;
@@ -25,6 +30,11 @@
 		status: 'pending' | 'preparing' | 'ready' | 'delivered';
 		createdAt: Date;
 		updatedAt: Date;
+		// Discount fields
+		discountAmount: number | null;
+		discountType: 'fixed' | 'percentage' | null;
+		discountValue: number | null;
+		discountReason: string | null;
 		employee: {
 			id: string;
 			name: string;
@@ -82,6 +92,35 @@
 			minute: '2-digit',
 			hour12: true
 		});
+	}
+
+	// Discount helper functions
+	function hasOrderDiscount(order: Order): boolean {
+		return !!(order.discountAmount && order.discountAmount > 0);
+	}
+
+	function hasItemDiscounts(order: Order): boolean {
+		return order.items?.some(item => item.discountAmount && item.discountAmount > 0) ?? false;
+	}
+
+	function hasAnyDiscount(order: Order): boolean {
+		return hasOrderDiscount(order) || hasItemDiscounts(order);
+	}
+
+	function calculateTotalItemDiscounts(order: Order): number {
+		if (!order.items) return 0;
+		return order.items.reduce((sum, item) => {
+			if (item.discountAmount && item.discountAmount > 0) {
+				return sum + (item.discountAmount * item.quantity);
+			}
+			return sum;
+		}, 0);
+	}
+
+	function calculateTotalSavings(order: Order): number {
+		const itemDiscounts = calculateTotalItemDiscounts(order);
+		const orderDiscount = order.discountAmount ?? 0;
+		return itemDiscounts + orderDiscount;
 	}
 
 	let totalPages = $derived(Math.ceil(totalCount / limit));
@@ -209,7 +248,17 @@
 					<div class="flex items-center gap-4 flex-1 min-w-0">
 						<StatusBadge status={order.status} />
 						<div class="flex-1 min-w-0">
-							<h3 class="font-semibold text-neutral-900 truncate">{order.customerName}</h3>
+							<div class="flex items-center gap-2 flex-wrap">
+								<h3 class="font-semibold text-neutral-900 truncate">{order.customerName}</h3>
+								{#if hasAnyDiscount(order)}
+									<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+										<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+										</svg>
+										Saved ${calculateTotalSavings(order).toFixed(2)}
+									</span>
+								{/if}
+							</div>
 							<p class="text-sm text-neutral-500">{order.items?.length || 0} item{order.items?.length !== 1 ? 's' : ''} · ${order.totalAmount?.toFixed(2) || '0.00'}</p>
 						</div>
 					</div>
