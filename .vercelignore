@@ -1,0 +1,22 @@
+# Test files
+**/*.test.ts
+**/*.spec.ts
+**/*.svelte.test.ts
+
+# Test directories
+**/__tests__/**
+e2e/
+tests/
+
+# Test results
+test-results/
+playwright-report/
+
+# Playwright
+playwright.config.ts
+
+# Coverage
+coverage/
+
+# Local env files
+.env*.local
