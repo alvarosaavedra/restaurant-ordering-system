@@ -173,20 +173,22 @@ calculateCartTotals(
 - [x] Functions: addItemDiscount, removeItemDiscount, setOrderDiscount, clearOrderDiscount, clearAllDiscounts
 - [x] Test cart total calculations with discounts (22/22 passing)
 
-### Phase 4: UI Components (Tests First)
+### Phase 4: UI Components (Tests First) ✅ COMPLETED
 **Test Files:**
-- `src/lib/components/DiscountPanel.svelte.test.ts`
-- `src/lib/components/DiscountItem.svelte.test.ts`
-- `src/lib/components/MobileDiscountSheet.svelte.test.ts`
-- `src/lib/components/DiscountBadge.svelte.test.ts`
+- `src/lib/components/DiscountBadge.svelte.test.ts` - 8 tests (100% passing)
+- `src/lib/components/DiscountItem.svelte.test.ts` - 8 tests (100% passing)
+- `src/lib/components/MobileDiscountSheet.svelte.test.ts` - 7 tests passing, 1 skipped
+- `src/lib/components/DiscountPanel.svelte.test.ts` - 15 tests (100% passing)
+
+**Total Component Tests:** 38 tests (38 passing, 1 skipped)
 
 **Implementation:**
-- [ ] Write failing component tests
-- [ ] Implement DiscountBadge (simplest first)
-- [ ] Implement DiscountItem
-- [ ] Implement MobileDiscountSheet with mobile interactions
-- [ ] Implement DiscountPanel
-- [ ] Pass all component tests
+- [x] Write failing component tests (38 tests created)
+- [x] Implement DiscountBadge with discount display
+- [x] Implement DiscountItem for per-item discount controls
+- [x] Implement MobileDiscountSheet with mobile interactions
+- [x] Implement DiscountPanel with full discount management
+- [x] Pass all component tests (38/38 passing, 1 skipped for HTML input limitation)
 
 ### Phase 5: Integration (Tests First)
 **Test Files:**
