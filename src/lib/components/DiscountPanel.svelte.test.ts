@@ -6,6 +6,7 @@ import type { CartItem } from '$lib/stores/cart';
 const mockCartItem = (id: string, name: string, price: number, quantity: number = 1, discount?: { type: 'fixed' | 'percentage'; value: number; reason?: string }): CartItem => ({
 	item: {
 		id,
+		categoryId: 'cat-1',
 		name,
 		description: 'Test',
 		price,
@@ -269,7 +270,7 @@ describe('DiscountPanel', () => {
 				onRemoveOrderDiscount: vi.fn()
 			});
 
-			const addBtn = container.querySelector('[data-testid="add-discount-btn"]');
+			const addBtn = container.querySelector('[data-testid="add-discount-btn"]') as HTMLElement;
 			addBtn?.click();
 
 			expect(handleAdd).toHaveBeenCalled();
@@ -292,7 +293,7 @@ describe('DiscountPanel', () => {
 				onRemoveOrderDiscount: vi.fn()
 			});
 
-			const removeBtn = container.querySelector('[data-testid="remove-item-discount-1"]');
+			const removeBtn = container.querySelector('[data-testid="remove-item-discount-1"]') as HTMLElement;
 			removeBtn?.click();
 
 			expect(handleRemove).toHaveBeenCalledWith('1');
@@ -315,7 +316,7 @@ describe('DiscountPanel', () => {
 				onRemoveOrderDiscount: handleRemove
 			});
 
-			const removeBtn = container.querySelector('[data-testid="remove-order-discount"]');
+			const removeBtn = container.querySelector('[data-testid="remove-order-discount"]') as HTMLElement;
 			removeBtn?.click();
 
 			expect(handleRemove).toHaveBeenCalled();

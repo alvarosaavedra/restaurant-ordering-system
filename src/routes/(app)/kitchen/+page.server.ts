@@ -24,6 +24,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 				totalAmount: order.totalAmount,
 				status: order.status,
 				createdAt: order.createdAt,
+				// Discount fields
+				discountAmount: order.discountAmount,
+				discountType: order.discountType,
+				discountValue: order.discountValue,
+				discountReason: order.discountReason,
 				employee: {
 					name: user.name,
 					email: user.email
@@ -44,6 +49,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 						quantity: orderItem.quantity,
 						unitPrice: orderItem.unitPrice,
 						menuItemId: orderItem.menuItemId,
+						// Item discount fields
+						discountAmount: orderItem.discountAmount,
+						discountType: orderItem.discountType,
+						discountValue: orderItem.discountValue,
+						discountReason: orderItem.discountReason,
 						menuItem: {
 							id: menuItem.id,
 							name: menuItem.name,

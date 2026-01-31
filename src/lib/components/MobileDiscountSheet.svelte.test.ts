@@ -6,6 +6,7 @@ import type { CartItem } from '$lib/stores/cart';
 const mockCartItem = (id: string, name: string, price: number): CartItem => ({
 	item: {
 		id,
+		categoryId: 'cat-1',
 		name,
 		description: 'Test',
 		price,
@@ -118,7 +119,7 @@ describe('MobileDiscountSheet', () => {
 				onClose: vi.fn()
 			});
 
-			const saveBtn = container.querySelector('[data-testid="save-btn"]');
+			const saveBtn = container.querySelector('[data-testid="save-btn"]') as HTMLElement;
 			saveBtn?.click();
 			
 			expect(handleSave).toHaveBeenCalled();
@@ -136,7 +137,7 @@ describe('MobileDiscountSheet', () => {
 				onClose: handleClose
 			});
 
-			const cancelBtn = container.querySelector('[data-testid="cancel-btn"]');
+			const cancelBtn = container.querySelector('[data-testid="cancel-btn"]') as HTMLElement;
 			cancelBtn?.click();
 
 			expect(handleClose).toHaveBeenCalled();
@@ -159,11 +160,11 @@ describe('MobileDiscountSheet', () => {
 
 			const amountInput = container.querySelector('input[name="amount"]');
 			if (amountInput) {
-				await fireEvent.input(amountInput, { target: { value: '-5' } });
+			await fireEvent.input(amountInput, { target: { value: '-5' } });
 			}
 
-			const saveBtn = container.querySelector('[data-testid="save-btn"]');
-			saveBtn?.click();
+			const saveBtn = container.querySelector('[data-testid="save-btn"]') as HTMLElement;
+				saveBtn?.click();
 
 			const error = container.querySelector('[data-testid="error-message"]');
 			expect(error).toBeInTheDocument();

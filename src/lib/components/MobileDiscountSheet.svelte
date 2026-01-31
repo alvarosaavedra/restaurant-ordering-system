@@ -21,6 +21,21 @@
 	let selectedItem = $state(selectedItemId ?? (cartItems[0]?.item.id || null));
 	let error = $state<string | null>(null);
 
+	// Reset form when modal opens
+	$effect(() => {
+		if (isOpen && initialDiscount) {
+			discountType = initialDiscount.type ?? 'fixed';
+			amount = initialDiscount.value?.toString() ?? '';
+			reason = initialDiscount.reason ?? '';
+			selectedItem = selectedItemId ?? (cartItems[0]?.item.id || null);
+		} else if (isOpen && !initialDiscount) {
+			discountType = 'fixed';
+			amount = '';
+			reason = '';
+			selectedItem = cartItems[0]?.item.id || null;
+		}
+	});
+
 	// Calculate base price for validation
 	let basePrice = $derived(() => {
 		if (mode === 'total') {
@@ -93,6 +108,7 @@
 			onclick={(e: MouseEvent) => e.stopPropagation()}
 			role="dialog"
 			aria-modal="true"
+			tabindex="-1"
 			aria-label="Add discount"
 		>
 			<!-- Drag handle -->

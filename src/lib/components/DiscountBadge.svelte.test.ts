@@ -74,8 +74,8 @@ describe('DiscountBadge', () => {
 				onClick: handleClick
 			});
 
-			const badge = container.querySelector('[data-testid="discount-badge"]');
-			badge?.click();
+		const badge = container.querySelector('[data-testid="discount-badge"]') as HTMLElement;
+		badge?.click();
 
 			expect(handleClick).toHaveBeenCalled();
 		});

@@ -16,6 +16,7 @@ const mockMenuItem = (id: string, price: number): MenuItemWithCategory => ({
 	description: 'Test description',
 	price,
 	isAvailable: true,
+	categoryId: 'cat-1',
 	category: mockCategory,
 	createdAt: new Date()
 });

@@ -13,6 +13,7 @@ const mockCategory = {
 const mockCartItem = (discount?: { type: 'fixed' | 'percentage'; value: number; reason?: string }): CartItem => ({
 	item: {
 		id: 'item-1',
+		categoryId: 'cat-1',
 		name: 'Chocolate Cake',
 		description: 'Delicious chocolate cake',
 		price: 25.00,
@@ -96,8 +97,8 @@ describe('DiscountItem', () => {
 				onRemoveDiscount: vi.fn()
 			});
 
-			const badge = container.querySelector('[data-testid="discount-badge"]');
-			badge?.click();
+		const badge = container.querySelector('[data-testid="discount-badge"]') as HTMLElement;
+		badge?.click();
 
 			expect(handleUpdate).toHaveBeenCalled();
 		});
@@ -121,8 +122,8 @@ describe('DiscountItem', () => {
 				onRemoveDiscount: vi.fn()
 			});
 
-			const addButton = container.querySelector('[data-testid="add-discount-btn"]');
-			addButton?.click();
+		const addButton = container.querySelector('[data-testid="add-discount-btn"]') as HTMLElement;
+		addButton?.click();
 
 			expect(handleUpdate).toHaveBeenCalled();
 		});
