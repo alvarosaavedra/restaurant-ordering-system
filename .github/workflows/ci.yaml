@@ -26,6 +26,11 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install chromium
 
+      - name: Setup test database
+        run: npm run db:push
+        env:
+          DATABASE_URL: file:test.db
+
       - name: Run linter
         run: npm run lint
 
