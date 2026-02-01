@@ -1,7 +1,11 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "node scripts/build-with-migrations.mjs",
   "outputDirectory": ".svelte-kit/output",
   "installCommand": "npm ci",
   "framework": "sveltekit",
-  "regions": ["iad1"]
+  "regions": ["iad1"],
+  "env": {
+    "DATABASE_URL": "@database_url",
+    "TURSO_AUTH_TOKEN": "@turso_auth_token"
+  }
 }
