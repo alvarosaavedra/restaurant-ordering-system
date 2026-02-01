@@ -13,8 +13,12 @@
 	let { value, onChange }: Props = $props();
 
 	// Initialize with default or provided value
+	// Note: These only capture initial values, which is intentional behavior
+	// svelte-ignore state_referenced_locally
 	let selectedRange = $state(value?.range ?? 'today');
+	// svelte-ignore state_referenced_locally
 	let customStartDate = $state(value?.startDate ?? formatDate(new Date()));
+	// svelte-ignore state_referenced_locally
 	let customEndDate = $state(value?.endDate ?? formatDate(new Date()));
 
 	const presets = [
@@ -203,6 +207,7 @@
 		</div>
 		
 		<div class="flex-1 w-full sm:w-auto">
+			<!-- svelte-ignore a11y_label_has_associated_control -->
 			<label class="block text-sm font-medium text-gray-700 mb-1">
 				Selected Range
 			</label>

@@ -25,6 +25,7 @@
 	let dailyVolume = $derived(data.dailyVolume);
 	let completionTimes = $derived(data.completionTimes);
 
+	// svelte-ignore state_referenced_locally
 	let dateRange = $state<DateRange>({
 		range: 'today',
 		startDate: data.startDate,

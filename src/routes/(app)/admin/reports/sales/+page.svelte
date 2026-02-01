@@ -23,6 +23,7 @@
 	let summary = $derived(data.summary);
 	let report = $derived(data.report);
 
+	// svelte-ignore state_referenced_locally
 	let dateRange = $state<DateRange>({
 		range: 'today',
 		startDate: data.startDate,

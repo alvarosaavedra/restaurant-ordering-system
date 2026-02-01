@@ -23,6 +23,7 @@
 	let topItems = $derived(data.topItems);
 	let categoryStats = $derived(data.categoryStats);
 
+	// svelte-ignore state_referenced_locally
 	let dateRange = $state<DateRange>({
 		range: 'today',
 		startDate: data.startDate,
