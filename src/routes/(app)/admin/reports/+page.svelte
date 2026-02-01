@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import Card from '$lib/components/ui/Card.svelte';
 
 	const reportCategories = [
@@ -43,6 +44,11 @@
 			bgColor: 'bg-indigo-50'
 		}
 	];
+
+	function navigateToReport(href: string) {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve
+		goto(href);
+	}
 </script>
 
 <div class="space-y-6">
@@ -55,7 +61,8 @@
 
 	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 		{#each reportCategories as category (category.href)}
-			<Card class="hover:shadow-lg transition-shadow cursor-pointer" onclick={() => window.location.href = category.href}>
+			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+			<Card class="hover:shadow-lg transition-shadow cursor-pointer" onclick={() => navigateToReport(category.href)}>
 				<div class="p-6">
 					<div class="flex items-start space-x-4">
 						<div class="{category.bgColor} p-3 rounded-lg">
