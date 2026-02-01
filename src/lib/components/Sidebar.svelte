@@ -149,7 +149,8 @@
 			{#if user.role === 'admin'}
 				<!-- Reports Section -->
 				<div class="mt-2">
-					<div class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-neutral-600 border-l-4 min-h-[44px]"
+					<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+					<a href="/admin/reports" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-neutral-600 border-l-4 min-h-[44px]"
 						class:bg-bakery-100={isReportsExpanded}
 						class:text-bakery-700={isReportsExpanded}
 						class:border-bakery-500={isReportsExpanded}
@@ -159,17 +160,17 @@
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
 						</svg>
 						<span>Reports</span>
-					</div>
+					</a>
 
 					{#if isReportsExpanded}
 						<div class="ml-4 mt-1 space-y-1" transition:fade={{ duration: 150 }}>
 							{#each reportItems as report (report.href)}
 								<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 								<a href={report.href} class="flex items-center gap-3 px-4 py-2 rounded-lg text-sm transition-all duration-200 min-h-[40px] {
-									isActive(report.href)
-										? 'bg-bakery-50 text-bakery-700 border-l-4 border-bakery-400'
-										: 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 border-l-4 border-transparent'
-									}"
+										isActive(report.href)
+											? 'bg-bakery-50 text-bakery-700 border-l-4 border-bakery-400'
+											: 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 border-l-4 border-transparent'
+										}"
 									role="menuitem"
 									aria-current={isActive(report.href) ? 'page' : undefined}
 								>
