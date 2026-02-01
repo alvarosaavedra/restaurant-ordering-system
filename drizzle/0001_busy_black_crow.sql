@@ -7,5 +7,5 @@ CREATE TABLE `client` (
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL
 );
-
+--> statement-breakpoint
 CREATE UNIQUE INDEX `client_phone_unique` ON `client` (`phone`);

@@ -1,13 +1,3 @@
-CREATE TABLE `client` (
-	`id` text PRIMARY KEY NOT NULL,
-	`name` text NOT NULL,
-	`phone` text NOT NULL,
-	`address` text,
-	`created_at` integer NOT NULL,
-	`updated_at` integer NOT NULL
-);
---> statement-breakpoint
-CREATE UNIQUE INDEX `client_phone_unique` ON `client` (`phone`);--> statement-breakpoint
 PRAGMA foreign_keys=OFF;--> statement-breakpoint
 CREATE TABLE `__new_order` (
 	`id` text PRIMARY KEY NOT NULL,

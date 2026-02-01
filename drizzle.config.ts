@@ -14,7 +14,7 @@ const dbCredentials = process.env.TURSO_AUTH_TOKEN
 
 export default defineConfig({
 	schema: './src/lib/server/db/schema.ts',
-	dialect: 'sqlite',
+	dialect: 'turso',
 	dbCredentials,
 	verbose: true,
 	strict: true
