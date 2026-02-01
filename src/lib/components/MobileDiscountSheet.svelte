@@ -14,11 +14,11 @@
 
 	let { isOpen, mode, cartItems, selectedItemId, initialDiscount, onSave, onClose }: Props = $props();
 
-	// Form state
-	let discountType: 'fixed' | 'percentage' = $state(initialDiscount?.type ?? 'fixed');
-	let amount = $state(initialDiscount?.value ?? '');
-	let reason = $state(initialDiscount?.reason ?? '');
-	let selectedItem = $state(selectedItemId ?? (cartItems[0]?.item.id || null));
+	// Form state - initialized with defaults, actual values set in $effect
+	let discountType: 'fixed' | 'percentage' = $state('fixed');
+	let amount = $state('');
+	let reason = $state('');
+	let selectedItem = $state<string | null>(null);
 	let error = $state<string | null>(null);
 
 	// Reset form when modal opens
@@ -101,7 +101,8 @@
 </script>
 
 {#if isOpen}
-	<div class="fixed inset-0 bg-black/50 z-50" onclick={handleClose} role="presentation">
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<div class="fixed inset-0 bg-black/50 z-50" onclick={handleClose} role="presentation" tabindex="-1">
 		<div
 			data-testid="mobile-discount-sheet"
 			class="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-xl max-h-[85vh] overflow-y-auto"
@@ -124,9 +125,9 @@
 				<!-- Item Selector (only in item mode) -->
 				{#if mode === 'item'}
 					<div data-testid="item-selector" class="mb-4">
-						<label class="block text-sm font-medium text-neutral-700 mb-1.5">
+						<span class="block text-sm font-medium text-neutral-700 mb-1.5">
 							Apply to
-						</label>
+						</span>
 						<div class="space-y-2 max-h-40 overflow-y-auto border border-neutral-200 rounded-lg p-2">
 			{#each cartItems as cartItem (cartItem.item.id)}
 				<label class="flex items-center gap-3 p-2 rounded-lg cursor-pointer hover:bg-neutral-50 {selectedItem === cartItem.item.id ? 'bg-bakery-50 border border-bakery-200' : ''}">
@@ -153,9 +154,9 @@
 
 				<!-- Discount Type -->
 				<div class="mb-4">
-					<label class="block text-sm font-medium text-neutral-700 mb-1.5">
+					<span class="block text-sm font-medium text-neutral-700 mb-1.5">
 						Discount Type
-					</label>
+					</span>
 					<div class="flex gap-2">
 						<button
 							type="button"
@@ -178,7 +179,7 @@
 
 				<!-- Amount Input -->
 				<div class="mb-4">
-					<label class="block text-sm font-medium text-neutral-700 mb-1.5">
+					<label for="discount-amount" class="block text-sm font-medium text-neutral-700 mb-1.5">
 						Amount {discountType === 'fixed' ? '($)' : '(%)'}
 					</label>
 					<div class="relative">
@@ -186,6 +187,7 @@
 							<span class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500">$</span>
 						{/if}
 					<input
+						id="discount-amount"
 						type="number"
 						name="amount"
 						value={amount}
@@ -206,10 +208,11 @@
 
 				<!-- Reason Input -->
 				<div class="mb-4">
-					<label class="block text-sm font-medium text-neutral-700 mb-1.5">
+					<label for="discount-reason" class="block text-sm font-medium text-neutral-700 mb-1.5">
 						Reason (optional)
 					</label>
 				<input
+					id="discount-reason"
 					type="text"
 					value={reason}
 					oninput={(e: Event & { currentTarget: HTMLInputElement }) => reason = e.currentTarget.value}
