@@ -3,9 +3,5 @@
   "outputDirectory": ".svelte-kit/output",
   "installCommand": "npm ci",
   "framework": "sveltekit",
-  "regions": ["iad1"],
-  "env": {
-    "DATABASE_URL": "@database_url",
-    "TURSO_AUTH_TOKEN": "@turso_auth_token"
-  }
+  "regions": ["iad1"]
 }
