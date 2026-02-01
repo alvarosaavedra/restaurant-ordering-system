@@ -287,33 +287,39 @@
 									: cartItem.discount.value))
 								: cartItem.item.price * cartItem.quantity}
 							<Card variant="subtle" class="p-3">
-								<div class="flex items-center justify-between">
-									<div class="flex-1 min-w-0">
-										<div class="flex items-center gap-2">
-											<h4 class="font-semibold text-neutral-900 text-sm truncate">{cartItem.item.name}</h4>
+								<div class="flex flex-col gap-3">
+									<!-- Top Row: Item Info and Price -->
+									<div class="flex items-start justify-between gap-2">
+										<div class="flex-1 min-w-0">
+											<div class="flex items-center gap-2 flex-wrap">
+												<h4 class="font-semibold text-neutral-900 text-sm">{cartItem.item.name}</h4>
+												{#if cartItem.discount}
+													<span class="text-xs font-medium text-success-600 bg-success-50 px-1.5 py-0.5 rounded shrink-0">
+														{cartItem.discount.type === 'percentage' ? `${cartItem.discount.value}%` : `$${cartItem.discount.value.toFixed(2)}`} off
+													</span>
+												{/if}
+											</div>
+											{#if cartItem.item.category}
+												<p class="text-xs text-neutral-500 mt-0.5">{cartItem.item.category.name}</p>
+											{/if}
 											{#if cartItem.discount}
-												<span class="text-xs font-medium text-success-600 bg-success-50 px-1.5 py-0.5 rounded">
-													{cartItem.discount.type === 'percentage' ? `${cartItem.discount.value}%` : `$${cartItem.discount.value.toFixed(2)}`} off
-												</span>
+												{@const originalPrice = cartItem.item.price * cartItem.quantity}
+												{@const discountAmount = cartItem.discount.type === 'percentage' 
+													? originalPrice * (cartItem.discount.value / 100)
+													: cartItem.discount.value}
+												{@const finalPrice = Math.max(0, originalPrice - discountAmount)}
+												<p class="text-xs text-success-600 mt-0.5">
+													<span class="line-through text-neutral-400">${originalPrice.toFixed(2)}</span>
+													<span class="font-medium">${finalPrice.toFixed(2)}</span>
+													<span class="text-success-600">(-${discountAmount.toFixed(2)})</span>
+												</p>
 											{/if}
 										</div>
-										{#if cartItem.item.category}
-											<p class="text-xs text-neutral-500 mt-0.5">{cartItem.item.category.name}</p>
-										{/if}
-										{#if cartItem.discount}
-											{@const originalPrice = cartItem.item.price * cartItem.quantity}
-											{@const discountAmount = cartItem.discount.type === 'percentage' 
-												? originalPrice * (cartItem.discount.value / 100)
-												: cartItem.discount.value}
-											{@const finalPrice = Math.max(0, originalPrice - discountAmount)}
-											<p class="text-xs text-success-600 mt-0.5">
-												<span class="line-through text-neutral-400">${originalPrice.toFixed(2)}</span>
-												<span class="font-medium">${finalPrice.toFixed(2)}</span>
-												<span class="text-success-600">(-${discountAmount.toFixed(2)})</span>
-											</p>
-										{/if}
+										<span class="font-bold text-neutral-900 text-sm shrink-0">${displayPrice.toFixed(2)}</span>
 									</div>
-									<div class="flex items-center gap-2 ml-3">
+									
+									<!-- Bottom Row: Controls -->
+									<div class="flex items-center justify-between">
 										<button
 											type="button"
 											class="p-1.5 text-bakery-500 hover:text-bakery-700 hover:bg-bakery-50 rounded-lg transition-colors"
@@ -325,37 +331,36 @@
 												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" />
 											</svg>
 										</button>
-										<div class="flex items-center border border-neutral-200 rounded-lg" role="group" aria-label="Quantity selector">
-											<Button variant="ghost" size="sm" onclick={() => updateCartQuantity(cartItem.item.id, cartItem.quantity - 1)} disabled={cartItem.quantity <= 1} aria-label={`Decrease ${cartItem.item.name} quantity`}>
-												<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
-												</svg>
-											</Button>
- 
-											<span class="px-2 text-sm font-medium text-neutral-700 min-w-[30px] text-center" aria-live="polite" aria-atomic="true">
-												{cartItem.quantity}
-											</span>
- 
-											<Button variant="ghost" size="sm" onclick={() => updateCartQuantity(cartItem.item.id, cartItem.quantity + 1)} aria-label={`Increase ${cartItem.item.name} quantity`}>
-												<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12h16m-8-8v8m0 0l8 8m8-8v8" />
-												</svg>
-											</Button>
+										<div class="flex items-center gap-2">
+											<div class="flex items-center border border-neutral-200 rounded-lg" role="group" aria-label="Quantity selector">
+												<Button variant="ghost" size="sm" onclick={() => updateCartQuantity(cartItem.item.id, cartItem.quantity - 1)} disabled={cartItem.quantity <= 1} aria-label={`Decrease ${cartItem.item.name} quantity`}>
+													<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+													</svg>
+												</Button>
+ 													<span class="px-2 text-sm font-medium text-neutral-700 min-w-[30px] text-center" aria-live="polite" aria-atomic="true">
+														{cartItem.quantity}
+													</span>
+ 													<Button variant="ghost" size="sm" onclick={() => updateCartQuantity(cartItem.item.id, cartItem.quantity + 1)} aria-label={`Increase ${cartItem.item.name} quantity`}>
+														<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+															<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12h16m-8-8v8m0 0l8 8m8-8v8" />
+														</svg>
+													</Button>
+												</div>
+												<button
+													type="button"
+													class="p-1.5 text-error-500 hover:text-error-700 hover:bg-error-50 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+													onclick={() => removeFromCart(cartItem.item.id)}
+													aria-label={`Remove ${cartItem.item.name} from order`}
+												>
+													<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+													</svg>
+												</button>
+											</div>
 										</div>
-										<span class="font-bold text-neutral-900 text-sm w-16 text-right">${displayPrice.toFixed(2)}</span>
-										<button
-											type="button"
-											class="p-1.5 text-error-500 hover:text-error-700 hover:bg-error-50 rounded-lg transition-colors ml-1 min-w-[44px] min-h-[44px] flex items-center justify-center"
-											onclick={() => removeFromCart(cartItem.item.id)}
-											aria-label={`Remove ${cartItem.item.name} from order`}
-										>
-											<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-											</svg>
-										</button>
 									</div>
-								</div>
-							</Card>
+								</Card>
 						{/each}
 					</div>
 
