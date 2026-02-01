@@ -27,7 +27,7 @@ jobs:
         run: npx playwright install chromium
 
       - name: Setup test database
-        run: npm run db:push
+        run: npm run db:push -- --force
         env:
           DATABASE_URL: file:test.db
 
