@@ -61,7 +61,7 @@ export async function getOrderVolume(
 
 	const result = await db
 		.select({
-			date: sql<string>`date(${order.createdAt} / 1000, 'unixepoch')`,
+			date: sql<string>`date(${order.createdAt} / 1000, 'unixepoch', 'localtime')`,
 			count: count(order.id)
 		})
 		.from(order)
@@ -72,8 +72,8 @@ export async function getOrderVolume(
 				lte(order.createdAt, new Date(endTimestamp))
 			)
 		)
-		.groupBy(sql`date(${order.createdAt} / 1000, 'unixepoch')`)
-		.orderBy(sql`date(${order.createdAt} / 1000, 'unixepoch')`);
+		.groupBy(sql`date(${order.createdAt} / 1000, 'unixepoch', 'localtime')`)
+		.orderBy(sql`date(${order.createdAt} / 1000, 'unixepoch', 'localtime')`);
 
 	return result.map((row) => ({
 		date: row.date,
