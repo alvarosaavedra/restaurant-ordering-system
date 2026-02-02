@@ -62,7 +62,7 @@
 	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 		{#each reportCategories as category (category.href)}
 			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-			<Card class="hover:shadow-lg transition-shadow cursor-pointer" onclick={() => navigateToReport(category.href)}>
+			<Card clickable class="hover:shadow-lg transition-shadow" onclick={() => navigateToReport(category.href)}>
 				<div class="p-6">
 					<div class="flex items-start space-x-4">
 						<div class="{category.bgColor} p-3 rounded-lg">

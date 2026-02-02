@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db';
 import { order, orderItem, menuItem, user, category } from '$lib/server/db/schema';
-import { eq, desc, sql, count, and, isNull } from 'drizzle-orm';
+import { eq, desc, sql, count, isNull } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
