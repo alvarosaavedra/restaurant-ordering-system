@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db';
 import { order, orderItem, menuItem, user } from '$lib/server/db/schema';
-import { eq, desc, asc, or, like, isNull } from 'drizzle-orm';
+import { eq, desc, asc, and, like, isNull } from 'drizzle-orm';
 import { orderLogger } from '$lib/server/logger';
 import type { PageServerLoad } from './$types';
 import type { OrderStatus } from '$lib/types/orders';
@@ -70,7 +70,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			})
 			.from(order)
 			.leftJoin(user, eq(order.employeeId, user.id))
-			.where(conditions.length > 0 ? or(...conditions) : undefined)
+			.where(conditions.length > 0 ? and(...conditions) : undefined)
 			.orderBy(orderBy)
 			.limit(limit)
 			.offset(offset);
@@ -108,7 +108,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		const totalCount = await db
 			.select({ count: order.id })
 			.from(order)
-			.where(conditions.length > 0 ? or(...conditions) : undefined);
+			.where(conditions.length > 0 ? and(...conditions) : undefined);
 
 		orderLogger.info(
 			{

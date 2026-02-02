@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db';
 import { order, orderItem, menuItem, user, category } from '$lib/server/db/schema';
-import { eq, desc, sql, count } from 'drizzle-orm';
+import { eq, desc, sql, count, and, isNull } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -14,7 +14,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	try {
-		// Get order statistics
+		// Get order statistics (excluding deleted orders)
 		const stats = await db
 			.select({
 				pending: sql<number>`SUM(CASE WHEN ${order.status} = 'pending' THEN 1 ELSE 0 END)`.mapWith(Number),
@@ -23,7 +23,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 				delivered: sql<number>`SUM(CASE WHEN ${order.status} = 'delivered' THEN 1 ELSE 0 END)`.mapWith(Number),
 				total: count()
 			})
-			.from(order);
+			.from(order)
+			.where(isNull(order.deletedAt));
 
 		const statsData = stats[0] || {
 			pending: 0,
@@ -33,7 +34,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			total: 0
 		};
 
-		// Fetch recent orders (last 5)
+		// Fetch recent orders (last 5, excluding deleted)
 		const recentOrders = await db
 			.select({
 				id: order.id,
@@ -50,6 +51,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			})
 			.from(order)
 			.leftJoin(user, eq(order.employeeId, user.id))
+			.where(isNull(order.deletedAt))
 			.orderBy(desc(order.createdAt))
 			.limit(5);
 
