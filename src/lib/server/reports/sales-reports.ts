@@ -33,7 +33,7 @@ export async function getSalesReport(
 
 	const result = await db
 		.select({
-			date: sql<string>`date(${order.createdAt} / 1000, 'unixepoch')`,
+			date: sql<string>`date(${order.createdAt} / 1000, 'unixepoch', 'localtime')`,
 			grossRevenue: sql<number>`SUM(${order.totalAmount})`,
 			totalDiscounts: sql<number>`COALESCE(SUM(${order.discountAmount}), 0)`,
 			netRevenue: sql<number>`SUM(${order.totalAmount}) - COALESCE(SUM(${order.discountAmount}), 0)`,
@@ -48,8 +48,8 @@ export async function getSalesReport(
 				lte(order.createdAt, new Date(endTimestamp))
 			)
 		)
-		.groupBy(sql`date(${order.createdAt} / 1000, 'unixepoch')`)
-		.orderBy(sql`date(${order.createdAt} / 1000, 'unixepoch')`);
+		.groupBy(sql`date(${order.createdAt} / 1000, 'unixepoch', 'localtime')`)
+		.orderBy(sql`date(${order.createdAt} / 1000, 'unixepoch', 'localtime')`);
 
 	return result.map((row) => ({
 		date: row.date,
