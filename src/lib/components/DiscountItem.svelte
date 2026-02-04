@@ -1,6 +1,7 @@
 <script lang="ts">
 	import DiscountBadge from './DiscountBadge.svelte';
 	import { calculateDiscountAmount } from '$lib/utils/discounts';
+	import { formatCurrency } from '$lib/utils/formatting';
 	import type { CartItem } from '$lib/stores/cart';
 
 	interface Props {
@@ -37,14 +38,14 @@
 			<span class="text-neutral-300">|</span>
 			{#if hasDiscount}
 				<span data-testid="original-price" class="text-sm text-neutral-400 line-through">
-					${itemTotal.toFixed(2)}
+					{formatCurrency(itemTotal)}
 				</span>
 				<span class="text-sm font-bold text-success-700">
-					${finalPrice.toFixed(2)}
+					{formatCurrency(finalPrice)}
 				</span>
 			{:else}
 				<span class="text-sm font-medium text-neutral-700">
-					${itemTotal.toFixed(2)}
+					{formatCurrency(itemTotal)}
 				</span>
 			{/if}
 		</div>

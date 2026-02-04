@@ -3,6 +3,7 @@
 	import { page } from '$app/stores';
 	import DateRangePicker from '$lib/components/DateRangePicker.svelte';
 	import Card from '$lib/components/ui/Card.svelte';
+	import { formatCurrency } from '$lib/utils/formatting';
 	import type { TopClient, ClientMetrics } from '$lib/server/reports/client-reports';
 
 	interface DateRange {
@@ -63,10 +64,6 @@
 		url.searchParams.set('endDate', range.endDate);
 		// eslint-disable-next-line svelte/no-navigation-without-resolve
 		goto(url.toString(), { keepFocus: true });
-	}
-
-	function formatCurrency(value: number): string {
-		return `$${value.toFixed(2)}`;
 	}
 </script>
 

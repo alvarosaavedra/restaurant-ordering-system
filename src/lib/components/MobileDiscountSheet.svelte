@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { CartItem, ItemDiscount, OrderDiscount } from '$lib/stores/cart';
 	import { validateDiscount } from '$lib/utils/discounts';
+	import { formatCurrency } from '$lib/utils/formatting';
 
 	interface Props {
 		isOpen: boolean;
@@ -144,8 +145,8 @@
 										<span class="text-xs text-neutral-500 ml-2">x{cartItem.quantity}</span>
 									</div>
 									<span class="text-sm font-medium text-neutral-700">
-										${(cartItem.item.price * cartItem.quantity).toFixed(2)}
-									</span>
+											{formatCurrency(cartItem.item.price * cartItem.quantity)}
+										</span>
 								</label>
 							{/each}
 						</div>
@@ -202,7 +203,7 @@
 						{/if}
 					</div>
 					<p class="text-xs text-neutral-500 mt-1">
-						Max {discountType === 'fixed' ? `$${basePrice().toFixed(2)}` : '50%'}
+						Max {discountType === 'fixed' ? formatCurrency(basePrice()) : '50%'}
 					</p>
 				</div>
 
@@ -235,9 +236,9 @@
 					<div class="mb-4 p-3 bg-neutral-50 border border-neutral-200 rounded-lg">
 						<p class="text-sm text-neutral-600 mb-1">Preview:</p>
 						<div class="flex items-center justify-between">
-							<span class="text-sm text-neutral-500 line-through">${p.original.toFixed(2)}</span>
-							<span class="text-sm font-medium text-success-600">-${p.discount.toFixed(2)}</span>
-							<span class="text-base font-bold text-neutral-900">${p.final.toFixed(2)}</span>
+							<span class="text-sm text-neutral-500 line-through">{formatCurrency(p.original)}</span>
+							<span class="text-sm font-medium text-success-600">-{formatCurrency(p.discount)}</span>
+							<span class="text-base font-bold text-neutral-900">{formatCurrency(p.final)}</span>
 						</div>
 					</div>
 				{/if}

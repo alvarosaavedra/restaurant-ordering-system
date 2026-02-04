@@ -1,11 +1,20 @@
 /**
- * Format price as currency
+ * Format price as currency with $ prefix, no decimals, and . as thousand separator
+ * Example: 1234.56 -> $1.234
  */
 export function formatCurrency(amount: number): string {
-	return new Intl.NumberFormat('en-US', {
-		style: 'currency',
-		currency: 'USD'
-	}).format(amount);
+	const rounded = Math.round(amount);
+	const parts = rounded.toString().split('');
+	const formatted = [];
+	
+	for (let i = 0; i < parts.length; i++) {
+		if (i > 0 && (parts.length - i) % 3 === 0) {
+			formatted.push('.');
+		}
+		formatted.push(parts[i]);
+	}
+	
+	return `$${formatted.join('')}`;
 }
 
 /**

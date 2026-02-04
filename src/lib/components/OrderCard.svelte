@@ -3,6 +3,7 @@
 	import Button from '$lib/components/ui/Button.svelte';
 	import Spinner from '$lib/components/ui/Spinner.svelte';
 	import { toast } from '$lib/utils/toast';
+	import { formatCurrency } from '$lib/utils/formatting';
 
 	interface OrderItemWithType {
 		id: string;
@@ -140,7 +141,7 @@
 	function formatDiscountLabel(type: 'fixed' | 'percentage' | null, value: number | null): string {
 		if (!type || !value) return '';
 		if (type === 'percentage') return `${value}% off`;
-		return `$${value.toFixed(2)} off`;
+		return `${formatCurrency(value)} off`;
 	}
 
 	let currentStatus = $derived(isUpdating ? previousStatus : order.status);
@@ -188,14 +189,14 @@
 			<div class="text-right w-full sm:w-auto">
 				{#if hasAnyDiscount()}
 					<div class="flex flex-col items-end">
-						<div class="text-xl sm:text-2xl font-black text-bakery-700">${order.totalAmount.toFixed(2)}</div>
+						<div class="text-xl sm:text-2xl font-black text-bakery-700">{formatCurrency(order.totalAmount)}</div>
 						<div class="flex items-center gap-1 text-xs">
-							<span class="text-neutral-400 line-through">${calculateSubtotal().toFixed(2)}</span>
-							<span class="text-green-600 font-medium">-${calculateTotalSavings().toFixed(2)}</span>
+							<span class="text-neutral-400 line-through">{formatCurrency(calculateSubtotal())}</span>
+							<span class="text-green-600 font-medium">-{formatCurrency(calculateTotalSavings())}</span>
 						</div>
 					</div>
 				{:else}
-					<div class="text-xl sm:text-2xl font-black text-bakery-700">${order.totalAmount.toFixed(2)}</div>
+					<div class="text-xl sm:text-2xl font-black text-bakery-700">{formatCurrency(order.totalAmount)}</div>
 				{/if}
 				<div class="text-xs text-neutral-400">Order #{order.id.slice(-6)}</div>
 			</div>
@@ -257,15 +258,15 @@
 						{/if}
 					</div>
 					<div class="text-right">
-						{#if item.discountAmount && item.discountAmount > 0}
-							<div class="flex flex-col items-end">
-								<span class="text-xs text-gray-400 line-through">${calculateItemOriginalTotal(item).toFixed(2)}</span>
-								<span class="font-medium text-gray-900">${(calculateItemOriginalTotal(item) - calculateItemDiscountAmount(item)).toFixed(2)}</span>
-							</div>
-						{:else}
-							<span class="font-medium text-gray-900">${calculateItemOriginalTotal(item).toFixed(2)}</span>
-						{/if}
-					</div>
+							{#if item.discountAmount && item.discountAmount > 0}
+								<div class="flex flex-col items-end">
+									<span class="text-xs text-gray-400 line-through">{formatCurrency(calculateItemOriginalTotal(item))}</span>
+									<span class="font-medium text-gray-900">{formatCurrency(calculateItemOriginalTotal(item) - calculateItemDiscountAmount(item))}</span>
+								</div>
+							{:else}
+								<span class="font-medium text-gray-900">{formatCurrency(calculateItemOriginalTotal(item))}</span>
+							{/if}
+						</div>
 				</div>
 			{/each}
 		</div>
@@ -283,7 +284,7 @@
 					{#if calculateTotalItemDiscounts() > 0}
 						<div class="flex justify-between text-green-700">
 							<span>Item Discounts</span>
-							<span>-${calculateTotalItemDiscounts().toFixed(2)}</span>
+							<span>-{formatCurrency(calculateTotalItemDiscounts())}</span>
 						</div>
 					{/if}
 					{#if hasOrderDiscount()}
@@ -297,12 +298,12 @@
 									<span class="text-green-600 text-xs">({order.discountReason})</span>
 								{/if}
 							</span>
-							<span>-${order.discountAmount?.toFixed(2)}</span>
+							<span>-{formatCurrency(order.discountAmount ?? 0)}</span>
 						</div>
 					{/if}
 					<div class="flex justify-between font-semibold text-green-800 pt-1 border-t border-green-200">
 						<span>Total Saved</span>
-						<span>-${calculateTotalSavings().toFixed(2)}</span>
+						<span>-{formatCurrency(calculateTotalSavings())}</span>
 					</div>
 				</div>
 			</div>

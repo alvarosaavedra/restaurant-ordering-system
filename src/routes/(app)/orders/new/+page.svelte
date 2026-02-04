@@ -8,6 +8,7 @@
 	import MobileDiscountSheet from '$lib/components/MobileDiscountSheet.svelte';
 	import { cartStore, type CartItem, type ItemDiscount, type OrderDiscount } from '$lib/stores/cart';
 	import { toast } from '$lib/utils/toast';
+	import { formatCurrency } from '$lib/utils/formatting';
 	import type { MenuItemWithCategory } from '$lib/types/orders';
 
 	interface CategoryWithItems {
@@ -359,29 +360,29 @@
 										<div class="flex-1 min-w-0">
 											<div class="flex items-center gap-2 flex-wrap">
 												<h4 class="font-semibold text-neutral-900 text-sm">{cartItem.item.name}</h4>
-												{#if cartItem.discount}
-													<span class="text-xs font-medium text-success-600 bg-success-50 px-1.5 py-0.5 rounded shrink-0">
-														{cartItem.discount.type === 'percentage' ? `${cartItem.discount.value}%` : `$${cartItem.discount.value.toFixed(2)}`} off
-													</span>
-												{/if}
+										{#if cartItem.discount}
+											<span class="text-xs font-medium text-success-600 bg-success-50 px-1.5 py-0.5 rounded shrink-0">
+												{cartItem.discount.type === 'percentage' ? `${cartItem.discount.value}%` : `${formatCurrency(cartItem.discount.value)}`} off
+											</span>
+										{/if}
 											</div>
 											{#if cartItem.item.category}
 												<p class="text-xs text-neutral-500 mt-0.5">{cartItem.item.category.name}</p>
 											{/if}
 											{#if cartItem.discount}
-												{@const originalPrice = cartItem.item.price * cartItem.quantity}
-												{@const discountAmount = cartItem.discount.type === 'percentage' 
-													? originalPrice * (cartItem.discount.value / 100)
-													: cartItem.discount.value}
-												{@const finalPrice = Math.max(0, originalPrice - discountAmount)}
-												<p class="text-xs text-success-600 mt-0.5">
-													<span class="line-through text-neutral-400">${originalPrice.toFixed(2)}</span>
-													<span class="font-medium">${finalPrice.toFixed(2)}</span>
-													<span class="text-success-600">(-${discountAmount.toFixed(2)})</span>
-												</p>
-											{/if}
-										</div>
-										<span class="font-bold text-neutral-900 text-sm shrink-0">${displayPrice.toFixed(2)}</span>
+										{@const originalPrice = cartItem.item.price * cartItem.quantity}
+										{@const discountAmount = cartItem.discount.type === 'percentage' 
+											? originalPrice * (cartItem.discount.value / 100)
+											: cartItem.discount.value}
+										{@const finalPrice = Math.max(0, originalPrice - discountAmount)}
+										<p class="text-xs text-success-600 mt-0.5">
+											<span class="line-through text-neutral-400">{formatCurrency(originalPrice)}</span>
+											<span class="font-medium">{formatCurrency(finalPrice)}</span>
+											<span class="text-success-600">(-{formatCurrency(discountAmount)})</span>
+										</p>
+									{/if}
+								</div>
+								<span class="font-bold text-neutral-900 text-sm shrink-0">{formatCurrency(displayPrice)}</span>
 									</div>
 									
 									<!-- Bottom Row: Controls -->
