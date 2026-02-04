@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { CartItem, CartTotals, OrderDiscount } from '$lib/stores/cart';
+	import { formatCurrency } from '$lib/utils/formatting';
 
 	interface Props {
 		cartItems: CartItem[];
@@ -19,17 +20,12 @@
 		return hasItemDiscounts || hasOrderDiscount;
 	});
 
-	// Format currency
-	function formatCurrency(amount: number): string {
-		return `$${amount.toFixed(2)}`;
-	}
-
 	// Format discount label
 	function formatDiscountLabel(discount: { type: 'fixed' | 'percentage'; value: number }): string {
 		if (discount.type === 'percentage') {
 			return `${discount.value}% off`;
 		}
-		return `$${discount.value.toFixed(2)} off`;
+		return `${formatCurrency(discount.value)} off`;
 	}
 
 	// Calculate item final price

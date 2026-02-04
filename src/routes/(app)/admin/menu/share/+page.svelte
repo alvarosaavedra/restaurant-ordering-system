@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { SvelteSet } from 'svelte/reactivity';
 	import Button from '$lib/components/ui/Button.svelte';
+	import { formatCurrency } from '$lib/utils/formatting';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -57,7 +58,7 @@
 					const emoji = itemEmojis[emojiIndex % itemEmojis.length];
 					emojiIndex++;
 					
-					lines.push(`${emoji} ${item.name} - $${item.price.toFixed(2)}`);
+					lines.push(`${emoji} ${item.name} - ${formatCurrency(item.price)}`);
 					
 					if (item.description) {
 						lines.push(`   ${item.description}`);
@@ -246,7 +247,7 @@
 													<div class="flex-1 min-w-0">
 														<div class="flex items-center justify-between">
 															<span class="font-medium text-gray-900">{item.name}</span>
-															<span class="font-semibold text-orange-600">${item.price.toFixed(2)}</span>
+															<span class="font-semibold text-orange-600">{formatCurrency(item.price)}</span>
 														</div>
 														{#if item.description}
 															<p class="mt-1 text-sm text-gray-500 line-clamp-2">{item.description}</p>

@@ -7,6 +7,7 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import Input from '$lib/components/ui/Input.svelte';
 	import Select from '$lib/components/ui/Select.svelte';
+	import { formatCurrency } from '$lib/utils/formatting';
 
 	interface OrderItem {
 		id: string;
@@ -205,7 +206,7 @@
 	function formatDiscountLabel(type: 'fixed' | 'percentage' | null, value: number | null): string {
 		if (!type || !value) return '';
 		if (type === 'percentage') return `${value}% off`;
-		return `$${value.toFixed(2)} off`;
+		return `${formatCurrency(value)} off`;
 	}
 </script>
 
@@ -363,15 +364,15 @@
 											{#if item.discountAmount && item.discountAmount > 0}
 												<div class="flex flex-col items-end">
 													<span class="text-sm text-gray-400 line-through">
-														${calculateItemOriginalTotal(item).toFixed(2)}
+														{formatCurrency(calculateItemOriginalTotal(item))}
 													</span>
 													<span class="font-bold text-gray-900">
-														${(calculateItemOriginalTotal(item) - calculateItemDiscountAmount(item)).toFixed(2)}
+														{formatCurrency(calculateItemOriginalTotal(item) - calculateItemDiscountAmount(item))}
 													</span>
 												</div>
 											{:else}
 												<span class="font-bold text-gray-900">
-													${calculateItemOriginalTotal(item).toFixed(2)}
+													{formatCurrency(calculateItemOriginalTotal(item))}
 												</span>
 											{/if}
 										</div>
@@ -386,7 +387,7 @@
 											</span>
 										{/if}
 										<span class="text-xs text-gray-500">×{item.quantity}</span>
-										<span class="text-xs text-gray-500">@ ${item.unitPrice.toFixed(2)}</span>
+										<span class="text-xs text-gray-500">@ {formatCurrency(item.unitPrice)}</span>
 										{#if item.discountAmount && item.discountAmount > 0}
 											<span class="text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
 												{formatDiscountLabel(item.discountType, item.discountValue)}
@@ -406,42 +407,42 @@
 						<div class="mt-6 pt-4 border-t border-gray-200">
 							<div class="space-y-2">
 								<div class="flex items-center justify-between text-sm">
-									<span class="text-gray-600">Subtotal</span>
-									<span class="font-medium text-gray-900">${calculateSubtotal().toFixed(2)}</span>
-								</div>
-								
-								{#if calculateTotalItemDiscounts() > 0}
-									<div class="flex items-center justify-between text-sm">
-										<span class="text-gray-600">Item Discounts</span>
-										<span class="font-medium text-green-600">-${calculateTotalItemDiscounts().toFixed(2)}</span>
+										<span class="text-gray-600">Subtotal</span>
+										<span class="font-medium text-gray-900">{formatCurrency(calculateSubtotal())}</span>
 									</div>
-								{/if}
-								
-								{#if order.discountAmount && order.discountAmount > 0}
-									<div class="flex items-center justify-between text-sm">
-										<span class="text-gray-600">
-											Order Discount
-											{#if order.discountReason}
-												<span class="text-gray-400">({order.discountReason})</span>
-											{/if}
-										</span>
-										<span class="font-medium text-green-600">-${order.discountAmount.toFixed(2)}</span>
+									
+									{#if calculateTotalItemDiscounts() > 0}
+										<div class="flex items-center justify-between text-sm">
+											<span class="text-gray-600">Item Discounts</span>
+											<span class="font-medium text-green-600">-{formatCurrency(calculateTotalItemDiscounts())}</span>
+										</div>
+									{/if}
+									
+									{#if order.discountAmount && order.discountAmount > 0}
+										<div class="flex items-center justify-between text-sm">
+											<span class="text-gray-600">
+												Order Discount
+												{#if order.discountReason}
+													<span class="text-gray-400">({order.discountReason})</span>
+												{/if}
+											</span>
+											<span class="font-medium text-green-600">-{formatCurrency(order.discountAmount)}</span>
+										</div>
+									{/if}
+									
+									<div class="flex items-center justify-between text-sm pt-2 border-t border-dashed border-gray-200">
+										<span class="font-semibold text-green-700">You Saved</span>
+										<span class="font-bold text-green-700">-{formatCurrency(calculateTotalSavings())}</span>
 									</div>
-								{/if}
-								
-								<div class="flex items-center justify-between text-sm pt-2 border-t border-dashed border-gray-200">
-									<span class="font-semibold text-green-700">You Saved</span>
-									<span class="font-bold text-green-700">-${calculateTotalSavings().toFixed(2)}</span>
-								</div>
 							</div>
 						</div>
 					{/if}
 
 					<div class="mt-6 pt-4 border-t border-gray-200">
 						<div class="flex items-center justify-between">
-							<span class="text-lg font-bold text-gray-900">Total</span>
-							<span class="text-2xl font-black text-gradient">${order.totalAmount.toFixed(2)}</span>
-						</div>
+										<span class="text-lg font-bold text-gray-900">Total</span>
+										<span class="text-2xl font-black text-gradient">{formatCurrency(order.totalAmount)}</span>
+									</div>
 					</div>
 				</div>
 			</Card>
@@ -668,7 +669,7 @@
 							class="w-20 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
 							bind:value={itemsFormData[index].quantity}
 						/>
-						<span class="text-sm text-gray-500">@ ${item.unitPrice.toFixed(2)}</span>
+						<span class="text-sm text-gray-500">@ {formatCurrency(item.unitPrice)}</span>
 						<button
 							type="button"
 							onclick={() => removeItem(index)}
@@ -699,9 +700,9 @@
 
 			<div class="pt-4 border-t border-gray-200">
 				<div class="flex justify-between items-center">
-					<span class="font-medium">Total</span>
-					<span class="text-xl font-bold">${calculateTotal().toFixed(2)}</span>
-				</div>
+									<span class="font-medium">Total</span>
+									<span class="text-xl font-bold">{formatCurrency(calculateTotal())}</span>
+								</div>
 			</div>
 
 			<div class="flex gap-3 pt-4">
