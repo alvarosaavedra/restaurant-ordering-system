@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { order, orderItem, menuItem, user } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and, isNull } from 'drizzle-orm';
 import type { RequestHandler } from '@sveltejs/kit';
 
 export const GET: RequestHandler = async ({ locals }) => {
@@ -39,7 +39,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			})
 			.from(order)
 			.leftJoin(user, eq(order.employeeId, user.id))
-			.where(eq(order.status, 'ready'))
+			.where(and(isNull(order.deletedAt), eq(order.status, 'ready')))
 			.orderBy(order.createdAt);
 
 		const ordersWithItems = await Promise.all(

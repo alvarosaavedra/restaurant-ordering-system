@@ -1,7 +1,7 @@
 import { fail, error } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { client, order } from '$lib/server/db/schema';
-import { eq, desc, count } from 'drizzle-orm';
+import { eq, desc, count, and, isNull } from 'drizzle-orm';
 import { adminLogger } from '$lib/server/logger';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -21,7 +21,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 				const [result] = await db
 					.select({ count: count() })
 					.from(order)
-					.where(eq(order.customerPhone, c.phone));
+					.where(and(isNull(order.deletedAt), eq(order.customerPhone, c.phone)));
 
 				return {
 					...c,
@@ -200,10 +200,10 @@ export const actions: Actions = {
 				});
 			}
 
-			const [orderCount] = await db
-				.select({ count: count() })
-				.from(order)
-				.where(eq(order.customerPhone, existing.phone));
+const [orderCount] = await db
+			.select({ count: count() })
+			.from(order)
+			.where(and(isNull(order.deletedAt), eq(order.customerPhone, existing.phone)));
 
 			if (orderCount && orderCount.count > 0) {
 				adminLogger.warn({ event: 'delete_blocked', clientId: id, reason: 'has_orders', orderCount: orderCount.count }, 'Cannot delete client with existing orders');
