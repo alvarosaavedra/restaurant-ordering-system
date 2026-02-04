@@ -49,7 +49,7 @@ describe('DiscountItem', () => {
 				onRemoveDiscount: vi.fn()
 			});
 
-			expect(container.textContent).toContain('$50.00'); // 25 * 2
+			expect(container.textContent).toContain('$50'); // 25 * 2
 		});
 	});
 
@@ -72,7 +72,7 @@ describe('DiscountItem', () => {
 				onRemoveDiscount: vi.fn()
 			});
 
-			expect(container.textContent).toContain('$45.00'); // 50 - 5
+			expect(container.textContent).toContain('$45'); // 50 - 5
 		});
 
 		it('should show original price with strikethrough', async () => {

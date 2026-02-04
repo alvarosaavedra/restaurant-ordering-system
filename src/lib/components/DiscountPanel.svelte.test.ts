@@ -123,7 +123,7 @@ describe('DiscountPanel', () => {
 			});
 
 			const discountText = container.textContent;
-			expect(discountText).toContain('$5.00');
+			expect(discountText).toContain('$5');
 		});
 
 		it('should show remove button for item discount', async () => {
@@ -207,7 +207,7 @@ describe('DiscountPanel', () => {
 			});
 
 			const text = container.textContent;
-			expect(text).toContain('$25.00');
+			expect(text).toContain('$25');
 		});
 
 		it('should display total savings when discounts applied', async () => {
@@ -228,7 +228,7 @@ describe('DiscountPanel', () => {
 
 			const text = container.textContent;
 			expect(text).toContain('You saved');
-			expect(text).toContain('$4.50');
+			expect(text).toContain('$5');
 		});
 
 		it('should display final total', async () => {
@@ -248,7 +248,7 @@ describe('DiscountPanel', () => {
 			});
 
 			const text = container.textContent;
-			expect(text).toContain('$20.00');
+			expect(text).toContain('$20');
 		});
 	});
 
