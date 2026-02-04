@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { order, orderItem, menuItem, user, client } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, isNull } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 import { orderLogger } from '$lib/server/logger';
 import type { RequestHandler } from '@sveltejs/kit';
@@ -28,6 +28,7 @@ export const GET: RequestHandler = async () => {
 			})
 			.from(order)
 			.leftJoin(user, eq(order.employeeId, user.id))
+			.where(isNull(order.deletedAt))
 			.orderBy(order.createdAt);
 
 		orderLogger.info({ event: 'orders_fetched', count: orders.length }, 'Fetched all orders');
