@@ -46,6 +46,30 @@
 	let categories = $derived(data.categories || []);
 	let isSubmitting: boolean = $state(false);
 	let showValidationErrors: boolean = $state(false);
+	let searchQuery: string = $state('');
+
+	// Filtered categories based on search query with items sorted by name
+	let filteredCategories = $derived(() => {
+		if (!searchQuery.trim()) {
+			return categories.map(cat => ({
+				...cat,
+				items: [...cat.items].sort((a, b) => a.name.localeCompare(b.name))
+			}));
+		}
+		
+		const query = searchQuery.toLowerCase().trim();
+		return categories
+			.map(cat => ({
+				...cat,
+				items: cat.items
+					.filter(item => 
+						item.name.toLowerCase().includes(query) ||
+						(item.description?.toLowerCase().includes(query) ?? false)
+					)
+					.sort((a, b) => a.name.localeCompare(b.name))
+			}))
+			.filter(cat => cat.items.length > 0);
+	});
 
 	// Mobile discount sheet state
 	let showDiscountSheet: boolean = $state(false);
@@ -220,13 +244,43 @@
 		<!-- Menu Items -->
 		<div class="lg:col-span-2">
 			<Card variant="elevated" class="p-6 shadow-warm-glow-sm">
-				<div class="flex items-center gap-3 mb-6">
-					<div class="w-10 h-10 bg-bakery-100 rounded-lg flex items-center justify-center" aria-hidden="true">
-						<svg class="w-5 h-5 text-bakery-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-						</svg>
+				<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+					<div class="flex items-center gap-3">
+						<div class="w-10 h-10 bg-bakery-100 rounded-lg flex items-center justify-center" aria-hidden="true">
+							<svg class="w-5 h-5 text-bakery-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+							</svg>
+						</div>
+						<h2 class="text-xl font-bold text-neutral-900 font-display">Menu</h2>
 					</div>
-					<h2 class="text-xl font-bold text-neutral-900 font-display">Menu</h2>
+					
+					<!-- Search Input -->
+					<div class="relative w-full sm:w-72">
+						<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+							<svg class="h-4 w-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+							</svg>
+						</div>
+						<input
+							type="text"
+							bind:value={searchQuery}
+							placeholder="Search products..."
+							class="w-full pl-10 pr-10 py-2 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-bakery-500 focus:border-transparent transition-all"
+							aria-label="Search menu items"
+						/>
+						{#if searchQuery}
+							<button
+								type="button"
+								class="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-600 transition-colors"
+								onclick={() => searchQuery = ''}
+								aria-label="Clear search"
+							>
+								<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+								</svg>
+							</button>
+						{/if}
+					</div>
 				</div>
 
 				{#if categories.length === 0}
@@ -240,8 +294,19 @@
 						<p class="text-neutral-500 font-medium">Please wait while we load the menu items</p>
 					</div>
 				{:else}
+					{#if filteredCategories().length === 0}
+						<div class="text-center py-12">
+							<div class="w-16 h-16 mx-auto mb-4 bg-neutral-100 rounded-2xl flex items-center justify-center">
+								<svg class="w-8 h-8 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+								</svg>
+							</div>
+							<h3 class="text-lg font-semibold text-neutral-900 mb-2">No products found</h3>
+							<p class="text-neutral-500 font-medium">Try adjusting your search terms</p>
+						</div>
+					{:else}
 					<div class="space-y-6">
-						{#each categories as category (category.id)}
+						{#each filteredCategories() as category (category.id)}
 							<div class="animate-slide-up">
 								<div class="flex items-center gap-3 mb-3 pb-3 border-b border-neutral-200">
 									<h3 class="text-base font-bold text-neutral-900 font-display">{category.name}</h3>
@@ -259,6 +324,7 @@
 							</div>
 						{/each}
 					</div>
+					{/if}
 				{/if}
 			</Card>
 		</div>
