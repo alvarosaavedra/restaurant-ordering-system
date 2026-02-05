@@ -36,7 +36,7 @@ describe('MenuItemCard', () => {
 			ondelete: vi.fn()
 		});
 
-		expect(getByText(`$${mockMenuItemWithCategory.price.toFixed(2)}`)).toBeInTheDocument();
+		expect(getByText('$6')).toBeInTheDocument(); // 5.99 rounded to 6
 	});
 
 	it('shows availability indicator', async () => {
