@@ -1,10 +1,6 @@
 <script lang="ts">
 	import type { MenuItemWithCategory } from '$lib/types/orders';
-
-	// Simple currency formatter for now
-	function formatCurrency(amount: number): string {
-		return `$${amount.toFixed(2)}`;
-	}
+	import { formatCurrency } from '$lib/utils/formatting';
 
 	interface Props {
 		item: MenuItemWithCategory;
