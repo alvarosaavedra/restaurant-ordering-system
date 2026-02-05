@@ -16,7 +16,7 @@ describe('DiscountBadge', () => {
 
 			const badge = container.querySelector('[data-testid="discount-badge"]');
 			expect(badge).toBeInTheDocument();
-			expect(badge?.textContent).toContain('$5.00');
+			expect(badge?.textContent).toContain('$5');
 		});
 
 		it('should render with size sm', async () => {

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { formatCurrency } from '$lib/utils/formatting';
+
 	interface Props {
 		discount: {
 			type: 'fixed' | 'percentage';
@@ -20,7 +22,7 @@
 
 	let formattedValue = $derived(
 		discount.type === 'fixed'
-			? `$${discount.value.toFixed(2)}`
+			? formatCurrency(discount.value)
 			: `${discount.value}%`
 	);
 

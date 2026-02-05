@@ -3,6 +3,7 @@
 	import Button from '$lib/components/ui/Button.svelte';
 	import Card from '$lib/components/ui/Card.svelte';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
+	import { formatCurrency } from '$lib/utils/formatting';
 	import type { OrderStatus } from '$lib/types/orders';
 
 	interface OrderItem {
@@ -319,7 +320,7 @@
 							<StatusBadge status={order.status} />
 							<div class="flex-1 min-w-0">
 								<h3 class="font-semibold text-neutral-900 truncate">{order.customerName}</h3>
-								<p class="text-sm text-neutral-500">{order.items.length} item{order.items.length !== 1 ? 's' : ''} · {order.totalAmount.toFixed(2)}</p>
+								<p class="text-sm text-neutral-500">{order.items.length} item{order.items.length !== 1 ? 's' : ''} · {formatCurrency(order.totalAmount)}</p>
 							</div>
 						</div>
 						<div class="flex items-center gap-3">

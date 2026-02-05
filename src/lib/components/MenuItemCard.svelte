@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { MenuItemWithCategory } from '$lib/types/orders';
 	import Button from '$lib/components/ui/Button.svelte';
+	import { formatCurrency } from '$lib/utils/formatting';
 
 	interface Props {
 		item: MenuItemWithCategory;
@@ -9,10 +10,6 @@
 	}
 
 	let { item, onedit, ondelete }: Props = $props();
-
-	function formatCurrency(amount: number): string {
-		return `$${amount.toFixed(2)}`;
-	}
 </script>
 
 <div class="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">

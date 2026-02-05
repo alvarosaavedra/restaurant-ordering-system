@@ -25,7 +25,7 @@ describe('MenuItem', () => {
 			onAdd: vi.fn()
 		});
 
-		expect(getByText(`$${mockMenuItemWithCategory.price.toFixed(2)}`)).toBeInTheDocument();
+		expect(getByText('$6')).toBeInTheDocument(); // 5.99 rounded to 6
 	});
 
 	it('displays initial quantity as 1', async () => {
