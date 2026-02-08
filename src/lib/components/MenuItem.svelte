@@ -3,8 +3,8 @@
 	import { formatCurrency } from '$lib/utils/formatting';
 
 	interface Props {
-		item: MenuItemWithCategory;
-		onAdd: (item: MenuItemWithCategory, quantity: number) => void;
+		item: MenuItemWithCategory & Record<string, unknown>;
+		onAdd: (item: MenuItemWithCategory & Record<string, unknown>, quantity: number) => void;
 	}
 
 	let { item, onAdd }: Props = $props();

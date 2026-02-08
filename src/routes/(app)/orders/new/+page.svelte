@@ -6,17 +6,23 @@
 	import CustomerInfo from '$lib/components/CustomerInfo.svelte';
 	import DiscountPanel from '$lib/components/DiscountPanel.svelte';
 	import MobileDiscountSheet from '$lib/components/MobileDiscountSheet.svelte';
-	import { cartStore, type CartItem, type ItemDiscount, type OrderDiscount } from '$lib/stores/cart';
+	import ItemCustomizationModal from '$lib/components/ItemCustomizationModal.svelte';
+	import { cartStore, type CartItem, type ItemDiscount, type OrderDiscount, type SelectedVariation, type SelectedModifier } from '$lib/stores/cart';
 	import { toast } from '$lib/utils/toast';
 	import { formatCurrency } from '$lib/utils/formatting';
 	import type { MenuItemWithCategory } from '$lib/types/orders';
+	import type { VariationGroup, Variation, ModifierGroup, Modifier } from '$lib/server/db/schema';
 
 	interface CategoryWithItems {
 		id: string;
 		name: string;
 		displayOrder: number;
 		createdAt: Date;
-		items: MenuItemWithCategory[];
+		items: (MenuItemWithCategory & {
+			variationGroups: (VariationGroup & { variations: Variation[] })[];
+			modifierGroups: (ModifierGroup & { modifiers: Modifier[] })[];
+			hasCustomizations: boolean;
+		})[];
 	}
 
 	let { data }: { data: { categories: CategoryWithItems[] } } = $props();
@@ -78,8 +84,41 @@
 	let selectedItemIdForDiscount: string | null = $state(null);
 	let editingDiscount: ItemDiscount | OrderDiscount | null = $state(null);
 
+	// Customization modal state
+	let showCustomizationModal: boolean = $state(false);
+	let selectedItemForCustomization: CategoryWithItems['items'][0] | null = $state(null);
+
 	function addToOrder(item: MenuItemWithCategory, quantity: number) {
-		cartStore.addItem(item, quantity);
+		// Cast to extended type since we know the server adds these fields
+		const extendedItem = item as CategoryWithItems['items'][0];
+		
+		// Check if item has variations or modifiers
+		if (extendedItem.hasCustomizations || extendedItem.variationGroups?.length > 0 || extendedItem.modifierGroups?.length > 0) {
+			selectedItemForCustomization = extendedItem;
+			showCustomizationModal = true;
+		} else {
+			// Add directly if no customizations
+			cartStore.addItem(item, quantity);
+			toast.success(`${item.name} added to order`);
+		}
+	}
+
+	function handleCustomizationSave(
+		variations: SelectedVariation[],
+		modifiers: SelectedModifier[],
+		quantity: number
+	) {
+		if (selectedItemForCustomization) {
+			cartStore.addItem(selectedItemForCustomization, quantity, variations, modifiers);
+			toast.success(`${selectedItemForCustomization.name} added to order`);
+			selectedItemForCustomization = null;
+			showCustomizationModal = false;
+		}
+	}
+
+	function handleCustomizationClose() {
+		selectedItemForCustomization = null;
+		showCustomizationModal = false;
 	}
 
 	function getTotalItems(): number {
@@ -493,3 +532,16 @@
 	onSave={handleSaveDiscount}
 	onClose={handleCloseDiscountSheet}
 />
+
+<!-- Item Customization Modal -->
+{#if selectedItemForCustomization}
+	<ItemCustomizationModal
+		open={showCustomizationModal}
+		itemName={selectedItemForCustomization.name}
+		basePrice={selectedItemForCustomization.price}
+		variationGroups={selectedItemForCustomization.variationGroups}
+		modifierGroups={selectedItemForCustomization.modifierGroups}
+		onSave={handleCustomizationSave}
+		onClose={handleCustomizationClose}
+	/>
+{/if}
