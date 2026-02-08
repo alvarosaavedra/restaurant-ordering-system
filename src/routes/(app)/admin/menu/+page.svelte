@@ -8,11 +8,14 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import MenuItemCard from '$lib/components/MenuItemCard.svelte';
 	import CategoryCard from '$lib/components/CategoryCard.svelte';
+	import VariationGroupEditor from '$lib/components/admin/VariationGroupEditor.svelte';
+	import VariationEditor from '$lib/components/admin/VariationEditor.svelte';
 	import type { MenuItemWithCategory, CategoryWithCount } from '$lib/types/orders';
+	import type { VariationGroup, Variation } from '$lib/server/db/schema';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
-	type AdminTab = 'menu-items' | 'categories';
+	type AdminTab = 'menu-items' | 'categories' | 'variations';
 
 	let currentTab: AdminTab = $state('menu-items');
 	let searchQuery: string = $state('');
@@ -23,9 +26,14 @@
 	let showAddCategoryModal: boolean = $state(false);
 	let showEditCategoryModal: boolean = $state(false);
 	let showDeleteCategoryModal: boolean = $state(false);
+	let showAddVariationGroupModal: boolean = $state(false);
+	let showVariationEditorModal: boolean = $state(false);
 
 	let selectedMenuItem: MenuItemWithCategory | null = $state(null);
 	let selectedCategory: CategoryWithCount | null = $state(null);
+	let selectedVariationGroup: (VariationGroup & { variations: Variation[] }) | null = $state(null);
+	let selectedVariation: Variation | null = $state(null);
+	let variationGroupMenuItemId: string = $state('');
 
 	let menuItemFormData = $state({
 		id: '',
@@ -40,6 +48,14 @@
 		id: '',
 		name: '',
 		displayOrder: ''
+	});
+
+	let variationGroupFormData = $state({
+		id: '',
+		name: '',
+		isRequired: true,
+		minSelections: 1,
+		maxSelections: 1
 	});
 
 	let filteredMenuItems = $derived.by(() => {
@@ -119,6 +135,24 @@
 		showDeleteCategoryModal = true;
 	}
 
+	function openAddVariationGroupModal(menuItemId: string) {
+		variationGroupMenuItemId = menuItemId;
+		variationGroupFormData = {
+			id: '',
+			name: '',
+			isRequired: true,
+			minSelections: 1,
+			maxSelections: 1
+		};
+		showAddVariationGroupModal = true;
+	}
+
+	function openVariationEditor(group: VariationGroup & { variations: Variation[] }, variation?: Variation) {
+		selectedVariationGroup = group;
+		selectedVariation = variation || null;
+		showVariationEditorModal = true;
+	}
+
 	function closeAllModals() {
 		showAddMenuItemModal = false;
 		showEditMenuItemModal = false;
@@ -126,8 +160,12 @@
 		showAddCategoryModal = false;
 		showEditCategoryModal = false;
 		showDeleteCategoryModal = false;
+		showAddVariationGroupModal = false;
+		showVariationEditorModal = false;
 		selectedMenuItem = null;
 		selectedCategory = null;
+		selectedVariationGroup = null;
+		selectedVariation = null;
 	}
 
 	let categoryOptions = $derived.by(() =>
@@ -174,6 +212,16 @@
 			>
 				Categories
 			</button>
+			<button
+				class="px-6 py-3 text-sm font-medium border-b-2 transition-colors {currentTab === 'variations'
+					? 'border-primary-600 text-primary-700'
+					: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
+				onclick={() => (currentTab = 'variations')}
+				aria-current={currentTab === 'variations' ? 'page' : undefined}
+				role="tab"
+			>
+				Variations
+			</button>
 		</div>
 
 		<div class="p-6">
@@ -206,7 +254,7 @@
 						{/each}
 					</div>
 				{/if}
-			{:else}
+			{:else if currentTab === 'categories'}
 				<div class="mb-6 flex justify-end">
 					<Button onclick={openAddCategoryModal}>
 						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -229,9 +277,80 @@
 						{/each}
 					</div>
 				{/if}
-			{/if}
-		</div>
+			{:else if currentTab === 'variations'}
+				<div class="space-y-6">
+					{#if data.menuItems.length === 0}
+						<div class="text-center py-12 text-gray-500">
+							No menu items yet. Add menu items first to configure variations.
+						</div>
+					{:else}
+						{#each data.menuItems as item (item.id)}
+							<div class="bg-white rounded-xl border border-gray-200 p-6">
+								<div class="flex items-center justify-between mb-4">
+									<div>
+										<h3 class="text-lg font-semibold text-gray-900">{item.name}</h3>
+										<p class="text-sm text-gray-500">{item.category?.name || 'No category'} • ${item.price.toFixed(2)}</p>
+									</div>
+								<Button 
+									size="sm" 
+									onclick={() => openAddVariationGroupModal(item.id)}
+								>
+									<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+									</svg>
+									Add Group
+								</Button>
+							</div>
+							
+							{#if data.variationGroups.filter(vg => vg.menuItemId === item.id).length === 0}
+								<p class="text-sm text-gray-500 italic">No variation groups configured</p>
+							{:else}
+								<div class="space-y-4">
+									{#each data.variationGroups.filter(vg => vg.menuItemId === item.id) as group (group.id)}
+										<VariationGroupEditor
+											{group}
+											onUpdate={(data) => {
+												const form = new FormData();
+												form.append('id', data.id || group.id);
+												form.append('name', data.name || group.name);
+												form.append('isRequired', String(data.isRequired ?? group.isRequired));
+												form.append('minSelections', String(data.minSelections ?? group.minSelections));
+												form.append('maxSelections', String(data.maxSelections ?? group.maxSelections));
+												
+												fetch('?/updateVariationGroup', {
+													method: 'POST',
+													body: form
+												}).then(() => invalidateAll());
+											}}
+											onDelete={() => {
+												const form = new FormData();
+												form.append('id', group.id);
+												fetch('?/deleteVariationGroup', {
+													method: 'POST',
+													body: form
+												}).then(() => invalidateAll());
+											}}
+											onAddVariation={() => openVariationEditor(group)}
+											onUpdateVariation={(variation) => openVariationEditor(group, variation as Variation)}
+											onDeleteVariation={(variationId) => {
+												const form = new FormData();
+												form.append('id', variationId);
+												fetch('?/deleteVariation', {
+													method: 'POST',
+													body: form
+												}).then(() => invalidateAll());
+											}}
+										/>
+									{/each}
+								</div>
+							{/if}
+						</div>
+					{/each}
+				{/if}
+			</div>
+		{/if}
 	</div>
+</div>
 
 	{#if form?.error}
 		<div class="fixed top-4 right-4 max-w-sm p-4 bg-error-50 border border-error-200 rounded-xl shadow-lg" role="alert">
@@ -425,4 +544,86 @@
 			</div>
 		</form>
 	</Modal>
+
+	<!-- Variation Group Modal -->
+	<Modal title="Add Variation Group" open={showAddVariationGroupModal} onclose={closeAllModals}>
+		<form method="POST" action="?/addVariationGroup" use:enhance={handleFormSuccess}>
+			<input type="hidden" name="menuItemId" value={variationGroupMenuItemId} />
+			<div class="space-y-4">
+				<div>
+					<label for="vg-name" class="block text-sm font-medium text-gray-700 mb-1">Group Name</label>
+					<Input
+						id="vg-name"
+						name="name"
+						type="text"
+						placeholder="e.g., Protein Choice"
+						required
+						bind:value={variationGroupFormData.name}
+					/>
+				</div>
+				<div class="grid grid-cols-2 gap-4">
+					<div>
+						<label for="vg-min" class="block text-sm font-medium text-gray-700 mb-1">Min Selections</label>
+						<Input
+							id="vg-min"
+							name="minSelections"
+							type="number"
+							bind:value={() => variationGroupFormData.minSelections.toString(), (v) => variationGroupFormData.minSelections = parseInt(v) || 0}
+							min="0"
+						/>
+					</div>
+					<div>
+						<label for="vg-max" class="block text-sm font-medium text-gray-700 mb-1">Max Selections</label>
+						<Input
+							id="vg-max"
+							name="maxSelections"
+							type="number"
+							bind:value={() => variationGroupFormData.maxSelections.toString(), (v) => variationGroupFormData.maxSelections = parseInt(v) || 1}
+							min="1"
+						/>
+					</div>
+				</div>
+				<div class="flex items-center gap-2">
+					<input
+						type="checkbox"
+						id="vg-required"
+						name="isRequired"
+						checked={variationGroupFormData.isRequired}
+						value="true"
+						class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+					/>
+					<label for="vg-required" class="text-sm font-medium text-gray-700">Required</label>
+				</div>
+				<div class="flex gap-3 pt-4">
+					<Button type="button" variant="secondary" onclick={closeAllModals}>Cancel</Button>
+					<Button type="submit">Add Group</Button>
+				</div>
+			</div>
+		</form>
+	</Modal>
+
+	<!-- Variation Editor Modal -->
+	<VariationEditor
+		open={showVariationEditorModal}
+		variation={selectedVariation}
+		onSave={(data) => {
+			const form = new FormData();
+			if (data.id) form.append('id', data.id);
+			form.append('groupId', selectedVariationGroup?.id || '');
+			form.append('name', data.name);
+			form.append('priceAdjustment', String(data.priceAdjustment));
+			form.append('isDefault', String(data.isDefault));
+			form.append('displayOrder', String(data.displayOrder));
+			
+			const action = data.id ? 'updateVariation' : 'addVariation';
+			fetch(`?/${action}`, {
+				method: 'POST',
+				body: form
+			}).then(() => {
+				closeAllModals();
+				invalidateAll();
+			});
+		}}
+		onClose={closeAllModals}
+	/>
 </div>

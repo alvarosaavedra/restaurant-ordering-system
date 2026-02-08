@@ -1,6 +1,6 @@
 import { fail, error } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { category, menuItem } from '$lib/server/db/schema';
+import { category, menuItem, variationGroup, variation } from '$lib/server/db/schema';
 import { eq, desc, count } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -49,9 +49,27 @@ export const load: PageServerLoad = async ({ locals }) => {
 			})
 		);
 
+		// Load variation groups with their variations
+		const variationGroups = await db
+			.select()
+			.from(variationGroup)
+			.orderBy(variationGroup.displayOrder);
+
+		const variations = await db
+			.select()
+			.from(variation)
+			.orderBy(variation.displayOrder);
+
+		// Group variations by their groups
+		const variationGroupsWithVariations = variationGroups.map(group => ({
+			...group,
+			variations: variations.filter(v => v.groupId === group.id)
+		}));
+
 		return {
 			menuItems,
-			categories: categoriesWithCount
+			categories: categoriesWithCount,
+			variationGroups: variationGroupsWithVariations
 		};
 	} catch (err) {
 		console.error('Error loading admin menu data:', err);
@@ -308,6 +326,148 @@ export const actions: Actions = {
 			return fail(500, {
 				error: 'Failed to delete category'
 			});
+		}
+	},
+
+	// Variation Group Actions
+	addVariationGroup: async ({ request }) => {
+		const formData = await request.formData();
+		const menuItemId = formData.get('menuItemId')?.toString();
+		const name = formData.get('name')?.toString().trim();
+		const isRequired = formData.get('isRequired') === 'true';
+		const minSelections = parseInt(formData.get('minSelections')?.toString() || '1');
+		const maxSelections = parseInt(formData.get('maxSelections')?.toString() || '1');
+
+		if (!menuItemId || !name) {
+			return fail(400, { error: 'Menu item ID and group name are required' });
+		}
+
+		try {
+			await db.insert(variationGroup).values({
+				id: crypto.randomUUID(),
+				menuItemId,
+				name,
+				isRequired,
+				minSelections,
+				maxSelections
+			});
+
+			return { success: true, message: 'Variation group added successfully' };
+		} catch (err) {
+			console.error('Error adding variation group:', err);
+			return fail(500, { error: 'Failed to add variation group' });
+		}
+	},
+
+	updateVariationGroup: async ({ request }) => {
+		const formData = await request.formData();
+		const id = formData.get('id')?.toString();
+		const name = formData.get('name')?.toString().trim();
+		const isRequired = formData.get('isRequired') === 'true';
+		const minSelections = parseInt(formData.get('minSelections')?.toString() || '1');
+		const maxSelections = parseInt(formData.get('maxSelections')?.toString() || '1');
+
+		if (!id || !name) {
+			return fail(400, { error: 'Group ID and name are required' });
+		}
+
+		try {
+			await db.update(variationGroup)
+				.set({ name, isRequired, minSelections, maxSelections })
+				.where(eq(variationGroup.id, id));
+
+			return { success: true, message: 'Variation group updated successfully' };
+		} catch (err) {
+			console.error('Error updating variation group:', err);
+			return fail(500, { error: 'Failed to update variation group' });
+		}
+	},
+
+	deleteVariationGroup: async ({ request }) => {
+		const formData = await request.formData();
+		const id = formData.get('id')?.toString();
+
+		if (!id) {
+			return fail(400, { error: 'Group ID is required' });
+		}
+
+		try {
+			await db.delete(variationGroup).where(eq(variationGroup.id, id));
+			return { success: true, message: 'Variation group deleted successfully' };
+		} catch (err) {
+			console.error('Error deleting variation group:', err);
+			return fail(500, { error: 'Failed to delete variation group' });
+		}
+	},
+
+	// Variation Actions
+	addVariation: async ({ request }) => {
+		const formData = await request.formData();
+		const groupId = formData.get('groupId')?.toString();
+		const name = formData.get('name')?.toString().trim();
+		const priceAdjustment = parseFloat(formData.get('priceAdjustment')?.toString() || '0');
+		const isDefault = formData.get('isDefault') === 'true';
+		const displayOrder = parseInt(formData.get('displayOrder')?.toString() || '0');
+
+		if (!groupId || !name) {
+			return fail(400, { error: 'Group ID and variation name are required' });
+		}
+
+		try {
+			await db.insert(variation).values({
+				id: crypto.randomUUID(),
+				groupId,
+				name,
+				priceAdjustment,
+				isDefault,
+				displayOrder
+			});
+
+			return { success: true, message: 'Variation added successfully' };
+		} catch (err) {
+			console.error('Error adding variation:', err);
+			return fail(500, { error: 'Failed to add variation' });
+		}
+	},
+
+	updateVariation: async ({ request }) => {
+		const formData = await request.formData();
+		const id = formData.get('id')?.toString();
+		const name = formData.get('name')?.toString().trim();
+		const priceAdjustment = parseFloat(formData.get('priceAdjustment')?.toString() || '0');
+		const isDefault = formData.get('isDefault') === 'true';
+		const displayOrder = parseInt(formData.get('displayOrder')?.toString() || '0');
+
+		if (!id || !name) {
+			return fail(400, { error: 'Variation ID and name are required' });
+		}
+
+		try {
+			await db.update(variation)
+				.set({ name, priceAdjustment, isDefault, displayOrder })
+				.where(eq(variation.id, id));
+
+			return { success: true, message: 'Variation updated successfully' };
+		} catch (err) {
+			console.error('Error updating variation:', err);
+			return fail(500, { error: 'Failed to update variation' });
+		}
+	},
+
+	deleteVariation: async ({ request }) => {
+		const formData = await request.formData();
+		const id = formData.get('id')?.toString();
+
+		if (!id) {
+			return fail(400, { error: 'Variation ID is required' });
+		}
+
+		try {
+			await db.delete(variation).where(eq(variation.id, id));
+			return { success: true, message: 'Variation deleted successfully' };
+		} catch (err) {
+			console.error('Error deleting variation:', err);
+			return fail(500, { error: 'Failed to delete variation' });
 		}
 	}
 };

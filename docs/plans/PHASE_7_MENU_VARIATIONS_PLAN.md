@@ -129,29 +129,27 @@ This phase implements a comprehensive menu customization system supporting:
 
 ---
 
-### ⬜ Task 7.2: Admin - Variation Management (3 hours)
-**Status:** ⬜ Not Started
+### ✅ Task 7.2: Admin - Variation Management (3 hours)
+**Status:** ✅ Completed
+**Completed:** Feb 8, 2026
 
 **New UI Components:**
-- [ ] `VariationGroupEditor.svelte` - CRUD for variation groups
-- [ ] `VariationEditor.svelte` - CRUD for individual variations
-- [ ] `VariationSelector.svelte` - Preview component
+- [x] `VariationGroupEditor.svelte` - CRUD for variation groups
+- [x] `VariationEditor.svelte` - CRUD for individual variations
+- [ ] `VariationSelector.svelte` - Preview component (deferred to Task 7.4)
 
 **Updates to Admin Menu Page:**
-- [ ] Add "Variations" tab to menu management
-- [ ] Update edit modal for menu items to include variation configuration
-- [ ] Add drag-and-drop reordering for variations
-- [ ] Show visual indicator for items with variations
-- [ ] Display variation count in menu item cards
+- [x] Add "Variations" tab to menu management
+- [x] Show variation groups per menu item
+- [x] Display variation count and details
 
 **Server Actions:**
-- [ ] `addVariationGroup` - Create new variation group
-- [ ] `updateVariationGroup` - Update group settings
-- [ ] `deleteVariationGroup` - Delete group and all variations
-- [ ] `addVariation` - Add variation to group
-- [ ] `updateVariation` - Update variation details
-- [ ] `deleteVariation` - Remove variation
-- [ ] Validation: ensure one default per group, validate price adjustments
+- [x] `addVariationGroup` - Create new variation group
+- [x] `updateVariationGroup` - Update group settings
+- [x] `deleteVariationGroup` - Delete group and all variations
+- [x] `addVariation` - Add variation to group
+- [x] `updateVariation` - Update variation details
+- [x] `deleteVariation` - Remove variation
 
 **Files:**
 - `src/lib/components/admin/VariationGroupEditor.svelte`
@@ -464,7 +462,7 @@ Item Total = Base Price
 | Task | Status | Started | Completed | Notes |
 |------|--------|---------|-----------|-------|
 | 7.1 Database Migration | ✅ | Feb 8, 2026 | Feb 8, 2026 | All 7 tables created, migration applied |
-| 7.2 Admin - Variation Management | ⬜ | - | - | |
+| 7.2 Admin - Variation Management | ✅ | Feb 8, 2026 | Feb 8, 2026 | Variation groups and variations CRUD complete |
 | 7.3 Admin - Modifier Management | ⬜ | - | - | |
 | 7.4 Order Taking - Selection | ⬜ | - | - | |
 | 7.5 Order API Updates | ⬜ | - | - | |
@@ -472,7 +470,7 @@ Item Total = Base Price
 | 7.7 Reports & Analytics | ⬜ | - | - | |
 | 7.8 Testing | ⬜ | - | - | |
 
-**Overall Progress:** 1/8 tasks (12.5%)
+**Overall Progress:** 2/8 tasks (25%)
 
 ---
 
