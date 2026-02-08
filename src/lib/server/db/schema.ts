@@ -84,6 +84,84 @@ export const orderItem = sqliteTable('order_item', {
 	createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$default(() => new Date())
 });
 
+// ==================== VARIATIONS & MODIFIERS SYSTEM ====================
+
+// Variation groups - for mutually exclusive choices (e.g., "Protein Choice", "Cooking Preference")
+export const variationGroup = sqliteTable('variation_group', {
+	id: text('id').primaryKey(),
+	menuItemId: text('menu_item_id').notNull().references(() => menuItem.id, { onDelete: 'cascade' }),
+	name: text('name').notNull(),
+	displayOrder: integer('display_order').notNull().$default(() => 0),
+	isRequired: integer('is_required', { mode: 'boolean' }).notNull().$default(() => true),
+	minSelections: integer('min_selections').notNull().$default(() => 1),
+	maxSelections: integer('max_selections').notNull().$default(() => 1),
+	createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$default(() => new Date())
+});
+
+// Variations - individual options within a group (e.g., "Chicken", "Beef", "Rare", "Medium")
+export const variation = sqliteTable('variation', {
+	id: text('id').primaryKey(),
+	groupId: text('group_id').notNull().references(() => variationGroup.id, { onDelete: 'cascade' }),
+	name: text('name').notNull(),
+	priceAdjustment: real('price_adjustment').notNull().$default(() => 0),
+	isDefault: integer('is_default', { mode: 'boolean' }).notNull().$default(() => false),
+	displayOrder: integer('display_order').notNull().$default(() => 0),
+	createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$default(() => new Date())
+});
+
+// Modifier groups - reusable categories (e.g., "Extra Toppings", "Sauces")
+export const modifierGroup = sqliteTable('modifier_group', {
+	id: text('id').primaryKey(),
+	name: text('name').notNull(),
+	displayOrder: integer('display_order').notNull().$default(() => 0),
+	minSelections: integer('min_selections').notNull().$default(() => 0),
+	maxSelections: integer('max_selections'), // null = unlimited
+	createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$default(() => new Date())
+});
+
+// Modifiers - individual add-ons (e.g., "Extra Wasabi", "Extra Cheese")
+export const modifier = sqliteTable('modifier', {
+	id: text('id').primaryKey(),
+	groupId: text('group_id').notNull().references(() => modifierGroup.id, { onDelete: 'cascade' }),
+	name: text('name').notNull(),
+	price: real('price').notNull(),
+	isAvailable: integer('is_available', { mode: 'boolean' }).notNull().$default(() => true),
+	displayOrder: integer('display_order').notNull().$default(() => 0),
+	createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$default(() => new Date())
+});
+
+// Junction table - links modifier groups to menu items with per-item configuration
+export const menuItemModifierGroup = sqliteTable('menu_item_modifier_group', {
+	id: text('id').primaryKey(),
+	menuItemId: text('menu_item_id').notNull().references(() => menuItem.id, { onDelete: 'cascade' }),
+	modifierGroupId: text('modifier_group_id').notNull().references(() => modifierGroup.id, { onDelete: 'cascade' }),
+	isRequired: integer('is_required', { mode: 'boolean' }).notNull().$default(() => false),
+	minSelections: integer('min_selections').notNull().$default(() => 0),
+	maxSelections: integer('max_selections'), // null = unlimited
+	createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$default(() => new Date())
+});
+
+// Order item variations - stores which variation was selected per order
+export const orderItemVariation = sqliteTable('order_item_variation', {
+	id: text('id').primaryKey(),
+	orderItemId: text('order_item_id').notNull().references(() => orderItem.id, { onDelete: 'cascade' }),
+	variationGroupId: text('variation_group_id').notNull().references(() => variationGroup.id),
+	variationId: text('variation_id').notNull().references(() => variation.id),
+	createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$default(() => new Date())
+});
+
+// Order item modifiers - stores which modifiers were added per order
+export const orderItemModifier = sqliteTable('order_item_modifier', {
+	id: text('id').primaryKey(),
+	orderItemId: text('order_item_id').notNull().references(() => orderItem.id, { onDelete: 'cascade' }),
+	modifierId: text('modifier_id').notNull().references(() => modifier.id),
+	quantity: integer('quantity').notNull(),
+	priceAtOrder: real('price_at_order').notNull(), // Snapshot of price when ordered
+	createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$default(() => new Date())
+});
+
+// ==================== TYPE EXPORTS ====================
+
 export type Session = typeof session.$inferSelect;
 export type User = typeof user.$inferSelect;
 export type Category = typeof category.$inferSelect;
@@ -98,3 +176,20 @@ export type InsertMenuItem = typeof menuItem.$inferInsert;
 export type InsertClient = typeof client.$inferInsert;
 export type InsertOrder = typeof order.$inferInsert;
 export type InsertOrderItem = typeof orderItem.$inferInsert;
+
+// Variations & Modifiers types
+export type VariationGroup = typeof variationGroup.$inferSelect;
+export type Variation = typeof variation.$inferSelect;
+export type ModifierGroup = typeof modifierGroup.$inferSelect;
+export type Modifier = typeof modifier.$inferSelect;
+export type MenuItemModifierGroup = typeof menuItemModifierGroup.$inferSelect;
+export type OrderItemVariation = typeof orderItemVariation.$inferSelect;
+export type OrderItemModifier = typeof orderItemModifier.$inferSelect;
+
+export type InsertVariationGroup = typeof variationGroup.$inferInsert;
+export type InsertVariation = typeof variation.$inferInsert;
+export type InsertModifierGroup = typeof modifierGroup.$inferInsert;
+export type InsertModifier = typeof modifier.$inferInsert;
+export type InsertMenuItemModifierGroup = typeof menuItemModifierGroup.$inferInsert;
+export type InsertOrderItemVariation = typeof orderItemVariation.$inferInsert;
+export type InsertOrderItemModifier = typeof orderItemModifier.$inferInsert;
