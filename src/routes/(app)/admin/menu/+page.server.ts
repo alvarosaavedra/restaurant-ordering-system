@@ -1,6 +1,6 @@
 import { fail, error } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { category, menuItem, variationGroup, variation, modifierGroup, modifier } from '$lib/server/db/schema';
+import { category, menuItem, variationGroup, variation, modifierGroup, modifier, menuItemModifierGroup } from '$lib/server/db/schema';
 import { eq, desc, count } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -82,11 +82,17 @@ export const load: PageServerLoad = async ({ locals }) => {
 			modifiers: modifiers.filter(m => m.groupId === group.id)
 		}));
 
+		// Load modifier assignments
+		const assignments = await db
+			.select()
+			.from(menuItemModifierGroup);
+
 		return {
 			menuItems,
 			categories: categoriesWithCount,
 			variationGroups: variationGroupsWithVariations,
-			modifierGroups: modifierGroupsWithModifiers
+			modifierGroups: modifierGroupsWithModifiers,
+			assignments
 		};
 	} catch (err) {
 		console.error('Error loading admin menu data:', err);
@@ -626,6 +632,53 @@ export const actions: Actions = {
 		} catch (err) {
 			console.error('Error deleting modifier:', err);
 			return fail(500, { error: 'Failed to delete modifier' });
+		}
+	},
+
+	// Modifier Assignment Actions
+	assignModifierGroup: async ({ request }) => {
+		const formData = await request.formData();
+		const menuItemId = formData.get('menuItemId')?.toString();
+		const modifierGroupId = formData.get('modifierGroupId')?.toString();
+		const isRequired = formData.get('isRequired') === 'true';
+		const minSelections = parseInt(formData.get('minSelections')?.toString() || '0');
+		const maxSelections = formData.get('maxSelections')?.toString();
+
+		if (!menuItemId || !modifierGroupId) {
+			return fail(400, { error: 'Menu item ID and modifier group ID are required' });
+		}
+
+		try {
+			await db.insert(menuItemModifierGroup).values({
+				id: crypto.randomUUID(),
+				menuItemId,
+				modifierGroupId,
+				isRequired,
+				minSelections,
+				maxSelections: maxSelections ? parseInt(maxSelections) : null
+			});
+
+			return { success: true, message: 'Modifier group assigned successfully' };
+		} catch (err) {
+			console.error('Error assigning modifier group:', err);
+			return fail(500, { error: 'Failed to assign modifier group' });
+		}
+	},
+
+	unassignModifierGroup: async ({ request }) => {
+		const formData = await request.formData();
+		const id = formData.get('id')?.toString();
+
+		if (!id) {
+			return fail(400, { error: 'Assignment ID is required' });
+		}
+
+		try {
+			await db.delete(menuItemModifierGroup).where(eq(menuItemModifierGroup.id, id));
+			return { success: true, message: 'Modifier group unassigned successfully' };
+		} catch (err) {
+			console.error('Error unassigning modifier group:', err);
+			return fail(500, { error: 'Failed to unassign modifier group' });
 		}
 	}
 };

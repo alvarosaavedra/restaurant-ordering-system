@@ -17,7 +17,7 @@
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
-	type AdminTab = 'menu-items' | 'categories' | 'variations' | 'modifiers';
+	type AdminTab = 'menu-items' | 'categories' | 'variations' | 'modifiers' | 'assignments';
 
 	let currentTab: AdminTab = $state('menu-items');
 	let searchQuery: string = $state('');
@@ -265,6 +265,16 @@
 			>
 				Modifiers
 			</button>
+			<button
+				class="px-6 py-3 text-sm font-medium border-b-2 transition-colors {currentTab === 'assignments'
+					? 'border-primary-600 text-primary-700'
+					: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
+				onclick={() => (currentTab = 'assignments')}
+				aria-current={currentTab === 'assignments' ? 'page' : undefined}
+				role="tab"
+			>
+				Assignments
+			</button>
 		</div>
 
 		<div class="p-6">
@@ -446,9 +456,89 @@
 						</div>
 					{/if}
 				</div>
+			{:else if currentTab === 'assignments'}
+				<div class="space-y-6">
+					{#if data.menuItems.length === 0}
+						<div class="text-center py-12 text-gray-500 bg-white rounded-xl border border-gray-200">
+							<p>No menu items yet. Add menu items first to assign modifiers.</p>
+						</div>
+					{:else if data.modifierGroups.length === 0}
+						<div class="text-center py-12 text-gray-500 bg-white rounded-xl border border-gray-200">
+							<p>No modifier groups yet. Create modifier groups first.</p>
+						</div>
+					{:else}
+						{#each data.menuItems as item (item.id)}
+							{@const itemAssignments = data.assignments?.filter((a) => a.menuItemId === item.id) || []}
+							{@const assignedGroupIds = itemAssignments.map((a) => a.modifierGroupId)}
+							{@const availableGroups = data.modifierGroups.filter((mg) => !assignedGroupIds.includes(mg.id))}
+							<div class="bg-white rounded-xl border border-gray-200 p-6">
+								<div class="mb-4">
+									<h3 class="text-lg font-semibold text-gray-900">{item.name}</h3>
+									<p class="text-sm text-gray-500">{item.category?.name || 'No category'}</p>
+								</div>
+								
+								{#if itemAssignments.length === 0}
+									<p class="text-sm text-gray-500 italic mb-3">No modifier groups assigned</p>
+								{:else}
+									<div class="mb-4 space-y-2">
+										{#each itemAssignments as assignment (assignment.id)}
+											{@const group = data.modifierGroups.find((mg) => mg.id === assignment.modifierGroupId)}
+											{#if group}
+												<div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+													<span class="font-medium text-gray-900">{group.name}</span>
+													<button
+														type="button"
+														class="text-sm text-error-600 hover:text-error-700"
+														onclick={() => {
+															const form = new FormData();
+															form.append('id', assignment.id);
+															fetch('?/unassignModifierGroup', {
+																method: 'POST',
+																body: form
+															}).then(() => invalidateAll());
+														}}
+													>
+														Remove
+													</button>
+												</div>
+											{/if}
+										{/each}
+									</div>
+								{/if}
+								
+								{#if availableGroups.length > 0}
+									<div class="border-t border-gray-100 pt-4">
+										<p class="text-sm font-medium text-gray-700 mb-2">Available modifier groups:</p>
+										<div class="flex flex-wrap gap-2">
+											{#each availableGroups as group (group.id)}
+												<button
+													type="button"
+													class="px-3 py-1.5 text-sm bg-primary-50 text-primary-700 rounded-lg hover:bg-primary-100 transition-colors"
+													onclick={() => {
+														const form = new FormData();
+														form.append('menuItemId', item.id);
+														form.append('modifierGroupId', group.id);
+														form.append('isRequired', 'false');
+														form.append('minSelections', '0');
+														fetch('?/assignModifierGroup', {
+															method: 'POST',
+															body: form
+														}).then(() => invalidateAll());
+													}}
+												>
+													+ {group.name}
+												</button>
+											{/each}
+										</div>
+									</div>
+								{/if}
+							</div>
+						{/each}
+					{/if}
+				</div>
 			{/if}
+		</div>
 	</div>
-</div>
 
 	{#if form?.error}
 		<div class="fixed top-4 right-4 max-w-sm p-4 bg-error-50 border border-error-200 rounded-xl shadow-lg" role="alert">
