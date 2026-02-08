@@ -36,8 +36,9 @@
 			{ href: '/delivery', label: 'Delivery', icon: 'M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0', roles: ['delivery', 'admin'] }
 		];
 
-		const adminMenuItem: NavItem = { href: '/admin/menu', label: 'Menu Management', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', roles: ['admin'] };
-		const adminClientItem: NavItem = { href: '/admin/clients', label: 'Client Management', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z', roles: ['admin'] };
+	const adminMenuItem: NavItem = { href: '/admin/menu', label: 'Menu Management', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', roles: ['admin'] };
+	const adminClientItem: NavItem = { href: '/admin/clients', label: 'Client Management', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z', roles: ['admin'] };
+	const adminModifiersItem: NavItem = { href: '/admin/modifiers', label: 'Modifiers', icon: 'M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4', roles: ['admin'] };
 
 		const reportItems: ReportItem[] = [
 			{ href: '/admin/reports/sales', label: 'Sales' },
@@ -47,11 +48,11 @@
 			{ href: '/admin/reports/employees', label: 'Employees' }
 		];
 
-		let filteredNavItems = $derived(
-			user.role === 'admin'
-				? [...navigationItems, adminMenuItem, adminClientItem]
-				: navigationItems.filter((item) => item.roles.includes(user.role))
-			);
+	let filteredNavItems = $derived(
+		user.role === 'admin'
+			? [...navigationItems, adminMenuItem, adminClientItem, adminModifiersItem]
+			: navigationItems.filter((item) => item.roles.includes(user.role))
+		);
 
 		function isActive(href: string): boolean {
 			return page.url.pathname === href;
