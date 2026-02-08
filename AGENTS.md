@@ -12,8 +12,16 @@ This document provides comprehensive guidelines for agentic coding agents workin
 - **Phase 5**: Delivery View - Complete
 - **Phase 6**: Admin Dashboard - Complete
 
+### 🟡 Current Phase
+- **Phase 7**: Menu Item Variations & Modifiers - In Progress
+  - See `docs/plans/PHASE_7_MENU_VARIATIONS_PLAN.md` for detailed plan
+  - Task 7.1: Database Migration - Next to implement
+  - Implementing full variations and modifiers system
+
 ### 🎉 System Status
 All core features are implemented and functional. The system supports full order workflow from creation to delivery with role-based access control.
+
+**New Feature Development:** Currently implementing menu item customizations (variations like Meat/Chicken choices and modifiers like Extra Wasabi).
 
 ## Svelte MCP Server Tools
 
