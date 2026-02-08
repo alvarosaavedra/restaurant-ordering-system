@@ -14,7 +14,9 @@ const mockCartItem = (id: string, name: string, price: number): CartItem => ({
 		category: { id: 'cat-1', name: 'Test', displayOrder: 1, createdAt: new Date() },
 		createdAt: new Date()
 	},
-	quantity: 1
+	quantity: 1,
+	variations: [],
+	modifiers: []
 });
 
 describe('MobileDiscountSheet', () => {

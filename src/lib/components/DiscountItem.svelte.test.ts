@@ -22,6 +22,8 @@ const mockCartItem = (discount?: { type: 'fixed' | 'percentage'; value: number; 
 		createdAt: new Date()
 	},
 	quantity: 2,
+	variations: [],
+	modifiers: [],
 	discount
 });
 
