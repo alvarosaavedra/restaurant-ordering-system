@@ -14,6 +14,7 @@
 	import ModifierEditor from '$lib/components/admin/ModifierEditor.svelte';
 	import type { MenuItemWithCategory, CategoryWithCount } from '$lib/types/orders';
 	import type { VariationGroup, Variation, ModifierGroup, Modifier } from '$lib/server/db/schema';
+	import { formatPrice } from '$lib/utils/formatting';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
@@ -342,7 +343,7 @@
 								<div class="flex items-center justify-between mb-4">
 									<div>
 										<h3 class="text-lg font-semibold text-gray-900">{item.name}</h3>
-										<p class="text-sm text-gray-500">{item.category?.name || 'No category'} • ${item.price.toFixed(2)}</p>
+										<p class="text-sm text-gray-500">{item.category?.name || 'No category'} • {formatPrice(item.price)}</p>
 									</div>
 								<Button 
 									size="sm" 

@@ -2,6 +2,7 @@
 	import Button from '$lib/components/ui/Button.svelte';
 	import Input from '$lib/components/ui/Input.svelte';
 	import type { VariationGroup, Variation } from '$lib/server/db/schema';
+	import { formatPrice } from '$lib/utils/formatting';
 
 	interface Props {
 		group: VariationGroup & { variations: Variation[] };
@@ -136,7 +137,7 @@
 								<span class="font-medium text-gray-900">{variation.name}</span>
 								{#if variation.priceAdjustment !== 0}
 									<span class="text-sm text-gray-600">
-										{variation.priceAdjustment > 0 ? '+' : ''}${variation.priceAdjustment.toFixed(2)}
+										{variation.priceAdjustment > 0 ? '+' : ''}{formatPrice(variation.priceAdjustment)}
 									</span>
 								{/if}
 							</div>

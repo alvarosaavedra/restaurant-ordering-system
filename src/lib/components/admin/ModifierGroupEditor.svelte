@@ -2,6 +2,7 @@
 	import Button from '$lib/components/ui/Button.svelte';
 	import Input from '$lib/components/ui/Input.svelte';
 	import type { ModifierGroup, Modifier } from '$lib/server/db/schema';
+	import { formatPrice } from '$lib/utils/formatting';
 
 	interface Props {
 		group: ModifierGroup & { modifiers: Modifier[] };
@@ -124,7 +125,7 @@
 						<div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
 							<div class="flex items-center gap-3">
 								<span class="font-medium text-gray-900">{modifier.name}</span>
-								<span class="text-sm text-gray-600">${modifier.price.toFixed(2)}</span>
+								<span class="text-sm text-gray-600">{formatPrice(modifier.price)}</span>
 								{#if !modifier.isAvailable}
 									<span class="px-2 py-0.5 text-xs font-medium bg-gray-200 text-gray-600 rounded-full">
 										Unavailable

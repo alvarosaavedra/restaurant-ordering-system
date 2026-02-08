@@ -3,6 +3,7 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import type { VariationGroup, Variation, ModifierGroup, Modifier } from '$lib/server/db/schema';
 	import type { SelectedVariation, SelectedModifier } from '$lib/stores/cart';
+	import { formatCurrency } from '$lib/utils/formatting';
 
 	interface Props {
 		open: boolean;
@@ -120,10 +121,6 @@
 		selectedVariations = {};
 		selectedModifiers = {};
 	}
-
-	function formatPrice(price: number): string {
-		return price.toFixed(2);
-	}
 </script>
 
 <Modal title="Customize {itemName}" {open} onclose={handleClose}>
@@ -155,7 +152,7 @@
 									</div>
 									{#if variation.priceAdjustment !== 0}
 										<span class="text-sm text-gray-600">
-											{variation.priceAdjustment > 0 ? '+' : ''}${formatPrice(variation.priceAdjustment)}
+											{variation.priceAdjustment > 0 ? '+' : ''}{formatCurrency(variation.priceAdjustment)}
 										</span>
 									{/if}
 								</label>
@@ -186,7 +183,7 @@
 										class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
 									/>
 									<span class="text-gray-900">{modifier.name}</span>
-									<span class="text-sm text-gray-600">+${formatPrice(modifier.price)}</span>
+									<span class="text-sm text-gray-600">+{formatCurrency(modifier.price)}</span>
 								</label>
 								{#if isSelected}
 									<div class="flex items-center gap-2">
@@ -247,7 +244,7 @@
 		<div class="border-t border-gray-200 pt-4">
 			<div class="flex items-center justify-between">
 				<span class="text-lg font-medium text-gray-900">Total</span>
-				<span class="text-2xl font-bold text-primary-600">${formatPrice(totalPrice)}</span>
+				<span class="text-2xl font-bold text-primary-600">{formatCurrency(totalPrice)}</span>
 			</div>
 		</div>
 	</div>
