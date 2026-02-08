@@ -1,6 +1,6 @@
 import { fail, error } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { category, menuItem, variationGroup, variation } from '$lib/server/db/schema';
+import { category, menuItem, variationGroup, variation, modifierGroup, modifier } from '$lib/server/db/schema';
 import { eq, desc, count } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -66,10 +66,27 @@ export const load: PageServerLoad = async ({ locals }) => {
 			variations: variations.filter(v => v.groupId === group.id)
 		}));
 
+		// Load modifier groups
+		const modifierGroups = await db
+			.select()
+			.from(modifierGroup)
+			.orderBy(modifierGroup.displayOrder);
+
+		const modifiers = await db
+			.select()
+			.from(modifier)
+			.orderBy(modifier.displayOrder);
+
+		const modifierGroupsWithModifiers = modifierGroups.map(group => ({
+			...group,
+			modifiers: modifiers.filter(m => m.groupId === group.id)
+		}));
+
 		return {
 			menuItems,
 			categories: categoriesWithCount,
-			variationGroups: variationGroupsWithVariations
+			variationGroups: variationGroupsWithVariations,
+			modifierGroups: modifierGroupsWithModifiers
 		};
 	} catch (err) {
 		console.error('Error loading admin menu data:', err);
@@ -468,6 +485,147 @@ export const actions: Actions = {
 		} catch (err) {
 			console.error('Error deleting variation:', err);
 			return fail(500, { error: 'Failed to delete variation' });
+		}
+	},
+
+	// Modifier Group Actions
+	addModifierGroup: async ({ request }) => {
+		const formData = await request.formData();
+		const name = formData.get('name')?.toString().trim();
+		const minSelections = parseInt(formData.get('minSelections')?.toString() || '0');
+		const maxSelections = formData.get('maxSelections')?.toString();
+
+		if (!name) {
+			return fail(400, { error: 'Group name is required' });
+		}
+
+		try {
+			await db.insert(modifierGroup).values({
+				id: crypto.randomUUID(),
+				name,
+				minSelections,
+				maxSelections: maxSelections ? parseInt(maxSelections) : null
+			});
+
+			return { success: true, message: 'Modifier group added successfully' };
+		} catch (err) {
+			console.error('Error adding modifier group:', err);
+			return fail(500, { error: 'Failed to add modifier group' });
+		}
+	},
+
+	updateModifierGroup: async ({ request }) => {
+		const formData = await request.formData();
+		const id = formData.get('id')?.toString();
+		const name = formData.get('name')?.toString().trim();
+		const minSelections = parseInt(formData.get('minSelections')?.toString() || '0');
+		const maxSelections = formData.get('maxSelections')?.toString();
+
+		if (!id || !name) {
+			return fail(400, { error: 'Group ID and name are required' });
+		}
+
+		try {
+			await db.update(modifierGroup)
+				.set({
+					name,
+					minSelections,
+					maxSelections: maxSelections ? parseInt(maxSelections) : null
+				})
+				.where(eq(modifierGroup.id, id));
+
+			return { success: true, message: 'Modifier group updated successfully' };
+		} catch (err) {
+			console.error('Error updating modifier group:', err);
+			return fail(500, { error: 'Failed to update modifier group' });
+		}
+	},
+
+	deleteModifierGroup: async ({ request }) => {
+		const formData = await request.formData();
+		const id = formData.get('id')?.toString();
+
+		if (!id) {
+			return fail(400, { error: 'Group ID is required' });
+		}
+
+		try {
+			await db.delete(modifierGroup).where(eq(modifierGroup.id, id));
+			return { success: true, message: 'Modifier group deleted successfully' };
+		} catch (err) {
+			console.error('Error deleting modifier group:', err);
+			return fail(500, { error: 'Failed to delete modifier group' });
+		}
+	},
+
+	// Modifier Actions
+	addModifier: async ({ request }) => {
+		const formData = await request.formData();
+		const groupId = formData.get('groupId')?.toString();
+		const name = formData.get('name')?.toString().trim();
+		const price = parseFloat(formData.get('price')?.toString() || '0');
+		const isAvailable = formData.get('isAvailable') === 'true';
+		const displayOrder = parseInt(formData.get('displayOrder')?.toString() || '0');
+
+		if (!groupId || !name) {
+			return fail(400, { error: 'Group ID and modifier name are required' });
+		}
+
+		try {
+			await db.insert(modifier).values({
+				id: crypto.randomUUID(),
+				groupId,
+				name,
+				price,
+				isAvailable,
+				displayOrder
+			});
+
+			return { success: true, message: 'Modifier added successfully' };
+		} catch (err) {
+			console.error('Error adding modifier:', err);
+			return fail(500, { error: 'Failed to add modifier' });
+		}
+	},
+
+	updateModifier: async ({ request }) => {
+		const formData = await request.formData();
+		const id = formData.get('id')?.toString();
+		const name = formData.get('name')?.toString().trim();
+		const price = parseFloat(formData.get('price')?.toString() || '0');
+		const isAvailable = formData.get('isAvailable') === 'true';
+		const displayOrder = parseInt(formData.get('displayOrder')?.toString() || '0');
+
+		if (!id || !name) {
+			return fail(400, { error: 'Modifier ID and name are required' });
+		}
+
+		try {
+			await db.update(modifier)
+				.set({ name, price, isAvailable, displayOrder })
+				.where(eq(modifier.id, id));
+
+			return { success: true, message: 'Modifier updated successfully' };
+		} catch (err) {
+			console.error('Error updating modifier:', err);
+			return fail(500, { error: 'Failed to update modifier' });
+		}
+	},
+
+	deleteModifier: async ({ request }) => {
+		const formData = await request.formData();
+		const id = formData.get('id')?.toString();
+
+		if (!id) {
+			return fail(400, { error: 'Modifier ID is required' });
+		}
+
+		try {
+			await db.delete(modifier).where(eq(modifier.id, id));
+			return { success: true, message: 'Modifier deleted successfully' };
+		} catch (err) {
+			console.error('Error deleting modifier:', err);
+			return fail(500, { error: 'Failed to delete modifier' });
 		}
 	}
 };

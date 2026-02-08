@@ -10,12 +10,14 @@
 	import CategoryCard from '$lib/components/CategoryCard.svelte';
 	import VariationGroupEditor from '$lib/components/admin/VariationGroupEditor.svelte';
 	import VariationEditor from '$lib/components/admin/VariationEditor.svelte';
+	import ModifierGroupEditor from '$lib/components/admin/ModifierGroupEditor.svelte';
+	import ModifierEditor from '$lib/components/admin/ModifierEditor.svelte';
 	import type { MenuItemWithCategory, CategoryWithCount } from '$lib/types/orders';
-	import type { VariationGroup, Variation } from '$lib/server/db/schema';
+	import type { VariationGroup, Variation, ModifierGroup, Modifier } from '$lib/server/db/schema';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
-	type AdminTab = 'menu-items' | 'categories' | 'variations';
+	type AdminTab = 'menu-items' | 'categories' | 'variations' | 'modifiers';
 
 	let currentTab: AdminTab = $state('menu-items');
 	let searchQuery: string = $state('');
@@ -28,11 +30,15 @@
 	let showDeleteCategoryModal: boolean = $state(false);
 	let showAddVariationGroupModal: boolean = $state(false);
 	let showVariationEditorModal: boolean = $state(false);
+	let showAddModifierGroupModal: boolean = $state(false);
+	let showModifierEditorModal: boolean = $state(false);
 
 	let selectedMenuItem: MenuItemWithCategory | null = $state(null);
 	let selectedCategory: CategoryWithCount | null = $state(null);
 	let selectedVariationGroup: (VariationGroup & { variations: Variation[] }) | null = $state(null);
 	let selectedVariation: Variation | null = $state(null);
+	let selectedModifierGroup: (ModifierGroup & { modifiers: Modifier[] }) | null = $state(null);
+	let selectedModifier: Modifier | null = $state(null);
 	let variationGroupMenuItemId: string = $state('');
 
 	let menuItemFormData = $state({
@@ -56,6 +62,13 @@
 		isRequired: true,
 		minSelections: 1,
 		maxSelections: 1
+	});
+
+	let modifierGroupFormData = $state({
+		id: '',
+		name: '',
+		minSelections: 0,
+		maxSelections: ''
 	});
 
 	let filteredMenuItems = $derived.by(() => {
@@ -153,6 +166,22 @@
 		showVariationEditorModal = true;
 	}
 
+	function openAddModifierGroupModal() {
+		modifierGroupFormData = {
+			id: '',
+			name: '',
+			minSelections: 0,
+			maxSelections: ''
+		};
+		showAddModifierGroupModal = true;
+	}
+
+	function openModifierEditor(group: ModifierGroup & { modifiers: Modifier[] }, modifier?: Modifier) {
+		selectedModifierGroup = group;
+		selectedModifier = modifier || null;
+		showModifierEditorModal = true;
+	}
+
 	function closeAllModals() {
 		showAddMenuItemModal = false;
 		showEditMenuItemModal = false;
@@ -162,10 +191,14 @@
 		showDeleteCategoryModal = false;
 		showAddVariationGroupModal = false;
 		showVariationEditorModal = false;
+		showAddModifierGroupModal = false;
+		showModifierEditorModal = false;
 		selectedMenuItem = null;
 		selectedCategory = null;
 		selectedVariationGroup = null;
 		selectedVariation = null;
+		selectedModifierGroup = null;
+		selectedModifier = null;
 	}
 
 	let categoryOptions = $derived.by(() =>
@@ -221,6 +254,16 @@
 				role="tab"
 			>
 				Variations
+			</button>
+			<button
+				class="px-6 py-3 text-sm font-medium border-b-2 transition-colors {currentTab === 'modifiers'
+					? 'border-primary-600 text-primary-700'
+					: 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
+				onclick={() => (currentTab = 'modifiers')}
+				aria-current={currentTab === 'modifiers' ? 'page' : undefined}
+				role="tab"
+			>
+				Modifiers
 			</button>
 		</div>
 
@@ -344,11 +387,66 @@
 									{/each}
 								</div>
 							{/if}
+							</div>
+						{/each}
+					{/if}
+				</div>
+			{:else if currentTab === 'modifiers'}
+				<div class="space-y-6">
+					<div class="mb-6 flex justify-end">
+						<Button onclick={openAddModifierGroupModal}>
+							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+							</svg>
+							Add Modifier Group
+						</Button>
+					</div>
+
+					{#if data.modifierGroups.length === 0}
+						<div class="text-center py-12 text-gray-500 bg-white rounded-xl border border-gray-200">
+							<p>No modifier groups yet. Create your first group to add modifiers!</p>
 						</div>
-					{/each}
-				{/if}
-			</div>
-		{/if}
+					{:else}
+						<div class="space-y-6">
+							{#each data.modifierGroups as group (group.id)}
+								<ModifierGroupEditor
+									{group}
+									onUpdate={(data) => {
+										const form = new FormData();
+										form.append('id', data.id || group.id);
+										form.append('name', data.name || group.name);
+										form.append('minSelections', String(data.minSelections ?? group.minSelections));
+										form.append('maxSelections', data.maxSelections?.toString() ?? '');
+										
+										fetch('?/updateModifierGroup', {
+											method: 'POST',
+											body: form
+										}).then(() => invalidateAll());
+									}}
+									onDelete={() => {
+										const form = new FormData();
+										form.append('id', group.id);
+										fetch('?/deleteModifierGroup', {
+											method: 'POST',
+											body: form
+										}).then(() => invalidateAll());
+									}}
+									onAddModifier={() => openModifierEditor(group)}
+									onUpdateModifier={(modifier: Modifier) => openModifierEditor(group, modifier)}
+									onDeleteModifier={(modifierId: string) => {
+										const form = new FormData();
+										form.append('id', modifierId);
+										fetch('?/deleteModifier', {
+											method: 'POST',
+											body: form
+										}).then(() => invalidateAll());
+									}}
+								/>
+							{/each}
+						</div>
+					{/if}
+				</div>
+			{/if}
 	</div>
 </div>
 
@@ -616,6 +714,76 @@
 			form.append('displayOrder', String(data.displayOrder));
 			
 			const action = data.id ? 'updateVariation' : 'addVariation';
+			fetch(`?/${action}`, {
+				method: 'POST',
+				body: form
+			}).then(() => {
+				closeAllModals();
+				invalidateAll();
+			});
+		}}
+		onClose={closeAllModals}
+	/>
+
+	<!-- Add Modifier Group Modal -->
+	<Modal title="Add Modifier Group" open={showAddModifierGroupModal} onclose={closeAllModals}>
+		<form method="POST" action="?/addModifierGroup" use:enhance={handleFormSuccess}>
+			<div class="space-y-4">
+				<div>
+					<label for="mod-group-name" class="block text-sm font-medium text-gray-700 mb-1">Group Name</label>
+					<Input
+						id="mod-group-name"
+						name="name"
+						type="text"
+						placeholder="e.g., Extra Toppings"
+						required
+						bind:value={modifierGroupFormData.name}
+					/>
+				</div>
+				<div class="grid grid-cols-2 gap-4">
+					<div>
+						<label for="mod-group-min" class="block text-sm font-medium text-gray-700 mb-1">Min Selections</label>
+						<Input
+							id="mod-group-min"
+							name="minSelections"
+							type="number"
+							bind:value={() => modifierGroupFormData.minSelections.toString(), (v) => modifierGroupFormData.minSelections = parseInt(v) || 0}
+							min="0"
+						/>
+					</div>
+					<div>
+						<label for="mod-group-max" class="block text-sm font-medium text-gray-700 mb-1">Max Selections (0 = unlimited)</label>
+						<Input
+							id="mod-group-max"
+							name="maxSelections"
+							type="number"
+							bind:value={modifierGroupFormData.maxSelections}
+							min="0"
+						/>
+					</div>
+				</div>
+				<div class="flex gap-3 pt-4">
+					<Button type="button" variant="secondary" onclick={closeAllModals}>Cancel</Button>
+					<Button type="submit">Add Group</Button>
+				</div>
+			</div>
+		</form>
+	</Modal>
+
+	<!-- Modifier Editor Modal -->
+	<ModifierEditor
+		open={showModifierEditorModal}
+		modifier={selectedModifier}
+		onSave={(data) => {
+			const form = new FormData();
+			if (data.id) form.append('id', data.id);
+			form.append('groupId', selectedModifierGroup?.id || '');
+			form.append('name', data.name);
+			form.append('price', String(data.price));
+			form.append('isAvailable', String(data.isAvailable));
+			form.append('displayOrder', String(data.displayOrder));
+			
+			const action = data.id ? 'updateModifier' : 'addModifier';
 			fetch(`?/${action}`, {
 				method: 'POST',
 				body: form
