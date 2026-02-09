@@ -386,12 +386,15 @@
 
 					<!-- Cart Items List -->
 					<div class="mb-6 space-y-3 max-h-64 overflow-y-auto pr-2">
-						{#each cart as cartItem (cartItem.item.id)}
+						{#each cart as cartItem, index (`${cartItem.item.id}-${JSON.stringify(cartItem.variations)}-${JSON.stringify(cartItem.modifiers)}-${index}`)}
+							{@const variationTotal = cartItem.variations.reduce((sum, v) => sum + v.priceAdjustment, 0)}
+							{@const modifiersTotal = cartItem.modifiers.reduce((sum, m) => sum + (m.price * m.quantity), 0)}
+							{@const basePrice = (cartItem.item.price + variationTotal + modifiersTotal) * cartItem.quantity}
 							{@const displayPrice = cartItem.discount 
-								? Math.max(0, (cartItem.item.price * cartItem.quantity) - (cartItem.discount.type === 'percentage' 
-									? (cartItem.item.price * cartItem.quantity) * (cartItem.discount.value / 100)
+								? Math.max(0, basePrice - (cartItem.discount.type === 'percentage' 
+									? basePrice * (cartItem.discount.value / 100)
 									: cartItem.discount.value))
-								: cartItem.item.price * cartItem.quantity}
+								: basePrice}
 							<Card variant="subtle" class="p-3">
 								<div class="flex flex-col gap-3">
 									<!-- Top Row: Item Info and Price -->
@@ -408,12 +411,45 @@
 											{#if cartItem.item.category}
 												<p class="text-xs text-neutral-500 mt-0.5">{cartItem.item.category.name}</p>
 											{/if}
+											
+											<!-- Variations -->
+											{#if cartItem.variations && cartItem.variations.length > 0}
+												<div class="mt-2 text-xs">
+													<p class="font-medium text-neutral-700 mb-1">Options:</p>
+													<div class="flex flex-wrap gap-2">
+														{#each cartItem.variations as variation (variation.variationId)}
+															<span class="inline-flex items-center gap-1 bg-neutral-100 px-2 py-1 rounded">
+																{variation.groupName}: {variation.variationName}
+																{#if variation.priceAdjustment !== 0}
+																	<span class="text-neutral-600">({variation.priceAdjustment > 0 ? '+' : ''}{formatCurrency(variation.priceAdjustment)})</span>
+																{/if}
+															</span>
+														{/each}
+													</div>
+												</div>
+											{/if}
+											
+											<!-- Modifiers -->
+											{#if cartItem.modifiers && cartItem.modifiers.length > 0}
+												<div class="mt-2 text-xs">
+													<p class="font-medium text-neutral-700 mb-1">Extras:</p>
+													<div class="flex flex-wrap gap-2">
+														{#each cartItem.modifiers as modifier (modifier.modifierId)}
+															<span class="inline-flex items-center gap-1 bg-neutral-100 px-2 py-1 rounded">
+																{modifier.quantity > 1 ? `${modifier.quantity}x ` : ''}{modifier.groupName}: {modifier.modifierName}
+																<span class="text-neutral-600">({formatCurrency(modifier.price * modifier.quantity)})</span>
+															</span>
+														{/each}
+													</div>
+												</div>
+											{/if}
+											
 											{#if cartItem.discount}
-										{@const originalPrice = cartItem.item.price * cartItem.quantity}
-										{@const discountAmount = cartItem.discount.type === 'percentage' 
-											? originalPrice * (cartItem.discount.value / 100)
-											: cartItem.discount.value}
-										{@const finalPrice = Math.max(0, originalPrice - discountAmount)}
+												{@const originalPrice = basePrice}
+												{@const discountAmount = cartItem.discount.type === 'percentage' 
+													? originalPrice * (cartItem.discount.value / 100)
+													: cartItem.discount.value}
+												{@const finalPrice = Math.max(0, originalPrice - discountAmount)}
 										<p class="text-xs text-success-600 mt-0.5">
 											<span class="line-through text-neutral-400">{formatCurrency(originalPrice)}</span>
 											<span class="font-medium">{formatCurrency(finalPrice)}</span>
