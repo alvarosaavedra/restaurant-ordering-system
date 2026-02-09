@@ -30,6 +30,18 @@
 			discountType: 'fixed' | 'percentage' | null;
 			discountValue: number | null;
 			discountReason: string | null;
+			// Variations and modifiers
+			variations: Array<{
+				groupName: string | null;
+				variationName: string | null;
+				priceAdjustment: number | null;
+			}>;
+			modifiers: Array<{
+				modifierId: string;
+				modifierName: string | null;
+				quantity: number;
+				priceAtOrder: number;
+			}>;
 			menuItem: {
 				id: string;
 				name: string;

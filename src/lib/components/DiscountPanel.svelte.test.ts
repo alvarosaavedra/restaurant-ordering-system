@@ -15,6 +15,8 @@ const mockCartItem = (id: string, name: string, price: number, quantity: number 
 		createdAt: new Date()
 	},
 	quantity,
+	variations: [],
+	modifiers: [],
 	discount
 });
 

@@ -29,6 +29,13 @@
       "when": 1769872532068,
       "tag": "0003_silky_maximus",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1770559532980,
+      "tag": "0004_lazy_the_hunter",
+      "breakpoints": true
     }
   ]
 }

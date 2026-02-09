@@ -61,7 +61,7 @@
 
 	<div class="p-4 space-y-3">
 		<!-- Item Discounts -->
-		{#each cartItems as item (item.item.id)}
+		{#each cartItems as item, index (`${item.item.id}-${JSON.stringify(item.variations)}-${JSON.stringify(item.modifiers)}-${index}`)}
 			{#if item.discount}
 				<div data-testid="item-discount-{item.item.id}" class="flex items-center justify-between p-3 bg-success-50 border border-success-200 rounded-lg">
 					<div class="flex-1 min-w-0">

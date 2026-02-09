@@ -115,9 +115,26 @@ describe('Discount Calculations', () => {
 	});
 
 	describe('calculateCartTotals', () => {
-		const mockCartItem = (price: number, quantity: number, discount?: { type: 'fixed' | 'percentage'; value: number }) => ({
-			item: { id: '1', name: 'Test Item', price, category: { id: '1', name: 'Test Category', displayOrder: 1, createdAt: new Date() } },
+		const mockCartItem = (
+			price: number, 
+			quantity: number, 
+			discount?: { type: 'fixed' | 'percentage'; value: number },
+			variations: { groupId: string; groupName: string; variationId: string; variationName: string; priceAdjustment: number }[] = [],
+			modifiers: { modifierId: string; modifierName: string; groupId: string; groupName: string; price: number; quantity: number }[] = []
+		) => ({
+			item: { 
+				id: '1', 
+				name: 'Test Item', 
+				price, 
+				createdAt: new Date(),
+				categoryId: '1',
+				description: null,
+				isAvailable: true,
+				category: { id: '1', name: 'Test Category', displayOrder: 1, createdAt: new Date() } 
+			},
 			quantity,
+			variations,
+			modifiers,
 			discount
 		});
 

@@ -1,3 +1,5 @@
+import type { CartItem, OrderDiscount } from '$lib/stores/cart';
+
 /**
  * Calculate discount amount based on type and value
  * @param basePrice - The original price
@@ -77,39 +79,28 @@ export function validateDiscount(
 }
 
 /**
- * Interface for cart items with optional discounts
+ * Calculate item base price including variations and modifiers
+ * @param cartItem - The cart item
+ * @returns The calculated base price for the item
  */
-export interface CartItem {
-	item: {
-		id: string;
-		name: string;
-		price: number;
-		category: {
-			id: string;
-			name: string;
-			displayOrder: number;
-			createdAt: Date;
-		} | null;
-	};
-	quantity: number;
-	discount?: {
-		type: 'fixed' | 'percentage';
-		value: number;
-		reason?: string;
-	};
+function calculateItemBasePrice(cartItem: CartItem): number {
+	let basePrice = cartItem.item.price;
+
+	// Add variation price adjustments
+	if (cartItem.variations && cartItem.variations.length > 0) {
+		basePrice += cartItem.variations.reduce((sum, v) => sum + (v.priceAdjustment || 0), 0);
+	}
+
+	// Add modifier prices
+	if (cartItem.modifiers && cartItem.modifiers.length > 0) {
+		basePrice += cartItem.modifiers.reduce((sum, m) => sum + (m.price * m.quantity), 0);
+	}
+
+	return basePrice;
 }
 
 /**
- * Interface for order-level discount
- */
-export interface OrderDiscount {
-	type: 'fixed' | 'percentage';
-	value: number;
-	reason?: string;
-}
-
-/**
- * Calculate cart totals including all discounts
+ * Calculate cart totals including all discounts, variations, and modifiers
  * @param cart - Array of cart items
  * @param orderDiscount - Optional order-level discount
  * @returns Object with subtotal, discounts, and final total
@@ -124,9 +115,10 @@ export function calculateCartTotals(
 	totalDiscount: number;
 	finalTotal: number;
 } {
-	// Calculate subtotal (before any discounts)
+	// Calculate subtotal (before any discounts, including variations and modifiers)
 	const subtotal = cart.reduce((total, cartItem) => {
-		return total + (cartItem.item.price * cartItem.quantity);
+		const itemBasePrice = calculateItemBasePrice(cartItem);
+		return total + (itemBasePrice * cartItem.quantity);
 	}, 0);
 
 	// Calculate item-level discounts
@@ -134,7 +126,8 @@ export function calculateCartTotals(
 	let discountedSubtotal = 0;
 
 	for (const cartItem of cart) {
-		const itemSubtotal = cartItem.item.price * cartItem.quantity;
+		const itemBasePrice = calculateItemBasePrice(cartItem);
+		const itemSubtotal = itemBasePrice * cartItem.quantity;
 
 		if (cartItem.discount) {
 			const itemDiscount = calculateDiscountAmount(
@@ -171,6 +164,8 @@ export function calculateCartTotals(
 		finalTotal
 	};
 }
+
+export type { OrderDiscount };
 
 /**
  * Round number to 2 decimal places

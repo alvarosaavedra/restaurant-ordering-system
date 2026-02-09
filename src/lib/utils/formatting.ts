@@ -18,6 +18,14 @@ export function formatCurrency(amount: number): string {
 }
 
 /**
+ * Format price with decimals for detailed displays (e.g., price adjustments)
+ * Example: 2.50 -> $2.50, 0.5 -> $0.50
+ */
+export function formatPrice(amount: number): string {
+	return `$${amount.toFixed(2)}`;
+}
+
+/**
  * Format date for display
  */
 export function formatDate(date: Date | string): string {
