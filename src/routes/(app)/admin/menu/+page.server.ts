@@ -1,4 +1,4 @@
-import { fail, error } from '@sveltejs/kit';
+import { fail, error, redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 import { category, menuItem, variationGroup, variation, modifierGroup, modifier, menuItemModifierGroup } from '$lib/server/db/schema';
 import { eq, desc, count } from 'drizzle-orm';
@@ -9,95 +9,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		error(403, 'Unauthorized - Admin access required');
 	}
 
-	try {
-		const menuItems = await db
-			.select({
-				id: menuItem.id,
-				categoryId: menuItem.categoryId,
-				name: menuItem.name,
-				description: menuItem.description,
-				price: menuItem.price,
-				isAvailable: menuItem.isAvailable,
-				createdAt: menuItem.createdAt,
-				category: {
-					id: category.id,
-					name: category.name,
-					displayOrder: category.displayOrder,
-					createdAt: category.createdAt
-				}
-			})
-			.from(menuItem)
-			.leftJoin(category, eq(menuItem.categoryId, category.id))
-			.orderBy(category.displayOrder, menuItem.name);
-
-		const categories = await db
-			.select()
-			.from(category)
-			.orderBy(category.displayOrder);
-
-		const categoriesWithCount = await Promise.all(
-			categories.map(async (cat) => {
-				const [result] = await db
-					.select({ count: count() })
-					.from(menuItem)
-					.where(eq(menuItem.categoryId, cat.id));
-
-				return {
-					...cat,
-					itemCount: result?.count || 0
-				};
-			})
-		);
-
-		// Load variation groups with their variations
-		const variationGroups = await db
-			.select()
-			.from(variationGroup)
-			.orderBy(variationGroup.displayOrder);
-
-		const variations = await db
-			.select()
-			.from(variation)
-			.orderBy(variation.displayOrder);
-
-		// Group variations by their groups
-		const variationGroupsWithVariations = variationGroups.map(group => ({
-			...group,
-			variations: variations.filter(v => v.groupId === group.id)
-		}));
-
-		// Load modifier groups
-		const modifierGroups = await db
-			.select()
-			.from(modifierGroup)
-			.orderBy(modifierGroup.displayOrder);
-
-		const modifiers = await db
-			.select()
-			.from(modifier)
-			.orderBy(modifier.displayOrder);
-
-		const modifierGroupsWithModifiers = modifierGroups.map(group => ({
-			...group,
-			modifiers: modifiers.filter(m => m.groupId === group.id)
-		}));
-
-		// Load modifier assignments
-		const assignments = await db
-			.select()
-			.from(menuItemModifierGroup);
-
-		return {
-			menuItems,
-			categories: categoriesWithCount,
-			variationGroups: variationGroupsWithVariations,
-			modifierGroups: modifierGroupsWithModifiers,
-			assignments
-		};
-	} catch (err) {
-		console.error('Error loading admin menu data:', err);
-		error(500, 'Failed to load menu data');
-	}
+	// Redirect to items page
+	redirect(302, '/admin/menu/items');
 };
 
 export const actions: Actions = {
