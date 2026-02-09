@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db';
-import { order, orderItem, menuItem, user, category } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { order, orderItem, menuItem, user, category, orderItemVariation, orderItemModifier, variation, variationGroup, modifier } from '$lib/server/db/schema';
+import { eq, inArray } from 'drizzle-orm';
 import { error, fail, redirect } from '@sveltejs/kit';
 import { adminLogger } from '$lib/server/logger';
 import type { Actions, PageServerLoad } from './$types';
@@ -78,6 +78,46 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			.leftJoin(category, eq(menuItem.categoryId, category.id))
 			.where(eq(orderItem.orderId, orderId));
 
+		// Fetch variations for all order items
+		const itemIds = items.map(item => item.id);
+		const variations = itemIds.length > 0 
+			? await db
+				.select({
+					orderItemId: orderItemVariation.orderItemId,
+					variationGroupId: orderItemVariation.variationGroupId,
+					variationId: orderItemVariation.variationId,
+					groupName: variationGroup.name,
+					variationName: variation.name,
+					priceAdjustment: variation.priceAdjustment
+				})
+				.from(orderItemVariation)
+				.leftJoin(variationGroup, eq(orderItemVariation.variationGroupId, variationGroup.id))
+				.leftJoin(variation, eq(orderItemVariation.variationId, variation.id))
+				.where(inArray(orderItemVariation.orderItemId, itemIds))
+			: [];
+
+		// Fetch modifiers for all order items
+		const modifiers = itemIds.length > 0
+			? await db
+				.select({
+					orderItemId: orderItemModifier.orderItemId,
+					modifierId: orderItemModifier.modifierId,
+					modifierName: modifier.name,
+					quantity: orderItemModifier.quantity,
+					priceAtOrder: orderItemModifier.priceAtOrder
+				})
+				.from(orderItemModifier)
+				.leftJoin(modifier, eq(orderItemModifier.modifierId, modifier.id))
+				.where(inArray(orderItemModifier.orderItemId, itemIds))
+			: [];
+
+		// Attach variations and modifiers to items
+		const itemsWithCustomizations = items.map(item => ({
+			...item,
+			variations: variations.filter(v => v.orderItemId === item.id),
+			modifiers: modifiers.filter(m => m.orderItemId === item.id)
+		}));
+
 		const menuItems = await db
 			.select()
 			.from(menuItem)
@@ -86,7 +126,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		return {
 			order: {
 				...orderRecord,
-				items
+				items: itemsWithCustomizations
 			},
 			isAdmin,
 			menuItems

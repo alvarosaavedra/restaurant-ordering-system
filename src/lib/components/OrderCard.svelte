@@ -15,6 +15,18 @@
 		discountType: 'fixed' | 'percentage' | null;
 		discountValue: number | null;
 		discountReason: string | null;
+		// Variations and modifiers
+		variations?: {
+			groupName: string | null;
+			variationName: string | null;
+			priceAdjustment: number | null;
+		}[];
+		modifiers?: {
+			modifierId: string;
+			modifierName: string | null;
+			quantity: number;
+			priceAtOrder: number;
+		}[];
 		menuItem: {
 			id: string;
 			name: string;
@@ -247,17 +259,18 @@
 		<!-- Order Items -->
 		<div class="mb-4" role="list" aria-label="Order items">
 			{#each order.items as item (item.id)}
-				<div class="flex items-center justify-between py-2 text-sm" role="listitem">
-					<div class="flex items-center gap-2 flex-wrap">
-						<span class="font-medium text-gray-600 w-6 text-center" aria-label={`Quantity: ${item.quantity}`}>×{item.quantity}</span>
-						<span class="text-gray-900">{item.menuItem?.name || 'Unknown'}</span>
-						{#if item.discountAmount && item.discountAmount > 0}
-							<span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">
-								{formatDiscountLabel(item.discountType, item.discountValue)}
-							</span>
-						{/if}
-					</div>
-					<div class="text-right">
+				<div class="py-2 text-sm" role="listitem">
+					<div class="flex items-center justify-between">
+						<div class="flex items-center gap-2 flex-wrap">
+							<span class="font-medium text-gray-600 w-6 text-center" aria-label={`Quantity: ${item.quantity}`}>×{item.quantity}</span>
+							<span class="text-gray-900 font-medium">{item.menuItem?.name || 'Unknown'}</span>
+							{#if item.discountAmount && item.discountAmount > 0}
+								<span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">
+									{formatDiscountLabel(item.discountType, item.discountValue)}
+								</span>
+							{/if}
+						</div>
+						<div class="text-right">
 							{#if item.discountAmount && item.discountAmount > 0}
 								<div class="flex flex-col items-end">
 									<span class="text-xs text-gray-400 line-through">{formatCurrency(calculateItemOriginalTotal(item))}</span>
@@ -267,6 +280,33 @@
 								<span class="font-medium text-gray-900">{formatCurrency(calculateItemOriginalTotal(item))}</span>
 							{/if}
 						</div>
+					</div>
+					
+					<!-- Variations -->
+					{#if item.variations && item.variations.length > 0}
+						<div class="ml-8 mt-1 text-xs text-gray-600">
+							{#each item.variations as variation (variation.variationName)}
+								<div class="flex items-center gap-1">
+									<span>• {variation.groupName}: {variation.variationName}</span>
+							{#if variation.priceAdjustment && variation.priceAdjustment !== 0}
+								<span class="text-gray-500">({variation.priceAdjustment > 0 ? '+' : ''}{formatCurrency(variation.priceAdjustment)})</span>
+							{/if}
+								</div>
+							{/each}
+						</div>
+					{/if}
+					
+					<!-- Modifiers -->
+					{#if item.modifiers && item.modifiers.length > 0}
+						<div class="ml-8 mt-1 text-xs text-gray-600">
+							{#each item.modifiers as modifier (modifier.modifierId)}
+								<div class="flex items-center gap-1">
+									<span>• {modifier.quantity > 1 ? `${modifier.quantity}x ` : ''}{modifier.modifierName}</span>
+									<span class="text-gray-500">(+{formatCurrency(modifier.priceAtOrder * modifier.quantity)})</span>
+								</div>
+							{/each}
+						</div>
+					{/if}
 				</div>
 			{/each}
 		</div>

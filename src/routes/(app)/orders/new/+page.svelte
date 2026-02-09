@@ -220,6 +220,14 @@
 					items: cart.map(cartItem => ({
 						menuItemId: cartItem.item.id,
 						quantity: cartItem.quantity,
+						variations: cartItem.variations.map(v => ({
+							groupId: v.groupId,
+							variationId: v.variationId
+						})),
+						modifiers: cartItem.modifiers.map(m => ({
+							modifierId: m.modifierId,
+							quantity: m.quantity
+						})),
 						discount: cartItem.discount
 					})),
 					orderDiscount: orderDiscount

@@ -30,6 +30,18 @@
 			discountType: 'fixed' | 'percentage' | null;
 			discountValue: number | null;
 			discountReason: string | null;
+			// Variations and modifiers
+			variations?: Array<{
+				groupName: string | null;
+				variationName: string | null;
+				priceAdjustment: number | null;
+			}>;
+			modifiers?: Array<{
+				modifierId: string;
+				modifierName: string | null;
+				quantity: number;
+				priceAtOrder: number;
+			}>;
 			menuItem: {
 				id: string;
 				name: string;
@@ -45,7 +57,7 @@
 	let orders = $state<Order[]>([]);
 
 	$effect(() => {
-		orders = initialOrders.map((order: Order) => ({
+		orders = (initialOrders as Order[]).map((order) => ({
 			...order,
 			deliveryDateTime: order.deliveryDateTime || null,
 			address: order.address || null,
@@ -70,8 +82,8 @@
 			});
 
 			if (response.ok) {
-				const newOrders = await response.json();
-				orders = newOrders.map((order: Order) => ({
+				const newOrders = await response.json() as Order[];
+				orders = newOrders.map((order) => ({
 					...order,
 					deliveryDateTime: order.deliveryDateTime || null,
 					address: order.address || null,

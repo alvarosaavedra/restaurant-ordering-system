@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { order, orderItem, menuItem, user } from '$lib/server/db/schema';
-import { eq, and, isNull } from 'drizzle-orm';
+import { order, orderItem, menuItem, user, orderItemVariation, orderItemModifier, variation, variationGroup, modifier } from '$lib/server/db/schema';
+import { eq, inArray, and, isNull } from 'drizzle-orm';
 import type { RequestHandler } from '@sveltejs/kit';
 
 export const GET: RequestHandler = async ({ locals }) => {
@@ -65,7 +65,49 @@ export const GET: RequestHandler = async ({ locals }) => {
 					.leftJoin(menuItem, eq(orderItem.menuItemId, menuItem.id))
 					.where(eq(orderItem.orderId, order.id));
 
-				return { ...order, items };
+				// Get all item IDs for this order
+				const itemIds = items.map(item => item.id);
+
+				// Fetch variations for all items
+				const variations = itemIds.length > 0
+					? await db
+						.select({
+							orderItemId: orderItemVariation.orderItemId,
+							variationGroupId: orderItemVariation.variationGroupId,
+							variationId: orderItemVariation.variationId,
+							groupName: variationGroup.name,
+							variationName: variation.name,
+							priceAdjustment: variation.priceAdjustment
+						})
+						.from(orderItemVariation)
+						.leftJoin(variationGroup, eq(orderItemVariation.variationGroupId, variationGroup.id))
+						.leftJoin(variation, eq(orderItemVariation.variationId, variation.id))
+						.where(inArray(orderItemVariation.orderItemId, itemIds))
+					: [];
+
+				// Fetch modifiers for all items
+				const modifiers = itemIds.length > 0
+					? await db
+						.select({
+							orderItemId: orderItemModifier.orderItemId,
+							modifierId: orderItemModifier.modifierId,
+							modifierName: modifier.name,
+							quantity: orderItemModifier.quantity,
+							priceAtOrder: orderItemModifier.priceAtOrder
+						})
+						.from(orderItemModifier)
+						.leftJoin(modifier, eq(orderItemModifier.modifierId, modifier.id))
+						.where(inArray(orderItemModifier.orderItemId, itemIds))
+					: [];
+
+				// Attach variations and modifiers to items
+				const itemsWithCustomizations = items.map(item => ({
+					...item,
+					variations: variations.filter(v => v.orderItemId === item.id),
+					modifiers: modifiers.filter(m => m.orderItemId === item.id)
+				}));
+
+				return { ...order, items: itemsWithCustomizations };
 			})
 		);
 

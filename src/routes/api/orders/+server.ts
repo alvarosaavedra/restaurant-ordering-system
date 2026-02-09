@@ -1,10 +1,28 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-import { order, orderItem, menuItem, user, client } from '$lib/server/db/schema';
+import { order, orderItem, menuItem, user, client, orderItemVariation, orderItemModifier, variation, modifier } from '$lib/server/db/schema';
 import { eq, isNull } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 import { orderLogger } from '$lib/server/logger';
 import type { RequestHandler } from '@sveltejs/kit';
+
+interface OrderItemInput {
+	menuItemId: string;
+	quantity: number;
+	variations?: {
+		groupId: string;
+		variationId: string;
+	}[];
+	modifiers?: {
+		modifierId: string;
+		quantity: number;
+	}[];
+	discount?: {
+		type: 'fixed' | 'percentage';
+		value: number;
+		reason?: string;
+	};
+}
 
 export const GET: RequestHandler = async () => {
 	try {
@@ -48,7 +66,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	try {
 		const data = await request.json();
-		const { customerName, customerPhone, deliveryDateTime, address, comment, items } = data;
+		const { customerName, customerPhone, deliveryDateTime, address, comment, items, orderDiscount } = data;
 
 		orderLogger.info(
 			{
@@ -123,9 +141,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		let totalAmount = 0;
-		const orderItems: typeof orderItem.$inferInsert[] = [];
+		const orderItemsData: {
+			orderItemId: string;
+			orderItem: typeof orderItem.$inferInsert;
+			variations: { groupId: string; variationId: string }[];
+			modifiers: { modifierId: string; quantity: number; priceAtOrder: number }[];
+		}[] = [];
 
-		for (const item of items) {
+		for (const item of items as OrderItemInput[]) {
 			const menuItemRecord = await db
 				.select()
 				.from(menuItem)
@@ -144,16 +167,100 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				return json({ error: `Menu item ${menuItemData.name} is not available` }, { status: 400 });
 			}
 
-			const itemTotal = menuItemData.price * item.quantity;
-			totalAmount += itemTotal;
+			// Calculate base price with variations
+			let baseUnitPrice = menuItemData.price;
+			const itemVariations: { groupId: string; variationId: string }[] = [];
+			
+			if (item.variations && item.variations.length > 0) {
+				for (const varInput of item.variations) {
+					const variationRecord = await db
+						.select()
+						.from(variation)
+						.where(eq(variation.id, varInput.variationId))
+						.limit(1);
+					
+					if (variationRecord && variationRecord.length > 0) {
+						baseUnitPrice += variationRecord[0].priceAdjustment;
+						itemVariations.push({
+							groupId: varInput.groupId,
+							variationId: varInput.variationId
+						});
+					}
+				}
+			}
 
-			orderItems.push({
-				id: nanoid(),
-				orderId: '',
-				menuItemId: item.menuItemId,
-				quantity: item.quantity,
-				unitPrice: menuItemData.price
+			// Calculate modifier prices
+			const itemModifiers: { modifierId: string; quantity: number; priceAtOrder: number }[] = [];
+			
+			if (item.modifiers && item.modifiers.length > 0) {
+				for (const modInput of item.modifiers) {
+					const modifierRecord = await db
+						.select()
+						.from(modifier)
+						.where(eq(modifier.id, modInput.modifierId))
+						.limit(1);
+					
+					if (modifierRecord && modifierRecord.length > 0 && modifierRecord[0].isAvailable) {
+						const modPrice = modifierRecord[0].price;
+						baseUnitPrice += modPrice * modInput.quantity;
+						itemModifiers.push({
+							modifierId: modInput.modifierId,
+							quantity: modInput.quantity,
+							priceAtOrder: modPrice
+						});
+					}
+				}
+			}
+
+			// Calculate item total with quantity
+			const itemTotal = baseUnitPrice * item.quantity;
+			
+			// Apply item discount if present
+			let finalPrice = itemTotal;
+			let discountAmount = 0;
+			
+			if (item.discount) {
+				if (item.discount.type === 'percentage') {
+					discountAmount = itemTotal * (item.discount.value / 100);
+				} else {
+					discountAmount = item.discount.value;
+				}
+				finalPrice = Math.max(0, itemTotal - discountAmount);
+			}
+
+			totalAmount += finalPrice;
+
+			const orderItemId = nanoid();
+			orderItemsData.push({
+				orderItemId,
+				orderItem: {
+					id: orderItemId,
+					orderId: '',
+					menuItemId: item.menuItemId,
+					quantity: item.quantity,
+					unitPrice: baseUnitPrice,
+					finalPrice: finalPrice,
+					...(item.discount && {
+						discountType: item.discount.type,
+						discountValue: item.discount.value,
+						discountAmount: discountAmount,
+						discountReason: item.discount.reason
+					})
+				},
+				variations: itemVariations,
+				modifiers: itemModifiers
 			});
+		}
+
+		// Apply order-level discount
+		let orderDiscountAmount = 0;
+		if (orderDiscount) {
+			if (orderDiscount.type === 'percentage') {
+				orderDiscountAmount = totalAmount * (orderDiscount.value / 100);
+			} else {
+				orderDiscountAmount = orderDiscount.value;
+			}
+			totalAmount = Math.max(0, totalAmount - orderDiscountAmount);
 		}
 
 		const orderId = nanoid();
@@ -166,15 +273,61 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			comment: comment?.trim() || null,
 			totalAmount,
 			status: 'pending',
-			employeeId: locals.user.id
+			employeeId: locals.user.id,
+			...(orderDiscount && {
+				discountType: orderDiscount.type,
+				discountValue: orderDiscount.value,
+				discountAmount: orderDiscountAmount,
+				discountReason: orderDiscount.reason
+			})
 		});
 
-		const orderItemsWithOrderId = orderItems.map(item => ({
+		// Insert order items with orderId
+		const orderItemsWithOrderId = orderItemsData.map(({ orderItem: item }) => ({
 			...item,
 			orderId
 		}));
 
 		await db.insert(orderItem).values(orderItemsWithOrderId);
+
+		// Insert variations
+		const allVariations: typeof orderItemVariation.$inferInsert[] = [];
+		for (const { orderItemId, variations } of orderItemsData) {
+			if (variations.length > 0) {
+				for (const varData of variations) {
+					allVariations.push({
+						id: nanoid(),
+						orderItemId: orderItemId,
+						variationGroupId: varData.groupId,
+						variationId: varData.variationId
+					});
+				}
+			}
+		}
+
+		if (allVariations.length > 0) {
+			await db.insert(orderItemVariation).values(allVariations);
+		}
+
+		// Insert modifiers
+		const allModifiers: typeof orderItemModifier.$inferInsert[] = [];
+		for (const { orderItemId, modifiers } of orderItemsData) {
+			if (modifiers.length > 0) {
+				for (const modData of modifiers) {
+					allModifiers.push({
+						id: nanoid(),
+						orderItemId: orderItemId,
+						modifierId: modData.modifierId,
+						quantity: modData.quantity,
+						priceAtOrder: modData.priceAtOrder
+					});
+				}
+			}
+		}
+
+		if (allModifiers.length > 0) {
+			await db.insert(orderItemModifier).values(allModifiers);
+		}
 
 		orderLogger.info(
 			{
@@ -184,7 +337,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				customerName,
 				customerPhone,
 				totalAmount,
-				itemCount: orderItems.length,
+				itemCount: orderItemsData.length,
+				variationCount: allVariations.length,
+				modifierCount: allModifiers.length,
 				deliveryDateTime: parsedDeliveryDateTime
 			},
 			'Order created successfully'
