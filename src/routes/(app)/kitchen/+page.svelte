@@ -1,5 +1,6 @@
 <script lang="ts">
 	import OrderCard from '$lib/components/OrderCard.svelte';
+	import KitchenSummary from '$lib/components/KitchenSummary.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import Spinner from '$lib/components/ui/Spinner.svelte';
 	import { onMount, onDestroy } from 'svelte';
@@ -175,6 +176,13 @@
 			</p>
 		{/if}
 	</div>
+
+	<!-- Kitchen Summary -->
+	{#if orders.filter(o => o.status === 'preparing').length > 0}
+		<div class="mb-8">
+			<KitchenSummary orders={orders.filter(o => o.status === 'preparing')} />
+		</div>
+	{/if}
 
 		<!-- Orders Grid -->
 	{#if orders.length === 0}
