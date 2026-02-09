@@ -55,7 +55,7 @@
 	}
 
 	function handleModifierToggle(groupId: string, modifier: Modifier) {
-		const key = `${groupId}-${modifier.id}`;
+		const key = `${groupId}::${modifier.id}`;
 		const newModifiers = { ...selectedModifiers };
 		
 		if (newModifiers[key]) {
@@ -67,7 +67,7 @@
 	}
 
 	function updateModifierQuantity(groupId: string, modifier: Modifier, delta: number) {
-		const key = `${groupId}-${modifier.id}`;
+		const key = `${groupId}::${modifier.id}`;
 		const current = selectedModifiers[key];
 		
 		if (current) {
@@ -92,17 +92,18 @@
 		});
 
 		const modifiers: SelectedModifier[] = [];
-		Object.entries(selectedModifiers).forEach(([key, { modifier, quantity: modQty }]) => {
-			const [groupId] = key.split('-');
+		const snapshot = $state.snapshot(selectedModifiers);
+		Object.entries(snapshot).forEach(([key, value]) => {
+			const [groupId] = key.split('::');
 			const group = modifierGroups.find((g) => g.id === groupId);
-			if (group) {
+			if (group && value && value.modifier) {
 				modifiers.push({
-					modifierId: modifier.id,
-					modifierName: modifier.name,
+					modifierId: value.modifier.id,
+					modifierName: value.modifier.name,
 					groupId,
 					groupName: group.name,
-					price: modifier.price,
-					quantity: modQty
+					price: value.modifier.price,
+					quantity: value.quantity
 				});
 			}
 		});
@@ -172,7 +173,7 @@
 						<h4 class="font-medium text-gray-900 mb-2">{group.name}</h4>
 						<div class="space-y-2">
 							{#each group.modifiers as modifier (modifier.id)}
-							{@const key = `${group.id}-${modifier.id}`}
+							{@const key = `${group.id}::${modifier.id}`}
 							{@const isSelected = !!selectedModifiers[key]}
 							<div class="flex items-center justify-between p-2 rounded-lg hover:bg-white transition-colors">
 								<label class="flex items-center gap-3 flex-1 cursor-pointer">
