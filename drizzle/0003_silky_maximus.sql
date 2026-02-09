@@ -19,7 +19,7 @@ CREATE TABLE `__new_order` (
 	FOREIGN KEY (`employee_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
-INSERT INTO `__new_order`("id", "customer_name", "customer_phone", "total_amount", "status", "employee_id", "delivery_date_time", "address", "comment", "deleted_at", "discount_amount", "discount_type", "discount_value", "discount_reason", "created_at", "updated_at") SELECT "id", "customer_name", "customer_phone", "total_amount", "status", "employee_id", "delivery_date_time", "address", "comment", "deleted_at", "discount_amount", "discount_type", "discount_value", "discount_reason", "created_at", "updated_at" FROM `order`;--> statement-breakpoint
+INSERT INTO `__new_order`("id", "customer_name", "customer_phone", "total_amount", "status", "employee_id", "delivery_date_time", "address", "comment", "deleted_at", "discount_amount", "discount_type", "discount_value", "discount_reason", "created_at", "updated_at") SELECT "id", "customer_name", "customer_phone", "total_amount", "status", "employee_id", strftime('%s', 'now') * 1000, NULL, NULL, "deleted_at", NULL, NULL, NULL, NULL, "created_at", "updated_at" FROM `order`;--> statement-breakpoint
 DROP TABLE `order`;--> statement-breakpoint
 ALTER TABLE `__new_order` RENAME TO `order`;--> statement-breakpoint
 PRAGMA foreign_keys=ON;--> statement-breakpoint
