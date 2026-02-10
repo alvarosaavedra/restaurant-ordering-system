@@ -1,0 +1,38 @@
+{
+  "default": {
+    "paths": ["features/**/*.feature"],
+    "require": ["features/step_definitions/**/*.ts"],
+    "format": [
+      "@cucumber/pretty-formatter",
+      "html:reports/cucumber-report.html",
+      "json:reports/cucumber-report.json"
+    ],
+    "parallel": 4,
+    "worldParameters": {
+      "headless": true,
+      "baseUrl": "http://localhost:4173"
+    },
+    "publishQuiet": true
+  },
+  "wip": {
+    "paths": ["features/**/*.feature"],
+    "require": ["features/step_definitions/**/*.ts"],
+    "format": ["@cucumber/pretty-formatter"],
+    "tags": "@wip",
+    "worldParameters": {
+      "headless": false,
+      "baseUrl": "http://localhost:5173"
+    }
+  },
+  "smoke": {
+    "paths": ["features/**/*.feature"],
+    "require": ["features/step_definitions/**/*.ts"],
+    "format": ["@cucumber/pretty-formatter"],
+    "tags": "@smoke",
+    "parallel": 4,
+    "worldParameters": {
+      "headless": true,
+      "baseUrl": "http://localhost:4173"
+    }
+  }
+}
