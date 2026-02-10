@@ -12,10 +12,11 @@ A full-stack restaurant ordering application built with **SvelteKit 5**, **Drizz
 - **Role-Based Access Control** - Three user roles with specific permissions
 - **Order Management** - Create, track, and update orders through the fulfillment pipeline
 - **Menu Management** - Categorized menu items with availability toggling
+- **Menu Customizations** - Variations (e.g., Meat/Chicken) and modifiers (e.g., Extra Wasabi) - In Progress
 - **Customer Management** - Phone-based client lookup and creation
 - **Responsive Design** - Mobile-first UI using Tailwind CSS v4
 - **Real-Time Updates** - Live order status tracking
-- **Admin Dashboard** - Client and menu management interface
+- **Admin Dashboard** - Client, menu, and customization management interface
 
 ## 🏗️ Architecture
 
@@ -164,6 +165,13 @@ npm run db:seed        # Seed sample data
 - **clients** - Customer database
 - **orders** - Order headers
 - **order_items** - Order line items
+- **variation_groups** - Menu item variation categories
+- **variations** - Individual variation options
+- **modifier_groups** - Reusable modifier categories
+- **modifiers** - Individual add-ons
+- **menu_item_modifier_groups** - Links modifiers to menu items
+- **order_item_variations** - Selected variations per order
+- **order_item_modifiers** - Selected modifiers per order
 
 ### Key Relationships
 
