@@ -23,9 +23,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Playwright browsers
-        run: npx playwright install chromium
-
       - name: Setup test database
         run: npm run db:push -- --force
         env:
