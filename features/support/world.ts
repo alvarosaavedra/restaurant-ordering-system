@@ -43,6 +43,7 @@ export class CustomWorld extends CucumberWorld {
 			id: string;
 			name: string;
 			phone: string;
+			address?: string;
 		};
 		
 		// UI state
@@ -170,6 +171,104 @@ export class CustomWorld extends CucumberWorld {
 		}
 		
 		return total;
+	}
+
+	/**
+	 * Submit order from cart - creates order and order items
+	 */
+	submitOrderFromCart(): void {
+		const user = this.context.currentUser;
+		if (!user) {
+			throw new Error('No user logged in');
+		}
+
+		const formData = this.context['formData'] || {};
+		const customerName = formData['Customer Name'] || 'Unknown Customer';
+		const phone = formData['Phone'];
+		const address = formData['Address'];
+
+		const total = this.calculateCartTotal();
+
+		const order = this.mockDb.createOrder({
+			customerName,
+			customerPhone: phone,
+			totalAmount: total,
+			status: 'pending',
+			employeeId: user.id,
+			deliveryDateTime: new Date(),
+			address: address || null,
+			comment: null,
+			deletedAt: null,
+			discountAmount: null,
+			discountType: null,
+			discountValue: null,
+			discountReason: null
+		});
+
+		// Create order items from cart
+		for (const cartItem of this.context.cartItems) {
+			const menuItem = this.mockDb.getMenuItem(cartItem.menuItemId);
+			if (!menuItem) continue;
+
+			let unitPrice = menuItem.price;
+			
+			// Add variation adjustments
+			for (const variationId of cartItem.variations) {
+				const variation = this.mockDb.getVariation(variationId);
+				if (variation) {
+					unitPrice += variation.priceAdjustment;
+				}
+			}
+
+			const orderItem = this.mockDb.createOrderItem({
+				orderId: order.id,
+				menuItemId: menuItem.id,
+				quantity: cartItem.quantity,
+				unitPrice,
+				discountAmount: null,
+				discountType: null,
+				discountValue: null,
+				discountReason: null,
+				finalPrice: null
+			});
+
+			// Add variations
+			for (const variationId of cartItem.variations) {
+				const variation = this.mockDb.getVariation(variationId);
+				if (variation) {
+					this.mockDb.createOrderItemVariation({
+						orderItemId: orderItem.id,
+						variationGroupId: variation.groupId,
+						variationId: variation.id
+					});
+				}
+			}
+
+			// Add modifiers
+			for (const modifierId of cartItem.modifiers) {
+				const modifier = this.mockDb.getModifier(modifierId);
+				if (modifier) {
+					this.mockDb.createOrderItemModifier({
+						orderItemId: orderItem.id,
+						modifierId: modifier.id,
+						quantity: 1,
+						priceAtOrder: modifier.price
+					});
+				}
+			}
+		}
+
+		this.trackEntity(order.id);
+		this.context.currentOrder = {
+			id: order.id,
+			total,
+			status: 'pending'
+		};
+		this.context.lastResponse = {
+			status: 200,
+			body: { success: true, orderId: order.id }
+		};
+		this.clearCart();
 	}
 }
 
