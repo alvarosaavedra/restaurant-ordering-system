@@ -1,7 +1,10 @@
 {
   "default": {
     "paths": ["features/**/*.feature"],
-    "require": ["features/step_definitions/**/*.ts"],
+    "require": [
+      "features/support/**/*.ts",
+      "features/step_definitions/**/*.ts"
+    ],
     "format": [
       "@cucumber/pretty-formatter",
       "html:reports/cucumber-report.html",
@@ -16,7 +19,10 @@
   },
   "wip": {
     "paths": ["features/**/*.feature"],
-    "require": ["features/step_definitions/**/*.ts"],
+    "require": [
+      "features/support/**/*.ts",
+      "features/step_definitions/**/*.ts"
+    ],
     "format": ["@cucumber/pretty-formatter"],
     "tags": "@wip",
     "worldParameters": {
@@ -26,7 +32,10 @@
   },
   "smoke": {
     "paths": ["features/**/*.feature"],
-    "require": ["features/step_definitions/**/*.ts"],
+    "require": [
+      "features/support/**/*.ts",
+      "features/step_definitions/**/*.ts"
+    ],
     "format": ["@cucumber/pretty-formatter"],
     "tags": "@smoke",
     "parallel": 4,
