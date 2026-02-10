@@ -13,25 +13,25 @@ import type { CustomWorld } from '../support/world';
 When('I enter {string} in the {string} field', function (this: CustomWorld, value: string, label: string) {
 	// In real UI tests, this would find the field by label and enter the value
 	// For mock tests, we track the form state
-	if (!this.context['formData']) {
-		this.context['formData'] = {};
+	if (!this.testContext['formData']) {
+		this.testContext['formData'] = {};
 	}
-	this.context['formData'][label] = value;
+	this.testContext['formData'][label] = value;
 });
 
 When(
 	'I enter {string} in the {string} input',
 	function (this: CustomWorld, value: string, label: string) {
-		if (!this.context['formData']) {
-			this.context['formData'] = {};
+		if (!this.testContext['formData']) {
+			this.testContext['formData'] = {};
 		}
-		this.context['formData'][label] = value;
+		this.testContext['formData'][label] = value;
 	}
 );
 
 When('I clear the {string} field', function (this: CustomWorld, label: string) {
-	if (this.context['formData']) {
-		delete this.context['formData'][label];
+	if (this.testContext['formData']) {
+		delete this.testContext['formData'][label];
 	}
 });
 
@@ -40,20 +40,20 @@ When('I clear the {string} field', function (this: CustomWorld, label: string) {
 When(
 	'I select {string} from the {string} dropdown',
 	function (this: CustomWorld, option: string, label: string) {
-		if (!this.context['formData']) {
-			this.context['formData'] = {};
+		if (!this.testContext['formData']) {
+			this.testContext['formData'] = {};
 		}
-		this.context['formData'][label] = option;
+		this.testContext['formData'][label] = option;
 	}
 );
 
 When(
 	'I select {string} from the {string} select',
 	function (this: CustomWorld, option: string, label: string) {
-		if (!this.context['formData']) {
-			this.context['formData'] = {};
+		if (!this.testContext['formData']) {
+			this.testContext['formData'] = {};
 		}
-		this.context['formData'][label] = option;
+		this.testContext['formData'][label] = option;
 	}
 );
 
@@ -61,15 +61,15 @@ When(
 	'I select {string} from the search results',
 	function (this: CustomWorld, option: string) {
 		// Handle selecting from search/autocomplete results
-		if (option === this.context.currentClient?.name) {
+		if (option === this.testContext.currentClient?.name) {
 			// Client was selected
-			if (!this.context['formData']) {
-				this.context['formData'] = {};
+			if (!this.testContext['formData']) {
+				this.testContext['formData'] = {};
 			}
-			this.context['formData']['Customer Name'] = this.context.currentClient.name;
-			this.context['formData']['Phone'] = this.context.currentClient.phone;
-			if (this.context.currentClient.address) {
-				this.context['formData']['Address'] = this.context.currentClient.address;
+			this.testContext['formData']['Customer Name'] = this.testContext.currentClient.name;
+			this.testContext['formData']['Phone'] = this.testContext.currentClient.phone;
+			if (this.testContext.currentClient.address) {
+				this.testContext['formData']['Address'] = this.testContext.currentClient.address;
 			}
 		}
 	}
@@ -78,24 +78,24 @@ When(
 // ==================== CHECKBOX/RADIO STEPS ====================
 
 When('I check the {string} checkbox', function (this: CustomWorld, label: string) {
-	if (!this.context['formData']) {
-		this.context['formData'] = {};
+	if (!this.testContext['formData']) {
+		this.testContext['formData'] = {};
 	}
-	this.context['formData'][label] = true;
+	this.testContext['formData'][label] = true;
 });
 
 When('I uncheck the {string} checkbox', function (this: CustomWorld, label: string) {
-	if (!this.context['formData']) {
-		this.context['formData'] = {};
+	if (!this.testContext['formData']) {
+		this.testContext['formData'] = {};
 	}
-	this.context['formData'][label] = false;
+	this.testContext['formData'][label] = false;
 });
 
 When('I select the {string} radio button', function (this: CustomWorld, label: string) {
-	if (!this.context['formData']) {
-		this.context['formData'] = {};
+	if (!this.testContext['formData']) {
+		this.testContext['formData'] = {};
 	}
-	this.context['formData']['radioSelection'] = label;
+	this.testContext['formData']['radioSelection'] = label;
 });
 
 // ==================== BUTTON/ACTION STEPS ====================
@@ -104,42 +104,42 @@ When('I click {string}', function (this: CustomWorld, text: string) {
 	// Generic click handler
 	// Handle common actions
 	if (text === 'Logout') {
-		if (this.context.sessionToken) {
-			this.mockDb.deleteSession(this.context.sessionToken);
+		if (this.testContext.sessionToken) {
+			this.mockDb.deleteSession(this.testContext.sessionToken);
 		}
-		this.context.currentUser = undefined;
-		this.context.sessionToken = undefined;
+		this.testContext.currentUser = undefined;
+		this.testContext.sessionToken = undefined;
 	}
 });
 
 When('I click the {string} link', function (this: CustomWorld, text: string) {
 	// Handle link clicks
 	if (text === 'Logout') {
-		if (this.context.sessionToken) {
-			this.mockDb.deleteSession(this.context.sessionToken);
+		if (this.testContext.sessionToken) {
+			this.mockDb.deleteSession(this.testContext.sessionToken);
 		}
-		this.context.currentUser = undefined;
-		this.context.sessionToken = undefined;
+		this.testContext.currentUser = undefined;
+		this.testContext.sessionToken = undefined;
 	}
 });
 
 When('I submit the form', function (this: CustomWorld) {
 	// Process form submission
-	const formData = this.context['formData'] || {};
+	const formData = this.testContext['formData'] || {};
 	
 	// Validate required fields
 	if (formData['Customer Name'] === undefined || formData['Customer Name'] === '') {
-		this.context.lastError = 'Customer name is required';
+		this.testContext.lastError = 'Customer name is required';
 		return;
 	}
 	
 	if (formData['Phone'] === undefined || formData['Phone'] === '') {
-		this.context.lastError = 'Phone number is required';
+		this.testContext.lastError = 'Phone number is required';
 		return;
 	}
 	
 	// Form is valid
-	this.context.lastResponse = {
+	this.testContext.lastResponse = {
 		status: 200,
 		body: { success: true, formData }
 	};
@@ -156,7 +156,7 @@ When('I search for {string}', function (this: CustomWorld, searchTerm: string) {
 	);
 	
 	if (matchingClient) {
-		this.context.currentClient = {
+		this.testContext.currentClient = {
 			id: matchingClient.id,
 			name: matchingClient.name,
 			phone: matchingClient.phone
@@ -175,7 +175,7 @@ When(
 		);
 		
 		if (matchingClient) {
-			this.context.currentClient = {
+			this.testContext.currentClient = {
 				id: matchingClient.id,
 				name: matchingClient.name,
 				phone: matchingClient.phone
@@ -187,7 +187,7 @@ When(
 // ==================== VERIFICATION STEPS ====================
 
 Then('the {string} field should contain {string}', function (this: CustomWorld, label: string, expectedValue: string) {
-	const formData = this.context['formData'] || {};
+	const formData = this.testContext['formData'] || {};
 	const actualValue = formData[label];
 	
 	assert.strictEqual(
@@ -198,7 +198,7 @@ Then('the {string} field should contain {string}', function (this: CustomWorld, 
 });
 
 Then('the {string} field should be empty', function (this: CustomWorld, label: string) {
-	const formData = this.context['formData'] || {};
+	const formData = this.testContext['formData'] || {};
 	const value = formData[label];
 	
 	assert.ok(
@@ -210,7 +210,7 @@ Then('the {string} field should be empty', function (this: CustomWorld, label: s
 Then(
 	'the {string} field should show {string}',
 	function (this: CustomWorld, label: string, expectedText: string) {
-		const formData = this.context['formData'] || {};
+		const formData = this.testContext['formData'] || {};
 		const actualValue = formData[label];
 		
 		assert.strictEqual(
@@ -225,16 +225,16 @@ Then('I should not see {string}', function (this: CustomWorld, text: string) {
 	// In real UI tests, verify element is not visible
 	// For mock tests, check that certain states don't exist
 	if (text === 'error' || text === 'errors') {
-		assert.ok(!this.context.lastError, `Expected no errors, but found: ${this.context.lastError}`);
+		assert.ok(!this.testContext.lastError, `Expected no errors, but found: ${this.testContext.lastError}`);
 	}
 });
 
 Then('I should see an error message', function (this: CustomWorld) {
-	assert.ok(this.context.lastError, 'Expected an error message but none was found');
+	assert.ok(this.testContext.lastError, 'Expected an error message but none was found');
 });
 
 Then('I should see a success message', function (this: CustomWorld) {
-	const response = this.context.lastResponse;
+	const response = this.testContext.lastResponse;
 	assert.ok(response, 'No response found');
 	assert.strictEqual(response.status, 200, 'Expected successful response');
 	
@@ -248,7 +248,7 @@ Then('I should see a success message', function (this: CustomWorld) {
 });
 
 Then('I should see the text {string}', function (this: CustomWorld, text: string) {
-	const response = this.context.lastResponse;
+	const response = this.testContext.lastResponse;
 	
 	if (response && response.body && typeof response.body === 'object') {
 		const bodyStr = JSON.stringify(response.body);

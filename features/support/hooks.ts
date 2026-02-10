@@ -16,11 +16,14 @@ BeforeAll(async function () {
 
 /**
  * Hook that runs before each scenario
- * Resets the world state and mock database
+ * Resets the world state and initializes browser
  */
 Before(async function (this: CustomWorld, scenario) {
 	// Reset the world state
 	this.reset();
+	
+	// Initialize browser for UI testing
+	await this.initBrowser();
 	
 	// Log scenario start
 	console.log(`\n📝 Scenario: ${scenario.pickle.name}`);
@@ -31,9 +34,14 @@ Before(async function (this: CustomWorld, scenario) {
  * Handles cleanup and reporting
  */
 After(async function (this: CustomWorld, scenario) {
-	// If scenario failed, you could take screenshots or save state here
-	if (scenario.result?.status === Status.FAILED) {
+	// If scenario failed, take screenshot
+	if (scenario.result?.status === Status.FAILED && this.page) {
 		console.log(`❌ Scenario failed: ${scenario.pickle.name}`);
+		
+		// Take screenshot on failure
+		const screenshotPath = `reports/screenshots/failed-${scenario.pickle.name.replace(/\s+/g, '-').toLowerCase()}.png`;
+		await this.page.screenshot({ path: screenshotPath, fullPage: true });
+		console.log(`📸 Screenshot saved: ${screenshotPath}`);
 		
 		// Log the error if available
 		if (scenario.result.message) {
@@ -43,8 +51,8 @@ After(async function (this: CustomWorld, scenario) {
 		console.log(`✅ Scenario passed: ${scenario.pickle.name}`);
 	}
 	
-	// Clean up is automatic via this.reset() in Before hook
-	// But we could do additional cleanup here if needed
+	// Close browser
+	await this.closeBrowser();
 });
 
 /**
@@ -64,16 +72,13 @@ Before({ tags: '@wip' }, async function (this: CustomWorld, scenario) {
 
 /**
  * Hook for @smoke tagged scenarios
- * Can be used to set up special configuration for smoke tests
  */
 Before({ tags: '@smoke' }, async function (this: CustomWorld) {
-	// Smoke tests might need specific setup
 	console.log('🔥 Running smoke test');
 });
 
 /**
  * Hook for @critical tagged scenarios
- * These are the most important tests
  */
 Before({ tags: '@critical' }, async function (this: CustomWorld) {
 	console.log('🚨 Running critical path test');

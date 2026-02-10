@@ -67,7 +67,7 @@ Given('the menu has {string} priced at ${float}', function (this: CustomWorld, n
 	});
 
 	this.trackEntity(menuItem.id);
-	this.context.currentMenuItem = { id: menuItem.id, name, price };
+	this.testContext.currentMenuItem = { id: menuItem.id, name, price };
 	return menuItem;
 });
 
@@ -121,7 +121,7 @@ Given(
 			address: null
 		});
 		this.trackEntity(client.id);
-		this.context.currentClient = { id: client.id, name, phone };
+		this.testContext.currentClient = { id: client.id, name, phone };
 		return client;
 	}
 );
@@ -135,7 +135,7 @@ Given(
 			address
 		});
 		this.trackEntity(client.id);
-		this.context.currentClient = { id: client.id, name, phone };
+		this.testContext.currentClient = { id: client.id, name, phone };
 		return client;
 	}
 );

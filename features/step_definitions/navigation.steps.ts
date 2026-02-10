@@ -14,7 +14,7 @@ Given('I am on the {string} page', function (this: CustomWorld, pageName: string
 	const path = getPathForPage(pageName);
 	// In real UI tests, this would navigate to the URL
 	// For mock tests, we just track the current location
-	this.context.lastResponse = {
+	this.testContext.lastResponse = {
 		status: 200,
 		body: { currentPath: path }
 	};
@@ -24,7 +24,7 @@ Given(
 	'I am on the {string} page with id {string}',
 	function (this: CustomWorld, pageName: string, id: string) {
 		const path = getPathForPage(pageName).replace(':id', id);
-		this.context.lastResponse = {
+		this.testContext.lastResponse = {
 			status: 200,
 			body: { currentPath: path }
 		};
@@ -36,7 +36,7 @@ Given(
 When('I navigate to {string}', function (this: CustomWorld, path: string) {
 	// In real UI tests, this would navigate to the URL
 	// For mock tests, we simulate navigation
-	this.context.lastResponse = {
+	this.testContext.lastResponse = {
 		status: 200,
 		body: { currentPath: path }
 	};
@@ -44,7 +44,7 @@ When('I navigate to {string}', function (this: CustomWorld, path: string) {
 
 When('I go back', function (this: CustomWorld) {
 	// Simulate browser back button
-	this.context.lastResponse = {
+	this.testContext.lastResponse = {
 		status: 200,
 		body: { action: 'back' }
 	};
@@ -52,7 +52,7 @@ When('I go back', function (this: CustomWorld) {
 
 When('I refresh the page', function (this: CustomWorld) {
 	// Simulate page refresh
-	this.context.lastResponse = {
+	this.testContext.lastResponse = {
 		status: 200,
 		body: { action: 'refresh' }
 	};
@@ -61,7 +61,7 @@ When('I refresh the page', function (this: CustomWorld) {
 // ==================== THEN STEPS ====================
 
 Then('the URL should be {string}', function (this: CustomWorld, expectedPath: string) {
-	const response = this.context.lastResponse;
+	const response = this.testContext.lastResponse;
 	assert.ok(response, 'No navigation response found');
 
 	if (response.body && typeof response.body === 'object') {
@@ -71,7 +71,7 @@ Then('the URL should be {string}', function (this: CustomWorld, expectedPath: st
 });
 
 Then('the URL should contain {string}', function (this: CustomWorld, text: string) {
-	const response = this.context.lastResponse;
+	const response = this.testContext.lastResponse;
 	assert.ok(response, 'No navigation response found');
 
 	if (response.body && typeof response.body === 'object') {
@@ -86,7 +86,7 @@ Then('the URL should contain {string}', function (this: CustomWorld, text: strin
 
 Then('I should see the {string} page', function (this: CustomWorld, pageName: string) {
 	const expectedPath = getPathForPage(pageName);
-	const response = this.context.lastResponse;
+	const response = this.testContext.lastResponse;
 	assert.ok(response, 'No page loaded');
 	assert.strictEqual(response.status, 200, 'Page failed to load');
 });

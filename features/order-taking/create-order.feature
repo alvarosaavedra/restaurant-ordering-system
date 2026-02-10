@@ -1,88 +1,90 @@
 Feature: Order Creation
   As an order taker
-  I want to create orders for customers
-  So that kitchen can prepare the food
+  I want to quickly create accurate customer orders
+  So that kitchen can prepare food correctly and on time
+
+  Business Context:
+  Fast and accurate order entry is critical for restaurant operations.
+  Orders must capture customer details, item selections, and customizations.
+  The system should guide order takers and prevent errors.
 
   Background:
-    Given I am logged in as an order taker
-    And the menu has the following items:
-      | name          | price |
-      | Fresh Bread   | 5.00  |
-      | Coffee        | 3.50  |
-      | Turkey Club   | 12.00 |
-      | Orange Juice  | 4.00  |
+    Given Ryan is logged in as an order taker
+    And the restaurant serves:
+      | item          | base price |
+      | Fresh Bread   | $5.00      |
+      | Coffee        | $3.50      |
+      | Turkey Club   | $12.00     |
+      | Orange Juice  | $4.00      |
 
   @smoke @critical
-  Scenario: Create a basic order with customer details
-    When I navigate to "/orders/new"
-    And I enter "John Doe" in the "Customer Name" field
-    And I enter "555-1234" in the "Phone" field
-    And I enter "123 Main St" in the "Address" field
-    And I add "Fresh Bread" to the cart
-    And I add "Coffee" to the cart
-    Then the cart should contain 2 items
-    And the order total should be $8.50
-    When I click the "Submit Order" button
-    Then I should see "Order created successfully"
-    And the order should have status "pending"
+  Scenario: Order taker creates a complete order for pickup
+    Given Ryan is creating a new order
+    When Ryan enters customer details for John Doe
+      | phone   | 555-1234     |
+      | address | 123 Main St  |
+    And Ryan adds to the order:
+      | item        | quantity |
+      | Fresh Bread | 2        |
+      | Coffee      | 1        |
+    Then the order total should be $13.50
+    When Ryan submits the order
+    Then the order should be created with status "pending"
+    And John Doe should receive order confirmation
 
-  Scenario: Create order with existing client
-    Given a client exists with name "Jane Smith", phone "555-5678", and address "456 Oak Ave"
-    When I navigate to "/orders/new"
-    And I search for client "Jane Smith"
-    And I select "Jane Smith" from the search results
-    Then the "Customer Name" field should contain "Jane Smith"
-    And the "Phone" field should contain "555-5678"
-    And the "Address" field should contain "456 Oak Ave"
+  Scenario: Returning customer details auto-populate
+    Given Sarah Smith is an existing customer
+      | phone   | 555-5678    |
+      | address | 456 Oak Ave |
+    When Ryan searches for "Sarah Smith"
+    And Ryan selects Sarah from the results
+    Then Sarah's details should populate the order form
 
-  Scenario: Order with item variations
-    Given the menu item "Turkey Club" has the variation group "Bread Type" with options:
-      | option      | price_adjustment |
-      | White Bread | 0.00             |
-      | Wheat Bread | 0.50             |
-    When I navigate to "/orders/new"
-    And I enter "Bob Wilson" in the "Customer Name" field
-    And I add "Turkey Club" with variation "Wheat Bread"
-    Then the order total should be $12.50
+  Scenario: Orders support item variations
+    Given Turkey Club sandwiches offer bread options:
+      | option      | price adjustment |
+      | White Bread | $0.00            |
+      | Wheat Bread | $0.50            |
+    When Ryan creates an order for Mike
+    And Ryan adds a Turkey Club with Wheat Bread
+    Then the item price should reflect the $0.50 upgrade
+    And the order total should be $12.50
 
-  Scenario: Order with modifiers
-    Given the menu item "Coffee" has the modifier group "Add-ons" with options:
-      | option         | price |
-      | Extra Shot     | 1.00  |
-      | Whipped Cream  | 0.50  |
-    When I navigate to "/orders/new"
-    And I enter "Alice Brown" in the "Customer Name" field
-    And I add "Coffee" with modifier "Extra Shot"
-    And I add "Coffee" with modifier "Whipped Cream"
+  Scenario: Orders support add-on modifiers
+    Given Coffee offers customization options:
+      | option        | additional price |
+      | Extra Shot    | $1.00            |
+      | Whipped Cream | $0.50            |
+    When Ryan creates an order for Lisa
+    And Ryan adds a Coffee with Extra Shot and Whipped Cream
     Then the order total should be $5.00
 
-  Scenario: Validation - Customer name is required
-    When I navigate to "/orders/new"
-    And I enter "555-1234" in the "Phone" field
-    And I click the "Submit Order" button
-    Then I should see "Customer name is required"
+  Scenario: System validates required customer information
+    Given Ryan is creating a new order
+    When Ryan attempts to submit without a customer name
+    Then Ryan should see a validation error for the customer name
+    When Ryan adds the customer name and attempts to submit without a phone
+    Then Ryan should see a validation error for the phone number
 
-  Scenario: Validation - Phone is required
-    When I navigate to "/orders/new"
-    And I enter "John Doe" in the "Customer Name" field
-    And I click the "Submit Order" button
-    Then I should see "Phone number is required"
-
-  Scenario: Clear cart
-    Given I navigate to "/orders/new"
-    And I enter "John Doe" in the "Customer Name" field
-    And I add "Fresh Bread" to the cart
-    And I add "Coffee" to the cart
-    When I click the "Clear Cart" button
-    Then the cart should contain 0 items
+  Scenario: Order taker can clear and restart an order
+    Given Ryan has started an order with items in the cart
+    When Ryan clears the order
+    Then the cart should be empty
     And the order total should be $0.00
 
   @smoke
-  Scenario: Remove item from cart
-    Given I navigate to "/orders/new"
-    And I enter "John Doe" in the "Customer Name" field
-    And I add "Fresh Bread" to the cart
-    And I add "Coffee" to the cart
-    When I remove "Fresh Bread" from the cart
-    Then the cart should contain 1 items
+  Scenario: Order taker can remove items from an order
+    Given Ryan is creating an order with:
+      | item        | quantity |
+      | Fresh Bread | 2        |
+      | Coffee      | 1        |
+    When Ryan removes Fresh Bread from the order
+    Then the cart should contain only Coffee
     And the order total should be $3.50
+
+  Scenario: Orders support quantity adjustments
+    Given Ryan is creating an order for a family
+    When Ryan adds 3 Turkey Club sandwiches
+    And Ryan increases the quantity to 5
+    Then the order should show 5 Turkey Clubs
+    And the total should be $60.00

@@ -1,52 +1,53 @@
 Feature: User Authentication
-  As a user
-  I want to log in with my credentials
-  So that I can access the ordering system
+  As a restaurant staff member
+  I want to securely access the ordering system
+  So that I can perform my role-specific duties
+
+  Business Context:
+  Different roles have different access needs:
+  - Order takers create and manage customer orders
+  - Kitchen staff view and update order preparation status
+  - Delivery staff manage order delivery
+  - Admins oversee all operations
 
   @smoke @critical
-  Scenario Outline: Successful login redirects based on user role
-    Given I am on the login page
-    And a user exists with email "<email>", password "password123", and role "<role>"
-    When I enter "<email>" in the "Email" field
-    And I enter "password123" in the "Password" field
-    And I click the "Log In" button
-    Then I should be redirected to "<redirect_path>"
-    And I should see "<expected_text>"
+  Scenario Outline: Staff members access their role-specific dashboard after login
+    Given <role> Ryan has an account with password "securePass123"
+    When Ryan logs in with "<email>" and "securePass123"
+    Then Ryan should be taken to the <destination>
+    And Ryan should see his assigned tasks
 
     Examples:
-      | email                    | role         | redirect_path  | expected_text  |
-      | order_taker@test.com     | order_taker  | /orders/new    | Create Order   |
-      | kitchen@test.com         | kitchen      | /kitchen       | Kitchen        |
-      | delivery@test.com        | delivery     | /delivery      | Delivery       |
-      | admin@test.com           | admin        | /              | Dashboard      |
+      | role         | email                    | destination          |
+      | order taker  | ryan.order@restaurant.com | order creation page  |
+      | kitchen      | ryan.kitchen@restaurant.com | kitchen view        |
+      | delivery     | ryan.delivery@restaurant.com | delivery view      |
+      | admin        | ryan.admin@restaurant.com | admin dashboard     |
 
-  Scenario: Invalid credentials show error message
-    Given I am on the login page
-    When I enter "invalid@test.com" in the "Email" field
-    And I enter "wrongpassword" in the "Password" field
-    And I click the "Log In" button
-    Then I should see "Invalid email or password"
-    And I should be on the "/login" page
+  Scenario: Invalid credentials prevent system access
+    Given a user has an account
+    When they attempt to log in with incorrect credentials
+    Then they should see an authentication error
+    And they should remain on the login page
 
-  Scenario: Empty fields show validation errors
-    Given I am on the login page
-    When I click the "Log In" button
-    Then I should see "Email is required"
-    And I should see "Password is required"
+  Scenario: Missing credentials trigger validation
+    Given a user is on the login page
+    When they submit the login form without credentials
+    Then they should see validation messages for required fields
 
-  Scenario: Logout clears session
-    Given I am logged in as an order taker
-    When I click on "Logout"
-    Then I should be redirected to "/login"
-    And I should see the login form
+  Scenario: Staff members can securely log out
+    Given Ryan is logged in as an order taker
+    When Ryan logs out
+    Then Ryan should be returned to the login page
+    And Ryan's session should be terminated
 
-  Scenario: Accessing protected routes while logged out redirects to login
-    Given I am not logged in
-    When I navigate to "/orders/new"
-    Then I should be redirected to "/login"
+  Scenario: Unauthenticated users are redirected to login
+    Given a user is not logged in
+    When they attempt to access a protected page
+    Then they should be redirected to the login page
 
   @smoke
-  Scenario: Session persists after page refresh
-    Given I am logged in as an order taker
-    When I refresh the page
-    Then I should still be logged in as an order taker
+  Scenario: Sessions persist during normal use
+    Given Ryan is logged in as an order taker
+    When Ryan continues working without logging out
+    Then Ryan should remain authenticated throughout the session

@@ -2,10 +2,11 @@
  * Cucumber World Configuration
  * 
  * Provides the test context and shared state for BDD scenarios.
- * Each scenario gets its own instance of the World.
+ * Each scenario gets its own instance of the World with Playwright browser.
  */
 
 import { setWorldConstructor, World as CucumberWorld, IWorldOptions } from '@cucumber/cucumber';
+import { chromium, Browser, BrowserContext, Page } from '@playwright/test';
 import { MockDatabase } from './mock-database';
 
 export interface WorldParameters {
@@ -18,8 +19,13 @@ export class CustomWorld extends CucumberWorld {
 	public baseUrl: string;
 	public headless: boolean;
 	
-	// Scenario context - shared state between steps
-	public context: {
+	// Playwright browser instances
+	public browser?: Browser;
+	public context?: BrowserContext;
+	public page?: Page;
+	
+	// Scenario context - shared state between steps (renamed to avoid conflict with BrowserContext)
+	public testContext: {
 		// Authentication
 		currentUser?: {
 			id: string;
@@ -46,12 +52,11 @@ export class CustomWorld extends CucumberWorld {
 			address?: string;
 		};
 		
-		// UI state
-		lastResponse?: {
-			status: number;
-			body: unknown;
-		};
+		// Test tracking
 		lastError?: string;
+		loggedInUser?: string;
+		testUser?: { firstName: string; email: string; role: string };
+		formData?: Record<string, string | boolean>;
 		
 		// Cart/items tracking
 		cartItems: Array<{
@@ -77,10 +82,57 @@ export class CustomWorld extends CucumberWorld {
 		this.headless = options.parameters.headless !== false;
 		
 		// Initialize context
-		this.context = {
+		this.testContext = {
 			cartItems: [],
 			entitiesToCleanUp: []
 		};
+	}
+
+	/**
+	 * Initialize browser and page for UI testing
+	 */
+	async initBrowser(): Promise<void> {
+		if (!this.browser) {
+			this.browser = await chromium.launch({
+				headless: this.headless
+			});
+		}
+		
+		if (!this.context) {
+			this.context = await this.browser.newContext({
+				viewport: { width: 1280, height: 720 }
+			});
+		}
+		
+		if (!this.page) {
+			this.page = await this.context.newPage();
+		}
+	}
+
+	/**
+	 * Close browser after scenario
+	 */
+	async closeBrowser(): Promise<void> {
+		if (this.context) {
+			await this.context.close();
+			this.context = undefined;
+		}
+		if (this.browser) {
+			await this.browser.close();
+			this.browser = undefined;
+		}
+		this.page = undefined;
+	}
+
+	/**
+	 * Navigate to a path
+	 */
+	async navigateTo(path: string): Promise<void> {
+		if (!this.page) {
+			await this.initBrowser();
+		}
+		const url = path.startsWith('http') ? path : `${this.baseUrl}${path}`;
+		await this.page!.goto(url);
 	}
 
 	/**
@@ -88,7 +140,7 @@ export class CustomWorld extends CucumberWorld {
 	 */
 	reset(): void {
 		this.mockDb.reset();
-		this.context = {
+		this.testContext = {
 			cartItems: [],
 			entitiesToCleanUp: []
 		};
@@ -98,21 +150,21 @@ export class CustomWorld extends CucumberWorld {
 	 * Helper to set current user
 	 */
 	setCurrentUser(user: { id: string; email: string; role: string }): void {
-		this.context.currentUser = user;
+		this.testContext.currentUser = user;
 	}
 
 	/**
 	 * Helper to set current order
 	 */
 	setCurrentOrder(order: { id: string; total: number; status: string }): void {
-		this.context.currentOrder = order;
+		this.testContext.currentOrder = order;
 	}
 
 	/**
 	 * Helper to track entity for cleanup
 	 */
 	trackEntity(id: string): void {
-		this.context.entitiesToCleanUp.push(id);
+		this.testContext.entitiesToCleanUp.push(id);
 	}
 
 	/**
@@ -124,7 +176,7 @@ export class CustomWorld extends CucumberWorld {
 		variations?: string[];
 		modifiers?: string[];
 	}): void {
-		this.context.cartItems.push({
+		this.testContext.cartItems.push({
 			menuItemId: item.menuItemId,
 			quantity: item.quantity,
 			variations: item.variations || [],
@@ -136,7 +188,7 @@ export class CustomWorld extends CucumberWorld {
 	 * Helper to clear cart
 	 */
 	clearCart(): void {
-		this.context.cartItems = [];
+		this.testContext.cartItems = [];
 	}
 
 	/**
@@ -145,13 +197,13 @@ export class CustomWorld extends CucumberWorld {
 	calculateCartTotal(): number {
 		let total = 0;
 		
-		for (const cartItem of this.context.cartItems) {
+		for (const cartItem of this.testContext.cartItems) {
 			const menuItem = this.mockDb.getMenuItem(cartItem.menuItemId);
 			if (!menuItem) continue;
 			
 			let itemTotal = menuItem.price * cartItem.quantity;
 			
-			// Add variation adjustments
+			// Add variation price adjustments
 			for (const variationId of cartItem.variations) {
 				const variation = this.mockDb.getVariation(variationId);
 				if (variation) {
@@ -177,15 +229,15 @@ export class CustomWorld extends CucumberWorld {
 	 * Submit order from cart - creates order and order items
 	 */
 	submitOrderFromCart(): void {
-		const user = this.context.currentUser;
+		const user = this.testContext.currentUser;
 		if (!user) {
 			throw new Error('No user logged in');
 		}
 
-		const formData = this.context['formData'] || {};
-		const customerName = formData['Customer Name'] || 'Unknown Customer';
-		const phone = formData['Phone'];
-		const address = formData['Address'];
+		const formData = this.testContext.formData || {};
+		const customerName = formData['Customer Name']?.toString() || 'Unknown Customer';
+		const phone = formData['Phone']?.toString();
+		const address = formData['Address']?.toString();
 
 		const total = this.calculateCartTotal();
 
@@ -206,7 +258,7 @@ export class CustomWorld extends CucumberWorld {
 		});
 
 		// Create order items from cart
-		for (const cartItem of this.context.cartItems) {
+		for (const cartItem of this.testContext.cartItems) {
 			const menuItem = this.mockDb.getMenuItem(cartItem.menuItemId);
 			if (!menuItem) continue;
 
@@ -259,14 +311,15 @@ export class CustomWorld extends CucumberWorld {
 		}
 
 		this.trackEntity(order.id);
-		this.context.currentOrder = {
+		this.testContext.currentOrder = {
 			id: order.id,
 			total,
 			status: 'pending'
 		};
-		this.context.lastResponse = {
-			status: 200,
-			body: { success: true, orderId: order.id }
+		this.testContext.formData = {
+			...(this.testContext.formData || {}),
+			success: true,
+			orderId: order.id
 		};
 		this.clearCart();
 	}
