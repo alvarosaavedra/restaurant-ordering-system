@@ -24,8 +24,6 @@
 
 	const categories: CategoryWithItems[] = $derived(data.categories);
 
-	const itemEmojis = ['🍕', '🍔', '🥗', '🍝', '🍰', '🥤', '🌮', '🍜', '🥪', '🍟', '🍱', '🥘', '🍛', '🥙', '🌯'];
-
 	let selectedItems = new SvelteSet<string>();
 	let expandedCategories = new SvelteSet<string>();
 	let copied = $state(false);
@@ -41,24 +39,20 @@
 
 	let formattedText = $derived.by(() => {
 		if (selectedCount === 0) {
-			return '🍴✨ Select items to share your menu! ✨🍴';
+			return 'Select items to share your menu!';
 		}
 
-		const lines: string[] = ['🍴✨ Our Delicious Menu ✨🍴', ''];
-		let emojiIndex = 0;
+		const lines: string[] = ['Our Delicious Menu', ''];
 
 		for (const category of categories) {
 			const categoryItems = category.items.filter(item => selectedItems.has(item.id));
 			
 			if (categoryItems.length > 0) {
-				lines.push(`📌 ${category.name}`);
+				lines.push(`${category.name}`);
 				lines.push('');
 				
 				for (const item of categoryItems) {
-					const emoji = itemEmojis[emojiIndex % itemEmojis.length];
-					emojiIndex++;
-					
-					lines.push(`${emoji} ${item.name} - ${formatCurrency(item.price)}`);
+					lines.push(`${item.name} - ${formatCurrency(item.price)}`);
 					
 					if (item.description) {
 						lines.push(`   ${item.description}`);
@@ -68,7 +62,7 @@
 			}
 		}
 
-		lines.push('✨💫 Hope to see you soon! 💫✨');
+		lines.push('Hope to see you soon!');
 		return lines.join('\n');
 	});
 
@@ -172,7 +166,7 @@
 					</svg>
 				</a>
 				<div>
-					<h1 class="text-2xl font-bold text-gray-900">📱 Share Menu</h1>
+					<h1 class="text-2xl font-bold text-gray-900">Share Menu</h1>
 					<p class="text-sm text-gray-600">Select items to share on social media</p>
 				</div>
 			</div>
